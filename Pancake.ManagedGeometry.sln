@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31613.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pancake.ManagedGeometry", "Pancake.ManagedGeometry\Pancake.ManagedGeometry.csproj", "{533AE43B-FE05-4D98-B1C9-8C12583B9C02}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pancake.ManagedGeometry.Benchmark", "Pancake.ManagedGeometry.Benchmark\Pancake.ManagedGeometry.Benchmark.csproj", "{FA5F127C-B550-4408-8396-7861818341B4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pancake.ManagedGeometry.Tests", "Pancake.ManagedGeometry.Tests\Pancake.ManagedGeometry.Tests.csproj", "{0C5D30B9-DFFC-40F6-8C84-E4CFB95BC159}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{533AE43B-FE05-4D98-B1C9-8C12583B9C02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{533AE43B-FE05-4D98-B1C9-8C12583B9C02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{533AE43B-FE05-4D98-B1C9-8C12583B9C02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{533AE43B-FE05-4D98-B1C9-8C12583B9C02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA5F127C-B550-4408-8396-7861818341B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA5F127C-B550-4408-8396-7861818341B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA5F127C-B550-4408-8396-7861818341B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA5F127C-B550-4408-8396-7861818341B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C5D30B9-DFFC-40F6-8C84-E4CFB95BC159}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C5D30B9-DFFC-40F6-8C84-E4CFB95BC159}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C5D30B9-DFFC-40F6-8C84-E4CFB95BC159}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C5D30B9-DFFC-40F6-8C84-E4CFB95BC159}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8AFC235C-AFEC-41DA-B5AF-86A3323C9E6C}
+	EndGlobalSection
+EndGlobal
