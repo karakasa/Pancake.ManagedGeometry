@@ -287,5 +287,21 @@ namespace Pancake.ManagedGeometry
             return (t.BetweenRange(0, 1) && u.BetweenRange(0, 1)) ? LineRelation.Intersected : LineRelation.NotIntersected;
         }
 
+        public LineRelation DoesIntersectWith(Line2d another)
+        {
+            var p1 = Coord2d.CrossProductLength(this.Direction, another.Direction);
+            var p2 = another.From - this.From;
+
+            if (p1.CloseToZero())
+            {
+                var judge = Coord2d.CrossProductLength(p2, this.Direction);
+                return judge.CloseToZero() ? LineRelation.Collinear : LineRelation.Parallel;
+            }
+
+            var t = Coord2d.CrossProductLength(p2, another.Direction) / p1;
+            var u = Coord2d.CrossProductLength(p2, this.Direction) / p1;
+
+            return t.BetweenRange(0, 1) && u.BetweenRange(0, 1) ? LineRelation.Intersected : LineRelation.NotIntersected;
+        }
     }
 }

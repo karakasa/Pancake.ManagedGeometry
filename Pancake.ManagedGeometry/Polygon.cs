@@ -6,6 +6,16 @@ using System.Runtime.CompilerServices;
 
 namespace Pancake.ManagedGeometry
 {
+    public enum PolygonShape
+    {
+        SelfIntersecting,
+        Convex,
+        Concave,
+        Degenerate
+    }
+    /// <summary>
+    /// XY 平面上的多边形。第一个点不需要重复一遍。
+    /// </summary>
     public class Polygon : ICloneable
     {
         private Coord2d[] _v;
@@ -223,5 +233,75 @@ namespace Pancake.ManagedGeometry
         }
 
         object ICloneable.Clone() => Duplicate();
+
+
+        public PolygonShape CalculateSimpleShape()
+        {
+            if (_v.Length < 3) return PolygonShape.Degenerate;
+
+            Coord2d v1, v2;
+
+            v1 = _v[1] - _v[0];
+            v2 = _v[2] - _v[1];
+
+            var sign = Math.Sign(Coord2d.CrossProductLength(v1, v2));
+
+            for (var i = 1; i < _v.Length - 1; i++)
+            {
+                v1 = v2;
+                v2 = _v[(i + 2) % _v.Length] - _v[i + 1];
+
+                if (Math.Sign(Coord2d.CrossProductLength(v1, v2)) != sign)
+                    return PolygonShape.Concave;
+            }
+
+            v1 = v2;
+            v2 = _v[1] - _v[0];
+
+            if (Math.Sign(Coord2d.CrossProductLength(v1, v2)) != sign)
+                return PolygonShape.Concave;
+
+            return PolygonShape.Convex;
+        }
+
+        public bool DoesSelfIntersect()
+        {
+            var edgeCnt = _v.Length;
+            for (var i = 0; i < edgeCnt; i++)
+            {
+                var l1 = LineAt(i);
+                for (var j = i + 2; j <= edgeCnt; j++)
+                {
+                    var l2 = LineAtUnbounded(j);
+
+                    var result = l1.DoesIntersectWith(l2);
+                    if (result == LineRelation.Intersected || result == LineRelation.Collinear)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+        public PolygonShape CalculateShape()
+        {
+            if (_v.Length < 3) return PolygonShape.Degenerate;
+            if (DoesSelfIntersect()) return PolygonShape.SelfIntersecting;
+
+            return CalculateSimpleShape();
+        }
+        public double ClosestDistanceTo(Coord2d pt)
+        {
+            var minDistance = double.MaxValue;
+            var thisEdgeCnt = _v.Length;
+
+            for (var i = 0; i < thisEdgeCnt; i++)
+            {
+                var dist = LineAt(i).SquareDistanceToPoint(pt);
+                if (dist < minDistance)
+                    minDistance = dist;
+            }
+
+            return Math.Sqrt(minDistance);
+        }
     }
 }
