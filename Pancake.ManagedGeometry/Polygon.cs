@@ -19,7 +19,10 @@ namespace Pancake.ManagedGeometry
     public class Polygon : ICloneable
     {
         private Coord2d[] _v;
-        public Coord2d[] GetVerticeArray() => _v;
+        /// <summary>
+        /// Do not use the property unless you know what you are doing.
+        /// </summary>
+        public Coord2d[] InternalVerticeArray => _v;
 
         public int VerticeCount => _v.Length;
         public Polygon Duplicate()
@@ -36,9 +39,12 @@ namespace Pancake.ManagedGeometry
         public void Transform(Matrix44 xform)
         {
             for (var i = 0; i < VerticeCount; i++)
-            {
                 _v[i] = _v[i].Transform(xform);
-            }
+        }
+        public void Transform(Func<Coord2d, Coord2d> func)
+        {
+            for (var i = 0; i < VerticeCount; i++)
+                _v[i] = func(_v[i]);
         }
         private Polygon()
         {

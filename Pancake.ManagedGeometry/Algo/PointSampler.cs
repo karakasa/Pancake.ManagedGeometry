@@ -11,8 +11,14 @@ namespace Pancake.ManagedGeometry.Algo
 {
     public struct PointSampleRegion
     {
-        public Coord[] Polygon;
+        public Polygon Polygon;
         public double Height;
+
+        public static PointSampleRegion Create(Polygon ply, double height = 0.9)
+            => new() { Polygon = ply, Height = height };
+
+        public static PointSampleRegion[] CreateSingle(Polygon ply, double height = 0.9)
+            => new[] { new PointSampleRegion { Polygon = ply, Height = height } };
     }
     public static class PointSampler
     {
@@ -20,8 +26,8 @@ namespace Pancake.ManagedGeometry.Algo
         {
             var terminals = regions.Select(ply =>
             {
-                ply.Polygon.Select(c => c.X).MinMax(out var minX, out var maxX);
-                ply.Polygon.Select(c => c.Y).MinMax(out var minY, out var maxY);
+                ply.Polygon.InternalVerticeArray.Select(c => c.X).MinMax(out var minX, out var maxX);
+                ply.Polygon.InternalVerticeArray.Select(c => c.Y).MinMax(out var minY, out var maxY);
                 return new { MinX = minX, MaxX = maxX, MinY = minY, MaxY = maxY };
             }).ToArray();
 
@@ -45,10 +51,10 @@ namespace Pancake.ManagedGeometry.Algo
             for (var x = rangeMinX; x <= rangeMaxX; x += distance)
                 for (var y = rangeMinY; y <= rangeMaxY; y += distance)
                 {
-                    var pt = new Coord(x, y, 0);
+                    var pt = new Coord2d(x, y);
                     foreach (var it in regions)
                     {
-                        if (PointInsidePolygon.Contains(it.Polygon, pt)
+                        if (PointInsidePolygon.Contains(it.Polygon.InternalVerticeArray, pt)
                             != PointInsidePolygon.PointContainment.Outside)
                         {
                             list.Add(new Coord(x, y, it.Height));
