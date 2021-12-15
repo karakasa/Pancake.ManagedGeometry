@@ -82,35 +82,7 @@ namespace Pancake.ManagedGeometry
         public FastVector2d MapToParametricSpaceInternal(Coord vec)
         {
             var v = MapToParametricSpace(vec) - MapToParametricSpace(Coord.Origin);
-            var z = v.Z;
-
-            if (Math.Abs(z) < 1e-7)
-            {
-                return new FastVector2d
-                {
-                    X = v.X,
-                    Y = v.Y,
-                    Direction = 0
-                };
-            }
-            else if (z > 0)
-            {
-                return new FastVector2d
-                {
-                    X = v.X / z,
-                    Y = v.Y / z,
-                    Direction = 1
-                };
-            }
-            else
-            {
-                return new FastVector2d
-                {
-                    X = -v.X / z,
-                    Y = -v.Y / z,
-                    Direction = -1
-                };
-            }
+            return new FastVector2d(v);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -143,15 +115,13 @@ namespace Pancake.ManagedGeometry
         }
 
         /// <summary>
-        /// 帮助结构，标准化 Z 轴为单位长度后用于存储退化的三维向量，可以更快的计算射线与平面是否相交。
+        /// 快速求某退化向量表达的射线和 XY 平面交点的算法
         /// </summary>
-        public struct FastVector2d
-        {
-            public int Direction;
-            public double X;
-            public double Y;
-        }
-
+        /// <param name="pt">出发点</param>
+        /// <param name="vec">退化向量，可以用 <see cref="FastVector2d.FastVector2d(Coord)"/> 初始化。</param>
+        /// <param name="s">X</param>
+        /// <param name="t">Y</param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool FastIntersectWorldXY(Coord pt, FastVector2d vec, ref double s, ref double t)
         {

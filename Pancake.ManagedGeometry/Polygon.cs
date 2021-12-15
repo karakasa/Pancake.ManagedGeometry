@@ -19,12 +19,21 @@ namespace Pancake.ManagedGeometry
     public class Polygon : ICloneable
     {
         private Coord2d[] _v;
+        
         /// <summary>
         /// Do not use the property unless you know what you are doing.
         /// </summary>
-        public Coord2d[] InternalVerticeArray => _v;
+        public Coord2d[] InternalVerticeArray
+        {
+            get => _v;
+            internal set => _v = value;
+        }
 
         public int VerticeCount => _v.Length;
+        /// <summary>
+        /// Creates a deepcopy of the current object.
+        /// </summary>
+        /// <returns></returns>
         public Polygon Duplicate()
         {
             var ply = new Polygon();
@@ -46,7 +55,10 @@ namespace Pancake.ManagedGeometry
             for (var i = 0; i < VerticeCount; i++)
                 _v[i] = func(_v[i]);
         }
-        private Polygon()
+        /// <summary>
+        /// Creates an empty polygon for further use. Array uninitialized.
+        /// </summary>
+        internal Polygon()
         {
         }
 
@@ -309,5 +321,6 @@ namespace Pancake.ManagedGeometry
 
             return Math.Sqrt(minDistance);
         }
+        public BoundingBox2d GetBoundingbox() => new(_v);
     }
 }

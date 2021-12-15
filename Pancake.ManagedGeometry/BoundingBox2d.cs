@@ -54,5 +54,17 @@ namespace Pancake.ManagedGeometry
 
             return true;
         }
+        public Polygon ToPolygon()
+        {
+            return new Polygon
+            {
+                InternalVerticeArray = new Coord2d[] {
+                (MinX, MinY),
+                (MaxX, MinY),
+                (MaxX, MaxY),
+                (MinX, MaxY)
+                }
+            };
+        }
     }
 }
