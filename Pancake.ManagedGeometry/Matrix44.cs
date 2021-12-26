@@ -300,5 +300,34 @@ namespace Pancake.ManagedGeometry
         {
             return ((1, 0, 0, vec.X), (0, 1, 0, vec.Y), (0, 0, 1, vec.Z), (0, 0, 0, 1));
         }
+
+        public static Matrix44 RotateX(double degree)
+        {
+            return (
+                (1, 0, 0, 0),
+                (0, Math.Cos(degree), -Math.Sin(degree), 0),
+                (0, Math.Sin(degree), Math.Cos(degree), 0),
+                (0, 0, 0, 1)
+                );
+        }
+
+        public static Matrix44 RotateY(double degree)
+        {
+            return (
+                (Math.Cos(degree), 0, Math.Sin(degree), 0),
+                (0, 1, 0, 0),
+                (-Math.Sin(degree), 0, Math.Cos(degree), 0),
+                (0, 0, 0, 1)
+                );
+        }
+        public static Matrix44 RotateZ(double degree)
+        {
+            return (
+                (Math.Cos(degree), -Math.Sin(degree), 0, 0),
+                (Math.Sin(degree), Math.Cos(degree), 0, 0),
+                (0, 0, 1, 0),
+                (0, 0, 0, 1)
+                );
+        }
     }
 }
