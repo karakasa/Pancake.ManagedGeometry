@@ -103,10 +103,7 @@ namespace Pancake.ManagedGeometry.Algo
 
             var prevPtId = i;
             var nextPtId = j;
-
-            var prevSide = 0;
-            var nextSide = 0;
-
+            int prevSide;
             for (; ; )
             {
                 prevPtId = (prevPtId - 1).UnboundIndex(len);
@@ -124,6 +121,7 @@ namespace Pancake.ManagedGeometry.Algo
                     break;
             }
 
+            int nextSide;
             for (; ; )
             {
                 nextPtId = (nextPtId + 1).UnboundIndex(len);

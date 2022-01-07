@@ -223,6 +223,21 @@ namespace Pancake.ManagedGeometry.Algo
                     yield return it;
             }
         }
+
+        public bool IsValidPoint(Coord2d pt)
+        {
+            if (PointInsidePolygon.Contains(_exterior, pt) == PointInsidePolygon.PointContainment.Outside)
+                return false;
+
+            if (_holes != null)
+            {
+                foreach (var it in _holes)
+                    if (PointInsidePolygon.Contains(it, pt) == PointInsidePolygon.PointContainment.Inside)
+                        return false;
+            }
+
+            return true;
+        }
         public bool Solve(Coord2d from, Coord2d to)
         {
             _from = from;
@@ -231,8 +246,7 @@ namespace Pancake.ManagedGeometry.Algo
             _lastFromVertex = _lastToVertex = -1;
             MinimalDistance = double.NaN;
 
-            if (PointInsidePolygon.Contains(_exterior, from) == PointInsidePolygon.PointContainment.Outside
-                || PointInsidePolygon.Contains(_exterior, to) == PointInsidePolygon.PointContainment.Outside)
+            if (!IsValidPoint(from) || !IsValidPoint(to))
                 return false;
 
             var directLine = new Line2d(from, to);

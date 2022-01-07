@@ -92,33 +92,5 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
             Assert.IsFalse(solver.IsOutside(ply, ((0.6, 1.5), (1.6, 0.5))));
             Assert.IsTrue(solver.IsOutside(ply, ((2, 1.5), (1, 1.5))));
         }
-
-        [Test]
-        public void BugTest()
-        {
-
-            var hole1 = new Polygon(new Coord2d[] {
-            (1.25, 0.25),
-            (1.75, 0.25),
-            (1.75, 0.75),
-            (1.25, 0.75)
-            });
-
-            var hole2 = new Polygon(new Coord2d[] {
-            (0.25, 1.25),
-            (0.75, 1.25),
-            (0.75, 1.75),
-            (0.25, 1.75)
-            });
-
-            var pt1 = (Coord2d)(1.25,0.5);
-            var pt2 = (Coord2d)(0,2);
-
-            var solver = new LineInsidePolygon();
-
-            Assert.IsFalse(solver.IsOutside(hole2, (pt1, pt2)));
-
-            Assert.AreEqual(PointInsidePolygon.Contains(hole1, (0.75, 0.75)), PointInsidePolygon.PointContainment.Outside);
-        }
     }
 }
