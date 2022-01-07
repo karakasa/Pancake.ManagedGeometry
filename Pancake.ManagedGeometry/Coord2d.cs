@@ -81,5 +81,12 @@ namespace Pancake.ManagedGeometry
         {
             return (xform * this).TwoDPart;
         }
+
+        public bool AlmostEqualTo(Coord2d another)
+        {
+            return
+                (X - another.X).CloseToZero()
+                && (Y - another.Y).CloseToZero();
+        }
     }
 }

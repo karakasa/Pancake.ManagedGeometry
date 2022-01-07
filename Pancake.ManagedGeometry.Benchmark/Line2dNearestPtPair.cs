@@ -20,7 +20,7 @@ namespace Pancake.ManagedGeometry.Benchmark
         [GlobalSetup]
         public void Setup()
         {
-            var rand = new Random();
+            var rand = new Random(42);
 
             for (var i = 0; i < N; i++)
             {

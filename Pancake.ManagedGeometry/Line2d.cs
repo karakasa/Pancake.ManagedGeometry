@@ -9,11 +9,18 @@ namespace Pancake.ManagedGeometry
         Collinear,
         Parallel,
         Intersected,
-        NotIntersected
+        NotIntersected,
+        Undetermined
     }
+    /// <summary>
+    /// 代表一个二维线段。线段是没有方向的。
+    /// </summary>
     [DebuggerDisplay("{From} -> {To}")]
     public partial struct Line2d
     {
+        public const double ParamAtStart = 0;
+        public const double ParamAtEnd = 1;
+
         public Coord2d From;
         public Coord2d Direction;
 
@@ -303,5 +310,32 @@ namespace Pancake.ManagedGeometry
 
             return t.BetweenRange(0, 1) && u.BetweenRange(0, 1) ? LineRelation.Intersected : LineRelation.NotIntersected;
         }
+
+        public LineRelation IsParallelOrColinear(Line2d another)
+        {
+            var p1 = Coord2d.CrossProductLength(this.Direction, another.Direction);
+            var p2 = another.From - this.From;
+
+            if (p1.CloseToZero())
+            {
+                var judge = Coord2d.CrossProductLength(p2, this.Direction);
+                return judge.CloseToZero() ? LineRelation.Collinear : LineRelation.Parallel;
+            }
+
+            return LineRelation.Undetermined;
+        }
+
+        public bool AlmostEqualTo(Line2d another)
+        {
+            var end = To;
+            var anotherEnd = another.To;
+
+            if (From.AlmostEqualTo(another.From) && end.AlmostEqualTo(anotherEnd)) return true;
+            if (From.AlmostEqualTo(anotherEnd) && end.AlmostEqualTo(another.From)) return true;
+
+            return false;
+        }
+
+        public static implicit operator Line2d((Coord2d, Coord2d) d) => new(d.Item1, d.Item2);
     }
 }
