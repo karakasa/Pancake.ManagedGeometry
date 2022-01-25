@@ -169,6 +169,8 @@ namespace Pancake.ManagedGeometry
 
         public bool IntersectWith(Polygon b)
         {
+            // https://stackoverflow.com/questions/42464399/2d-rotated-rectangle-collision
+
             return !HasSeparatingAxis(this, b) && !HasSeparatingAxis(b, this);
         }
 
