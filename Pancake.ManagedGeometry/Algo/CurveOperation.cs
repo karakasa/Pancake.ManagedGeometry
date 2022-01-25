@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Pancake.ManagedGeometry.HigherLevel;
 
 namespace Pancake.ManagedGeometry.Algo
 {
@@ -76,6 +77,63 @@ namespace Pancake.ManagedGeometry.Algo
             }
 
             return result;
+        }
+
+        public static IEnumerable<List<SortedCurveRepresentation>> MergeCurves(Curve[] curves)
+        {
+            return MergeCurves(curves.Select(s => new CurveRepresentation(s.Start, s.End)).ToArray());
+        }
+        public static IEnumerable<List<SortedCurveRepresentation>> MergeCurves(CurveRepresentation[] curves)
+        {
+            var remainingCrvs = curves.Select((crv, i) => new { Curve = crv, Index = i}).ToList();
+            var fndCurve = false;
+
+            while(remainingCrvs.Count > 0)
+            {
+                var firstCrv = remainingCrvs[0];
+                var crvCollection = new List<SortedCurveRepresentation>();
+                var lastEnd = firstCrv.Curve.End;
+
+                crvCollection.Add(new(firstCrv.Index, false));
+                remainingCrvs.RemoveAt(0);
+
+                for (; ; )
+                {
+                    fndCurve = false;
+
+                    var i = 0;
+                    for (; i < remainingCrvs.Count; i++)
+                    {
+                        var curCrv = remainingCrvs[i];
+                        if (curCrv.Curve.Start.IdenticalTo(lastEnd))
+                        {
+                            lastEnd = curCrv.Curve.End;
+                            fndCurve = true;
+                            crvCollection.Add(new(curCrv.Index, false));
+                            break;
+                        }
+                        else if (curCrv.Curve.End.IdenticalTo(lastEnd))
+                        {
+                            lastEnd = curCrv.Curve.Start;
+                            fndCurve = true;
+                            crvCollection.Add(new(curCrv.Index, true));
+                            break;
+                        }
+                    }
+
+                    if (!fndCurve)
+                    {
+                        // Nothing to add
+                        break;
+                    }
+                    else
+                    {
+                        remainingCrvs.RemoveAt(i);
+                    }
+                }
+
+                yield return crvCollection;
+            }
         }
     }
 }

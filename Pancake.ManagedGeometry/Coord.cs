@@ -123,6 +123,7 @@ namespace Pancake.ManagedGeometry
         }
 
         public static implicit operator Coord((double, double) d) => new Coord(d.Item1, d.Item2);
+        public static implicit operator Coord((double, double, double) d) => new Coord(d.Item1, d.Item2, d.Item3);
 
         public static Coord BipolarToVector(double zenith, double azimuth)
         {

@@ -55,6 +55,13 @@ namespace Pancake.ManagedGeometry
             for (var i = 0; i < VerticeCount; i++)
                 _v[i] = func(_v[i]);
         }
+
+        public Polygon TransformDuplicate(Matrix44 xform)
+        {
+            var ply = Duplicate();
+            ply.Transform(xform);
+            return ply;
+        }
         /// <summary>
         /// Creates an empty polygon for further use. Array uninitialized.
         /// </summary>
