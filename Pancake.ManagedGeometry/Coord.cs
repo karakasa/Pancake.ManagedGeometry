@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pancake.ManagedGeometry.Utility;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -136,6 +137,12 @@ namespace Pancake.ManagedGeometry
         public Coord Transform(Matrix44 xform)
         {
             return (xform * this).ThreeDPart;
+        }
+
+        public static bool IsColinear(Coord a, Coord b, Coord c)
+        {
+            var vec = Coord.CrossProduct((b - a), (c - a));
+            return vec.X.CloseToZero() && vec.Y.CloseToZero() && vec.Z.CloseToZero();
         }
     }
 }

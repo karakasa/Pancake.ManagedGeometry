@@ -1,4 +1,5 @@
-﻿using Pancake.ManagedGeometry.Utility;
+﻿using Pancake.ManagedGeometry.Algo;
+using Pancake.ManagedGeometry.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,6 +68,11 @@ namespace Pancake.ManagedGeometry
         /// </summary>
         internal Polygon()
         {
+        }
+
+        public static Polygon CreateByRef(Coord2d[] vertices)
+        {
+            return new Polygon { _v = vertices };
         }
 
         public Polygon(Coord2d[] vertices)
@@ -331,5 +337,44 @@ namespace Pancake.ManagedGeometry
             return Math.Sqrt(minDistance);
         }
         public BoundingBox2d GetBoundingbox() => new(_v);
+        private bool ContainsAllPoint(Polygon another)
+        {
+            foreach (var pt in another._v)
+                if (!Contains(pt)) return false;
+            return true;
+        }
+        public bool Contains(Coord2d pt)
+        {
+            return PointInsidePolygon.Contains(_v, pt) != PointInsidePolygon.PointContainment.Outside;
+        }
+        public bool Contains(Polygon another)
+        {
+            return ContainsAllPoint(another) && !IntersectWith(another);
+        }
+
+        public enum PolygonRelation : int
+        {
+            Unset = 0,
+            Intersected,
+            ContainsAnother,
+            InsideAnother,
+            OutsideAnother
+        }
+
+        public PolygonRelation RelationTo(Polygon another)
+        {
+            if (IntersectWith(another)) return PolygonRelation.Intersected;
+            if (ContainsAllPoint(another)) return PolygonRelation.ContainsAnother;
+            if (another.ContainsAllPoint(this)) return PolygonRelation.InsideAnother;
+            return PolygonRelation.OutsideAnother;
+        }
+        public double CalculatePerimeter()
+        {
+            var sum = 0.0;
+            for (var i = 0; i < _v.Length; i++)
+                sum += LineAt(i).Length;
+
+            return sum;
+        }
     }
 }

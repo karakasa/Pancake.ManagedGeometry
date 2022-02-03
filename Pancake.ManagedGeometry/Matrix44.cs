@@ -14,7 +14,7 @@ namespace Pancake.ManagedGeometry
         "({A31}, {A32}, {A33}, {A34}), " +
         "({A41}, {A42}, {A43}, {A44})"
         )]
-    public struct Matrix44
+    public class Matrix44
     {
         public double A11;
         public double A12;

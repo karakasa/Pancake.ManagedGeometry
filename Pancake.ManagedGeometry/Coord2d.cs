@@ -88,5 +88,10 @@ namespace Pancake.ManagedGeometry
                 (X - another.X).CloseToZero()
                 && (Y - another.Y).CloseToZero();
         }
+
+        public static bool IsColinear(Coord2d a, Coord2d b, Coord2d c)
+        {
+            return CrossProductLength(b - a, c - a).CloseToZero();
+        }
     }
 }

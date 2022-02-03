@@ -19,8 +19,8 @@ namespace Pancake.ManagedGeometry.Benchmark
         const int N = 10000;
         private Coord2d[] pts;
 
-        [GlobalSetup]
-        public void Setup()
+        [Benchmark]
+        public double Test()
         {
             var ply = new Polygon(new Coord2d[] {
             (0,0),
@@ -52,11 +52,7 @@ namespace Pancake.ManagedGeometry.Benchmark
                 .Select(_ => (Coord2d)(rand.NextDouble() * 2, rand.NextDouble() * 2))
                 .Where(solver.IsValidPoint)
                 .ToArray();
-        }
 
-        [Benchmark]
-        public double Test()
-        {
             var sum = 0.0;
 
             for (var i = 0; i < pts.Length - 1; i += 2)

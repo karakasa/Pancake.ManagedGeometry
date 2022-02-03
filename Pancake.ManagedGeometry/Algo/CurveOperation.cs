@@ -31,7 +31,7 @@ namespace Pancake.ManagedGeometry.Algo
             IsReversed = reversed;
         }
     }
-    public static class CurveOperation
+    public static partial class CurveOperation
     {
         public static IList<SortedCurveRepresentation> MergeCurveEndRepresentations(CurveRepresentation[] curves)
         {

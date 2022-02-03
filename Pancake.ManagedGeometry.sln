@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pancake.ManagedGeometry.Ben
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pancake.ManagedGeometry.Tests", "Pancake.ManagedGeometry.Tests\Pancake.ManagedGeometry.Tests.csproj", "{0C5D30B9-DFFC-40F6-8C84-E4CFB95BC159}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrossLibBenchmark", "CrossLibBenchmark\CrossLibBenchmark.csproj", "{E6CAB7BF-C20E-49AE-A273-70A6DD69190A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pancake.ModernUtility", "Pancake.ModernUtility\Pancake.ModernUtility.csproj", "{09EC2934-BFC8-4470-9F3C-C2A3B165E247}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{0C5D30B9-DFFC-40F6-8C84-E4CFB95BC159}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C5D30B9-DFFC-40F6-8C84-E4CFB95BC159}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C5D30B9-DFFC-40F6-8C84-E4CFB95BC159}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6CAB7BF-C20E-49AE-A273-70A6DD69190A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6CAB7BF-C20E-49AE-A273-70A6DD69190A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6CAB7BF-C20E-49AE-A273-70A6DD69190A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6CAB7BF-C20E-49AE-A273-70A6DD69190A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09EC2934-BFC8-4470-9F3C-C2A3B165E247}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09EC2934-BFC8-4470-9F3C-C2A3B165E247}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09EC2934-BFC8-4470-9F3C-C2A3B165E247}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09EC2934-BFC8-4470-9F3C-C2A3B165E247}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

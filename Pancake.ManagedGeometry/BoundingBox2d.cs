@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pancake.ManagedGeometry.Utility;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -13,6 +14,14 @@ namespace Pancake.ManagedGeometry
         public double MinY;
         public double MaxY;
 
+        public BoundingBox2d(Coord2d corner1, Coord2d corner2)
+        {
+            MinX = corner1.X;
+            MaxX = corner2.X;
+            MinY = corner1.Y;
+            MaxY = corner2.Y;
+            MakeValid();
+        }
         public BoundingBox2d(IEnumerable<Coord2d> pts)
         {
             var unset = true;
@@ -38,6 +47,11 @@ namespace Pancake.ManagedGeometry
             }
         }
 
+        private void MakeValid()
+        {
+            if (MinX > MaxX) LanguageExtensions.Swap(ref MinX, ref MaxX);
+            if (MinY > MaxY) LanguageExtensions.Swap(ref MinY, ref MaxY);
+        }
         public bool Contains(Coord2d ptr)
         {
             if (ptr.X < MinX || ptr.X > MaxX || ptr.Y < MinY || ptr.Y > MaxY)
@@ -65,6 +79,14 @@ namespace Pancake.ManagedGeometry
                 (MinX, MaxY)
                 }
             };
+        }
+
+        public bool IntersectsWith(BoundingBox2d another)
+        {
+            return MinX < another.MaxX 
+                && MaxX > another.MinX 
+                && MaxY > another.MinY
+                && MinY < another.MaxY;
         }
     }
 }

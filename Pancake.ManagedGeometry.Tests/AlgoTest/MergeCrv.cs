@@ -37,7 +37,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 new Line3d((41.7358877338387, 26.6213090677579, 0.0), (14.7687284957771, 24.523863349242, 0.0)),
             };
 
-            var crvs = array.Select(l => new CurveRepresentation(l.Start, l.End)).ToArray();
+            var crvs = array.Select(l => new CurveRepresentation(l.From, l.To)).ToArray();
             var result = CurveOperation.MergeCurves(crvs).ToArray();
 
             Assert.AreEqual(result.Length, 3);
