@@ -50,5 +50,9 @@ namespace Pancake.ManagedGeometry.Utility
             if (angle > Math.PI / 2) return Math.PI - angle;
             return angle;
         }
+        public static double SimplifyByTolerance(this double number, double tolerance)
+        {
+            return Math.Round(number / tolerance) * tolerance;
+        }
     }
 }
