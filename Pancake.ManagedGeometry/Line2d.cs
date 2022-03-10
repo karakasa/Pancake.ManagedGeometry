@@ -53,6 +53,10 @@ namespace Pancake.ManagedGeometry
         {
             return NearestPointInfinite(pt).BetweenRange(0, 1);
         }
+        public bool IsOnLine(Coord2d pt, double tolerance)
+        {
+            return NearestPointInfinite(pt).BetweenRange(0, 1, tolerance);
+        }
         public void GetEquation(out double a, out double b, out double c)
         {
             a = Direction.Y;
@@ -314,12 +318,25 @@ namespace Pancake.ManagedGeometry
         public LineRelation IsParallelOrColinear(Line2d another)
         {
             var p1 = Coord2d.CrossProductLength(this.Direction, another.Direction);
-            var p2 = another.From - this.From;
 
             if (p1.CloseToZero())
             {
+                var p2 = another.From - this.From;
                 var judge = Coord2d.CrossProductLength(p2, this.Direction);
                 return judge.CloseToZero() ? LineRelation.Collinear : LineRelation.Parallel;
+            }
+
+            return LineRelation.Undetermined;
+        }
+        public LineRelation IsParallelOrColinear(Line2d another, double tolerance)
+        {
+            var p1 = Coord2d.CrossProductLength(this.Direction.ChopZero(tolerance), another.Direction.ChopZero(tolerance));
+
+            if (p1.CloseToZero(tolerance))
+            {
+                var p2 = another.From - this.From;
+                var judge = Coord2d.CrossProductLength(p2.ChopZero(tolerance), this.Direction.ChopZero(tolerance));
+                return judge.CloseToZero(tolerance) ? LineRelation.Collinear : LineRelation.Parallel;
             }
 
             return LineRelation.Undetermined;
@@ -337,5 +354,10 @@ namespace Pancake.ManagedGeometry
         }
 
         public static implicit operator Line2d((Coord2d, Coord2d) d) => new(d.Item1, d.Item2);
+        public bool IsValid() =>
+            From.IsValid && Direction.IsValid && !Direction.SquareLength.CloseToZero();
+
+        public bool IsValid(double tolerance) =>
+            From.IsValid && Direction.IsValid && !Direction.SquareLength.CloseToZero(tolerance);
     }
 }

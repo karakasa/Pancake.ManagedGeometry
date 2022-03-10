@@ -47,6 +47,11 @@ namespace Pancake.ManagedGeometry
             return v.X * w.Y - v.Y * w.X;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Coord2d ChopZero(double tolerance)
+        {
+            return new Coord2d(X.CloseToZero(tolerance) ? 0.0 : X, Y.CloseToZero(tolerance) ? 0.0 : Y);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double CrossProduct(Coord2d secondOperand) => CrossProductLength(this, secondOperand);
         public bool ParallelTo(Coord2d another)
         {
@@ -93,5 +98,6 @@ namespace Pancake.ManagedGeometry
         {
             return CrossProductLength(b - a, c - a).CloseToZero();
         }
+        public bool IsValid => X.IsValid() && Y.IsValid();
     }
 }

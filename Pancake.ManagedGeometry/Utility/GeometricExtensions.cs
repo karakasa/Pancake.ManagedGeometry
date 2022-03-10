@@ -48,9 +48,19 @@ namespace Pancake.ManagedGeometry.Utility
             return v > -ZeroTolerance && v < ZeroTolerance;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool CloseToZero(this double v, double tolerance)
+        {
+            return v > -tolerance && v < tolerance;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool BetweenRange(this double v, double from, double to)
         {
             return from - ZeroTolerance < v && v < to + ZeroTolerance;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool BetweenRange(this double v, double from, double to, double tolerance)
+        {
+            return from - tolerance < v && v < to + tolerance;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsTinyAngle(this double v)
@@ -71,6 +81,14 @@ namespace Pancake.ManagedGeometry.Utility
             }
 
             return index;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static bool IsValid(this double number)
+        {
+            var val = (ulong)(*(long*)&number & 0x7FFFFFFFFFFFFFFFL);
+            return val < 0x7FF0000000000000uL;
+
+            // return !double.IsInfinity(number) && !double.IsNaN(number);
         }
     }
 }
