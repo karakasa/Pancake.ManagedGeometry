@@ -17,7 +17,14 @@ namespace Pancake.ManagedGeometry.Benchmark
 
             public override Coord End => throw new NotImplementedException();
 
+            public override bool IsClosed => throw new NotImplementedException();
+
             public override BoundingBox2d GetBoundingBox2d() => _b2d;
+
+            public override double CalculateArea()
+            {
+                throw new NotImplementedException();
+            }
 
             private readonly BoundingBox2d _b2d;
             public DummyCurve(BoundingBox2d bbox)

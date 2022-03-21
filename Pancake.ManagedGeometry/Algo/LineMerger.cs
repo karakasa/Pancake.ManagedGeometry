@@ -64,7 +64,7 @@ namespace Pancake.ManagedGeometry.Algo
                     listOfEnds.Add(lenAtStart);
                     listOfEnds.Add(lenAtEnd);
 
-                    set.Union((lenAtStart, lenAtEnd));
+                    set.UnionWith((lenAtStart, lenAtEnd));
                 }
 
                 if (!SplitAtOriginalEndPoints)

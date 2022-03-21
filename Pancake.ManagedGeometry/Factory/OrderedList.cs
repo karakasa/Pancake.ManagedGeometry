@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Pancake.ManagedGeometry.Algo.DataStructure;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Pancake.ManagedGeometry.Algo.DataStructure
+namespace Pancake.ManagedGeometry.Factory
 {
     public static class OrderedList
     {

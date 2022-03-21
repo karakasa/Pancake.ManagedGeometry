@@ -17,7 +17,14 @@ namespace Pancake.ManagedGeometry.Benchmark
 
             public override Coord End => throw new NotImplementedException();
 
+            public override bool IsClosed => throw new NotImplementedException();
+
             public override BoundingBox2d GetBoundingBox2d() => _b2d;
+
+            public override double CalculateArea()
+            {
+                throw new NotImplementedException();
+            }
 
             private readonly BoundingBox2d _b2d;
             public DummyCurve(BoundingBox2d bbox)
@@ -56,16 +63,6 @@ namespace Pancake.ManagedGeometry.Benchmark
         public bool Balanced()
         {
             return RegionGroup2dBoolean.IsXYOverlapped(grpA, grpB);
-        }
-        [Benchmark]
-        public bool FewerAsExpected()
-        {
-            return RegionGroup2dBoolean.IsXYOverlappedBiased(grpB, grpA);
-        }
-        [Benchmark]
-        public bool FewerNotAsExpected()
-        {
-            return RegionGroup2dBoolean.IsXYOverlappedBiased(grpA, grpB);
         }
     }
 }

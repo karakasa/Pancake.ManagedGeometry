@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Pancake.ManagedGeometry
 {
-    [DebuggerDisplay("({From}, {To})")]
+    [DebuggerDisplay("[{From}, {To}]")]
     public struct Interval1d : IEquatable<Interval1d>
     {
         public double From;
@@ -16,6 +16,12 @@ namespace Pancake.ManagedGeometry
         {
             From = from;
             To = to;
+        }
+
+        public Interval1d EnsureOrder()
+        {
+            if (From < To) return this;
+            return (To, From);
         }
 
         public static Interval1d Unset = (double.NaN, double.NaN);
@@ -59,6 +65,10 @@ namespace Pancake.ManagedGeometry
         public static bool operator !=(Interval1d left, Interval1d right)
         {
             return !(left == right);
+        }
+        public override string ToString()
+        {
+            return $"[{From}, {To}]";
         }
     }
 }
