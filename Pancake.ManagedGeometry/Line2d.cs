@@ -359,5 +359,24 @@ namespace Pancake.ManagedGeometry
 
         public bool IsValid(double tolerance) =>
             From.IsValid && Direction.IsValid && !Direction.SquareLength.CloseToZero(tolerance);
+        public bool DoesOverlapWith(Line2d another)
+            => DoesOverlap(this, another, MathUtils.ZeroTolerance);
+        public static bool DoesOverlap(Line2d a, Line2d b, double t)
+        {
+            if (!a.IsValid() || !b.IsValid()) return false;
+
+            var relation = a.IsParallelOrColinear(b, t);
+            if (relation != LineRelation.Collinear) return false;
+
+            if (a.IsOnLine(b.From, t)
+                || a.IsOnLine(b.To, t)
+                || b.IsOnLine(a.From, t)
+                || b.IsOnLine(a.To, t))
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

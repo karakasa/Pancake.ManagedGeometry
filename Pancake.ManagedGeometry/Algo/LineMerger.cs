@@ -1,6 +1,7 @@
 ﻿using Pancake.ManagedGeometry.Utility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Pancake.ManagedGeometry.Algo
@@ -11,17 +12,76 @@ namespace Pancake.ManagedGeometry.Algo
 
         public bool SplitAtOriginalEndPoints { get; set; } = true;
 
-        private List<Line2d> _linesSorted;
         private List<List<Line2d>> _lines;
-        public LineMerger(IEnumerable<Line2d> lines)
-        {
-            _linesSorted = lines.Select(EnsureLineDirection).ToList();
-        }
+        private IComparer<Coord2d> _ptSorter;
 
-        public void Calculate()
+        public List<Line2d> Calculate(IEnumerable<Line2d> lines)
         {
-            _lines = UnionFindData.CategorizeData(_linesSorted, DoesLineOverlap).ToNestedLists();
-            _linesSorted.Clear();
+            var linesSorted = lines
+                .Select(EnsureLineDirection)
+                .Where(l => l.IsValid(Tolerance))
+                .ToList();
+
+            _ptSorter = new Coord2dComparer(Tolerance);
+
+            // The algorithm here is generally O(n^2).
+            // There's an O(nlogn) algorithm, using directional angle & cross product as hashes,
+            // which, though, is difficult to handle tolerance and may overflow.
+            _lines = UnionFindData.CategorizeData(linesSorted,
+                (a, b) => Line2d.DoesOverlap(a, b, Tolerance)
+                ).ToNestedLists();
+
+            var listOfLines = new List<Line2d>(linesSorted.Count);
+
+            var listOfEnds = new List<double>();
+
+            foreach (var colinearLines in _lines)
+            {
+                if (colinearLines.Count == 0)
+                {
+                    // Shouldn't happen
+                    throw new InvalidOperationException();
+                }
+
+                if (colinearLines.Count == 1)
+                {
+                    // 只有一个元素
+                    continue;
+                }
+
+                var sortedStartPt = colinearLines.OrderBy(l => l.From, _ptSorter).First().From;
+                var unitVector = colinearLines[0].Direction.Unitize();
+
+                var set = new Interval1dSet(Tolerance);
+
+                listOfEnds.Clear();
+
+                foreach (var it in colinearLines)
+                {
+                    var lenAtStart = (it.From - sortedStartPt) * unitVector;
+                    var lenAtEnd = (it.To - sortedStartPt) * unitVector;
+
+                    listOfEnds.Add(lenAtStart);
+                    listOfEnds.Add(lenAtEnd);
+
+                    set.Union((lenAtStart, lenAtEnd));
+                }
+
+                if (!SplitAtOriginalEndPoints)
+                    set.Compact();
+                var intervals = set.Intervals;
+
+                foreach (var it in intervals)
+                {
+                    var ptStart = sortedStartPt + unitVector * it.From;
+                    var ptEnd = sortedStartPt + unitVector * it.To;
+
+                    var line = new Line2d(ptStart, ptEnd);
+                    listOfLines.Add(line);
+                }
+            }
+
+            return listOfLines;
         }
 
         private Line2d EnsureLineDirection(Line2d a)
@@ -37,37 +97,6 @@ namespace Pancake.ManagedGeometry.Algo
         {
             if ((a.X - b.X).CloseToZero(Tolerance)) return a.Y > b.Y;
             return a.X > b.X;
-        }
-        private bool DoesLineOverlap(Line2d a, Line2d b)
-        {
-            if (!a.IsValid() || !b.IsValid()) return false;
-
-            var relation = a.IsParallelOrColinear(b, Tolerance);
-            if (relation != LineRelation.Collinear) return false;
-
-            return IsPtIncluded(a, b);
-        }
-        private bool IsPtIncluded(Line2d a, Line2d b)
-        {
-            if (a.IsOnLine(b.From, Tolerance)
-                || a.IsOnLine(b.To, Tolerance)
-                || b.IsOnLine(a.From, Tolerance)
-                || b.IsOnLine(a.To, Tolerance))
-            {
-                return true;
-            }
-
-            return false;
-        }
-        private bool IsLineIncluded(Line2d smaller, Line2d larger)
-        {
-            if (larger.IsOnLine(smaller.From, Tolerance)
-                && larger.IsOnLine(smaller.To, Tolerance))
-            {
-                return true;
-            }
-
-            return false;
         }
     }
 }

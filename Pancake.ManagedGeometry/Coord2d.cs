@@ -81,7 +81,8 @@ namespace Pancake.ManagedGeometry
         public static implicit operator Coord2d((double, double) d) => new Coord2d(d.Item1, d.Item2);
         public double Length => Math.Sqrt(X * X + Y * Y);
         public double SquareLength => X * X + Y * Y;
-        public static readonly Coord2d Zero = new Coord2d(0, 0);
+        public static readonly Coord2d Zero = (0, 0);
+        public static readonly Coord2d Unset = (double.NaN, double.NaN);
         public Coord2d Transform(Matrix44 xform)
         {
             return (xform * this).TwoDPart;
@@ -98,6 +99,14 @@ namespace Pancake.ManagedGeometry
         {
             return CrossProductLength(b - a, c - a).CloseToZero();
         }
-        public bool IsValid => X.IsValid() && Y.IsValid();
+        public bool IsValid => X.IsFinite() && Y.IsFinite();
+        public Coord2d Unitize()
+        {
+            var length = Length;
+
+            if (length.CloseToZero()) return Coord2d.Unset;
+
+            return (X / length, Y / length);
+        }
     }
 }

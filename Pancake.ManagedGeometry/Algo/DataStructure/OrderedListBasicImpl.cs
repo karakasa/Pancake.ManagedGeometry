@@ -9,7 +9,8 @@ namespace Pancake.ManagedGeometry.Algo.DataStructure
     {
         private List<T> _underlying;
         private IComparer<T> _comparer;
-        internal OrderedListBasicImpl(IEnumerable<T> dataSrc, IComparer<T> comparer)
+        internal List<T> UnderlyingList => _underlying;
+        public OrderedListBasicImpl(IEnumerable<T> dataSrc = null, IComparer<T> comparer = null)
         {
             _comparer = comparer ?? Comparer<T>.Default;
 
@@ -22,6 +23,13 @@ namespace Pancake.ManagedGeometry.Algo.DataStructure
                 _underlying = new(dataSrc);
                 _underlying.Sort(_comparer);
             }
+        }
+
+        public static OrderedListBasicImpl<T> CreateWithSortedData(IEnumerable<T> dataSrc, IComparer<T> comparer = null)
+        {
+            var list = new OrderedListBasicImpl<T>(null, comparer);
+            list._underlying.AddRange(dataSrc);
+            return list;
         }
 
         public int Count => _underlying.Count;
