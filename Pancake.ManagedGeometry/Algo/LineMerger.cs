@@ -8,12 +8,10 @@ namespace Pancake.ManagedGeometry.Algo
 {
     public class LineMerger
     {
+        // TODO: Reduce memory use.
         public double Tolerance { get; set; } = MathUtils.ZeroTolerance;
 
         public bool SplitAtOriginalEndPoints { get; set; } = true;
-
-        private List<List<Line2d>> _lines;
-        private IComparer<Coord2d> _ptSorter;
 
         public List<Line2d> Calculate(IEnumerable<Line2d> lines)
         {
@@ -22,12 +20,13 @@ namespace Pancake.ManagedGeometry.Algo
                 .Where(l => l.IsValid(Tolerance))
                 .ToList();
 
-            _ptSorter = new Coord2dComparer(Tolerance);
+            var ptComparer = new Coord2dComparer(Tolerance);
+            var epsComparer = new EpsilonComparer(Tolerance);
 
             // The algorithm here is generally O(n^2).
             // There's an O(nlogn) algorithm, using directional angle & cross product as hashes,
             // which, though, is difficult to handle tolerance and may overflow.
-            _lines = UnionFindData.CategorizeData(linesSorted,
+            var lineGroups = UnionFindData.CategorizeData(linesSorted,
                 (a, b) => Line2d.DoesOverlap(a, b, Tolerance)
                 ).ToNestedLists();
 
@@ -35,7 +34,7 @@ namespace Pancake.ManagedGeometry.Algo
 
             var listOfEnds = new List<double>();
 
-            foreach (var colinearLines in _lines)
+            foreach (var colinearLines in lineGroups)
             {
                 if (colinearLines.Count == 0)
                 {
@@ -45,12 +44,12 @@ namespace Pancake.ManagedGeometry.Algo
 
                 if (colinearLines.Count == 1)
                 {
-                    listOfLines.Add(colinearLines[0]);
                     // 只有一个元素
+                    listOfLines.Add(colinearLines[0]);
                     continue;
                 }
 
-                var sortedStartPt = colinearLines.OrderBy(l => l.From, _ptSorter).First().From;
+                var sortedStartPt = colinearLines.OrderBy(l => l.From, ptComparer).First().From;
                 var unitVector = colinearLines[0].Direction.Unitize();
 
                 var set = new Interval1dSet(Tolerance);
@@ -74,7 +73,10 @@ namespace Pancake.ManagedGeometry.Algo
                 var intervals = set.Intervals;
 
                 if (SplitAtOriginalEndPoints)
-                    intervals = intervals.SplitAt(listOfEnds);
+                {
+                    intervals = intervals.SplitAt(
+                        listOfEnds.DistinctByComparer(epsComparer));
+                }
 
                 foreach (var it in intervals)
                 {

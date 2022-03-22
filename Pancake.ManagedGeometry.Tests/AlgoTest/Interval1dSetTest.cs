@@ -65,5 +65,17 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
             Assert.AreEqual(set.Count, 1);
             Assert.AreEqual(set.Intervals.ToArray(), new Interval1d[] { (-1, double.PositiveInfinity) });
         }
+        [Test]
+        public void RemoveDuplicateTest()
+        {
+            var iv = new Interval1d(1, 2);
+
+            var set = new Interval1dSet();
+            set.UnionWith(iv);
+            set.UnionWith(iv);
+
+            Assert.AreEqual(set.Count, 1);
+            Assert.AreEqual(set.Intervals.ToArray(), new[] { iv });
+        }
     }
 }

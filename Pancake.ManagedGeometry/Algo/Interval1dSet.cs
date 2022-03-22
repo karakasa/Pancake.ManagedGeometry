@@ -51,14 +51,17 @@ namespace Pancake.ManagedGeometry.Algo
 
             FindCharacteristicPoint(interval);
 
+            var list = _orderedList.UnderlyingList;
+
             if (_tempListForSplitPoints.Count == 0)
             {
-                _orderedList.Add(interval);
+                if (list.All(iv => !iv.Contains(interval, _tolerance)))
+                    _orderedList.Add(interval);
+
                 return;
             }
 
             var splitPoints = _tempListForSplitPoints.DistinctByComparer(_dblComparer);
-            var list = _orderedList.UnderlyingList;
 
             _tempListForSegmentToAdd.Clear();
 
