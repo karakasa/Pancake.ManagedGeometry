@@ -45,6 +45,7 @@ namespace Pancake.ManagedGeometry.Algo
 
                 if (colinearLines.Count == 1)
                 {
+                    listOfLines.Add(colinearLines[0]);
                     // 只有一个元素
                     continue;
                 }
@@ -69,7 +70,11 @@ namespace Pancake.ManagedGeometry.Algo
 
                 if (!SplitAtOriginalEndPoints)
                     set.Compact();
+
                 var intervals = set.Intervals;
+
+                if (SplitAtOriginalEndPoints)
+                    intervals = intervals.SplitAt(listOfEnds);
 
                 foreach (var it in intervals)
                 {

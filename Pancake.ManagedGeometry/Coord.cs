@@ -7,7 +7,7 @@ namespace Pancake.ManagedGeometry
 {
     [DebuggerDisplay("({X}, {Y}, {Z})")]
     [StructLayout(LayoutKind.Sequential, Pack = 8, Size = 24)]
-    public struct Coord : IEquatable<Coord>
+    public readonly struct Coord : IEquatable<Coord>
     {
         public Coord(double x, double y)
         {
@@ -16,9 +16,9 @@ namespace Pancake.ManagedGeometry
             Z = 0;
         }
 
-        public double X;
-        public double Y;
-        public double Z;
+        public readonly double X;
+        public readonly double Y;
+        public readonly double Z;
         private const double Tolerance = 1e-7;
         public bool IdenticalTo(Coord b)
         {
@@ -111,15 +111,17 @@ namespace Pancake.ManagedGeometry
             return v.X * w.Y - v.Y * w.X;
         }
 
-        public void Rotate(Coord center, double angle)
+        public Coord RotateInXY(Coord center, double angle)
         {
             var x0 = X - center.X;
             var y0 = Y - center.Y;
             var sin = Math.Sin(angle);
             var cos = Math.Cos(angle);
 
-            X = x0 * cos - y0 * sin + center.X;
-            Y = x0 * sin + y0 * cos + center.Y;
+            var x = x0 * cos - y0 * sin + center.X;
+            var y = x0 * sin + y0 * cos + center.Y;
+
+            return (x, y, Z);
         }
 
         public static implicit operator Coord((double, double) d) => new Coord(d.Item1, d.Item2);

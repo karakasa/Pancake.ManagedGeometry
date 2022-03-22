@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using Pancake.ManagedGeometry.Algo.DataStructure;
+using Pancake.ManagedGeometry.Factory;
 using System;
 using System.Collections.Generic;
 using System.Linq;

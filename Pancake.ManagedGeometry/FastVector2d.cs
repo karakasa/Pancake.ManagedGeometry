@@ -7,11 +7,11 @@ namespace Pancake.ManagedGeometry
     /// <summary>
     /// 辅助结构，标准化 Z 轴为单位长度后用于存储退化的三维向量，可以更快的计算射线与平面是否相交。
     /// </summary>
-    public struct FastVector2d
+    public readonly struct FastVector2d
     {
-        public int Direction;
-        public double X;
-        public double Y;
+        public readonly int Direction;
+        public readonly double X;
+        public readonly double Y;
 
         public FastVector2d(Coord vector3d)
         {

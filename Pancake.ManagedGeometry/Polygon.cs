@@ -108,7 +108,7 @@ namespace Pancake.ManagedGeometry
         public void Rotate(Coord2d center, double angle)
         {
             for (var i = 0; i < VerticeCount; i++)
-                _v[i].Rotate(center, angle);
+                _v[i] = _v[i].Rotate(center, angle);
         }
 
         public bool SimilarTo(Polygon another, double sqrEps = 0.003)

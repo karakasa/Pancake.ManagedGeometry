@@ -7,10 +7,10 @@ using System.Text;
 namespace Pancake.ManagedGeometry
 {
     [DebuggerDisplay("[{From}, {To}]")]
-    public struct Interval1d : IEquatable<Interval1d>
+    public readonly struct Interval1d : IEquatable<Interval1d>
     {
-        public double From;
-        public double To;
+        public readonly double From;
+        public readonly double To;
 
         public Interval1d(double from, double to)
         {

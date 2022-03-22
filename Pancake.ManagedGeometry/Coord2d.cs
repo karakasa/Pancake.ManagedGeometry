@@ -8,37 +8,41 @@ namespace Pancake.ManagedGeometry
 {
     [DebuggerDisplay("({X}, {Y})")]
     [StructLayout(LayoutKind.Sequential, Pack = 8, Size = 16)]
-    public struct Coord2d
+    public readonly struct Coord2d
     {
-        public double X;
-        public double Y;
-
+        public readonly double X;
+        public readonly double Y;
+    
         public Coord2d(double x, double y)
         {
             X = x;
             Y = y;
         }
 
-        public void Rotate(Coord2d center, double angle)
+        public Coord2d Rotate(Coord2d center, double angle)
         {
             var x0 = X - center.X;
             var y0 = Y - center.Y;
             var sin = Math.Sin(angle);
             var cos = Math.Cos(angle);
 
-            X = x0 * cos - y0 * sin + center.X;
-            Y = x0 * sin + y0 * cos + center.Y;
+            var x = x0 * cos - y0 * sin + center.X;
+            var y = x0 * sin + y0 * cos + center.Y;
+
+            return (x, y);
         }
 
-        public void Rotate(double angle)
+        public Coord2d Rotate(double angle)
         {
             var x0 = X;
             var y0 = Y;
             var sin = Math.Sin(angle);
             var cos = Math.Cos(angle);
 
-            X = x0 * cos - y0 * sin;
-            Y = x0 * sin + y0 * cos;
+            var x = x0 * cos - y0 * sin;
+            var y = x0 * sin + y0 * cos;
+
+            return (x, y);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
