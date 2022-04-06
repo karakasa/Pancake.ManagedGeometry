@@ -145,5 +145,9 @@ namespace Pancake.ManagedGeometry
             var vec = Coord.CrossProduct((b - a), (c - a));
             return vec.X.CloseToZero() && vec.Y.CloseToZero() && vec.Z.CloseToZero();
         }
+        public override string ToString()
+        {
+            return $"({X}, {Y}, {Z})";
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace Pancake.ManagedGeometry
 {
     [DebuggerDisplay("({X}, {Y})")]
     [StructLayout(LayoutKind.Sequential, Pack = 8, Size = 16)]
-    public readonly struct Coord2d
+    public readonly struct Coord2d : IEquatable<Coord2d>
     {
         public readonly double X;
         public readonly double Y;
@@ -82,6 +82,8 @@ namespace Pancake.ManagedGeometry
         public static Coord2d operator *(Coord2d a, double t) => new Coord2d(a.X * t, a.Y * t);
         public static Coord2d operator *(double t, Coord2d a) => a * t;
         public static Coord2d operator /(Coord2d a, double t) => a * (1 / t);
+        public static bool operator ==(Coord2d a, Coord2d b) => a.Equals(b);
+        public static bool operator !=(Coord2d a, Coord2d b) => !a.Equals(b);
         public static implicit operator Coord2d((double, double) d) => new Coord2d(d.Item1, d.Item2);
         public double Length => Math.Sqrt(X * X + Y * Y);
         public double SquareLength => X * X + Y * Y;
@@ -111,6 +113,30 @@ namespace Pancake.ManagedGeometry
             if (length.CloseToZero()) return Coord2d.Unset;
 
             return (X / length, Y / length);
+        }
+        public override string ToString()
+        {
+            return $"({X}, {Y})";
+        }
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var baseHs = -145785563;
+                baseHs += X.GetHashCode() * 77761841;
+                baseHs += Y.GetHashCode() * 77761841;
+                return baseHs;
+            }
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj is Coord2d c2d) return this.Equals(c2d);
+            return false;
+        }
+
+        public bool Equals(Coord2d other)
+        {
+            return this.X == other.X && this.Y == other.Y;
         }
     }
 }
