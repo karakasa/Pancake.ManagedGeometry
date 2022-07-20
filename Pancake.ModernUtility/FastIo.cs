@@ -51,7 +51,7 @@ namespace Pancake.ModernUtility
         }
 
         // TODO: Isn't this action illegal? Needs to be paired with No-GC region.
-        public static ReadOnlySpan<TDestination> Reinterpret<TSource, TDestination>(TSource[] source)
+        public static unsafe ReadOnlySpan<TDestination> Reinterpret<TSource, TDestination>(TSource[] source)
             where TSource : unmanaged
             where TDestination : unmanaged
         {
