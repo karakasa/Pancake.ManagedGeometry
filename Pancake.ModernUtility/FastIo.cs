@@ -57,7 +57,7 @@ namespace Pancake.ModernUtility
         {
             if (sizeof(TSource) != sizeof(TDestination)) throw new InvalidOperationException("Sizes mismatch.");
 
-            if (source.Length == 0) return Array.Empty<TDestination>();
+            if (source.Length == 0) return ReadOnlySpan<TDestination>.Empty;
 
             fixed (TSource* ptrSource = &source[0])
             {
