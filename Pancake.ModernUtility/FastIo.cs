@@ -51,7 +51,7 @@ namespace Pancake.ModernUtility
         }
 
         // TODO: Isn't this action illegal? Needs to be paired with No-GC region.
-        public static unsafe ReadOnlySpan<TDestination> Reinterpret<TSource, TDestination>(TSource[] source)
+        public static unsafe ReadOnlySpan<TDestination> ReinterpretUnsafe<TSource, TDestination>(TSource[] source)
             where TSource : unmanaged
             where TDestination : unmanaged
         {
@@ -64,6 +64,120 @@ namespace Pancake.ModernUtility
                 var spanSource = new ReadOnlySpan<TDestination>(ptrSource, source.Length);
                 return spanSource;
             }
+        }
+    }
+
+    public static unsafe class SafeFastIo<TDestination>
+        where TDestination : unmanaged
+    {
+        public delegate void Procedure(ReadOnlySpan<TDestination> parameter);
+        public static void Reinterpret<TSource>(
+            TSource[] source,
+            Procedure procedure
+            )
+            where TSource : unmanaged
+        {
+            if (sizeof(TSource) != sizeof(TDestination)) throw new InvalidOperationException("Sizes mismatch.");
+
+            if (source.Length == 0)
+            {
+                procedure(ReadOnlySpan<TDestination>.Empty);
+                return;
+            }
+
+            fixed (TSource* ptrSource = &source[0])
+            {
+                var spanSource = new ReadOnlySpan<TDestination>(ptrSource, source.Length);
+                procedure(spanSource);
+            }
+        }
+    }
+    public static unsafe class SafeFastIo<TDestination, TReturnType>
+        where TDestination : unmanaged
+    {
+        public delegate TReturnType Procedure(ReadOnlySpan<TDestination> parameter);
+        public static TReturnType Reinterpret<TSource>(
+            TSource[] source,
+            Procedure procedure
+            )
+            where TSource : unmanaged
+        {
+            if (sizeof(TSource) != sizeof(TDestination)) throw new InvalidOperationException("Sizes mismatch.");
+
+            if (source.Length == 0)
+            {
+                return procedure(ReadOnlySpan<TDestination>.Empty);
+            }
+
+            fixed (TSource* ptrSource = &source[0])
+            {
+                var spanSource = new ReadOnlySpan<TDestination>(ptrSource, source.Length);
+                return procedure(spanSource);
+            }
+        }
+    }
+    public static unsafe class SafeFastIoWithContext<TContext, TDestination>
+        where TDestination : unmanaged
+    {
+        public delegate void Procedure(TContext context, ReadOnlySpan<TDestination> parameter);
+        public static void Reinterpret<TSource>(
+            TContext context,
+            TSource[] source,
+            Procedure procedure
+            )
+            where TSource : unmanaged
+        {
+            if (sizeof(TSource) != sizeof(TDestination)) throw new InvalidOperationException("Sizes mismatch.");
+
+            if (source.Length == 0)
+            {
+                procedure(context, ReadOnlySpan<TDestination>.Empty);
+                return;
+            }
+
+            fixed (TSource* ptrSource = &source[0])
+            {
+                var spanSource = new ReadOnlySpan<TDestination>(ptrSource, source.Length);
+                procedure(context, spanSource);
+            }
+        }
+    }
+    public static unsafe class SafeFastIoWithContext<TContext, TDestination, TReturnType>
+        where TDestination : unmanaged
+    {
+        public delegate TReturnType Procedure(TContext context, ReadOnlySpan<TDestination> parameter);
+        public static TReturnType Reinterpret<TSource>(
+            TContext context,
+            TSource[] source,
+            Procedure procedure
+            )
+            where TSource : unmanaged
+        {
+            if (sizeof(TSource) != sizeof(TDestination)) throw new InvalidOperationException("Sizes mismatch.");
+
+            if (source.Length == 0)
+            {
+                return procedure(context, ReadOnlySpan<TDestination>.Empty);
+            }
+
+            fixed (TSource* ptrSource = &source[0])
+            {
+                var spanSource = new ReadOnlySpan<TDestination>(ptrSource, source.Length);
+                return procedure(context, spanSource);
+            }
+        }
+    }
+
+    public static class TestClass
+    {
+        public static void A()
+        {
+            SafeFastIoWithContext<int, double, string>.Reinterpret(2, new long[] { 1, 2, 3 }, TestFunc);
+        }
+
+        private static string TestFunc(int context, ReadOnlySpan<double> value)
+        {
+            return "";
         }
     }
 }
