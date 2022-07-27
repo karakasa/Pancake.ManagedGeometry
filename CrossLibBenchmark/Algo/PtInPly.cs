@@ -16,10 +16,12 @@ namespace CrossLibBenchmark.Algo
         private Coord[] plyCoords;
         private Elements.Geometry.Polygon plyElements;
         private GShark.Geometry.Polygon plyGshark;
+        private SharpMath.Geometry.Polygon plySharpMath;
 
         private Coord[] samplePts;
         private Elements.Geometry.Vector3[] samplePtsElements;
         private GShark.Geometry.Point3[] samplePtsGShark;
+        private SharpMath.Geometry.Point2D[] samplePtsSharpMath;
 
         private Coord2d[] plyPancake;
         private Coord2d[] samplePtsPancake;
@@ -49,6 +51,23 @@ namespace CrossLibBenchmark.Algo
 
             plyPancake = plyCoords.Select(r => (Coord2d)(r.X, r.Y)).ToArray();
             samplePtsPancake = samplePts.Select(r => (Coord2d)(r.X, r.Y)).ToArray();
+
+            samplePtsSharpMath = samplePts.Select(r => new SharpMath.Geometry.Point2D(r.X, r.Y)).ToArray();
+            plySharpMath = new SharpMath.Geometry.Polygon(
+                plyCoords.Select(r => new SharpMath.Geometry.Point2D(r.X, r.Y)).ToArray()
+                );
+        }
+        [Benchmark]
+        public bool SharpMath()
+        {
+            var sum = false;
+            foreach (var it in samplePtsSharpMath)
+            {
+                var result = plySharpMath.ContainsPoint(it);
+                sum ^= result;
+            }
+
+            return sum;
         }
         [Benchmark]
         public bool Pancake()

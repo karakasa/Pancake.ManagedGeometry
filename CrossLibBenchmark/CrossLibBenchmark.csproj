@@ -8,11 +8,17 @@
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
     <PackageReference Include="GShark" Version="1.5.0" />
-    <PackageReference Include="Hypar.Elements" Version="0.9.8" />
+    <PackageReference Include="Hypar.Elements" Version="1.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Pancake.ManagedGeometry\Pancake.ManagedGeometry.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="SharpMath">
+      <HintPath>ThirdPartyLibrary\SharpMath\SharpMath.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

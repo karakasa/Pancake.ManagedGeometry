@@ -8,7 +8,8 @@ namespace CrossLibBenchmark
         static void Main(string[] args)
         {
             //BenchmarkRunner.Run<BasicGeometry.Colinear2d>();
-            BenchmarkRunner.Run<Algo.PlyIntersect>();
+            BenchmarkRunner.Run<Algo.PtInPly>();
+            Console.ReadLine();
         }
     }
 }
