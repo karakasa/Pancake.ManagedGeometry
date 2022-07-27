@@ -1,6 +1,7 @@
 ﻿using Pancake.ManagedGeometry.Algo;
 using Pancake.ManagedGeometry.Utility;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -477,6 +478,49 @@ namespace Pancake.ManagedGeometry
             return false;
         }
 
+        private struct PolygonEdgeEnumerator : IEnumerator<Line2d>
+        {
+            private readonly Polygon _ply;
+            private int _index;
+            public PolygonEdgeEnumerator(Polygon ply)
+            {
+                _index = -1;
+                _ply = ply;
+            }
+
+            public Line2d Current => _ply.LineAt(_index);
+
+            object IEnumerator.Current => Current;
+
+            public void Dispose()
+            {
+            }
+
+            public bool MoveNext()
+            {
+                ++_index;
+                return _index < _ply._v.Length;
+            }
+
+            public void Reset()
+            {
+                _index = -1;
+            }
+        }
+        private struct PolygonEdgeEnumerable : IEnumerable<Line2d>
+        {
+            private readonly Polygon _ply;
+            public PolygonEdgeEnumerable(Polygon ply)
+            {
+                _ply = ply;
+            }
+
+            public IEnumerator<Line2d> GetEnumerator()
+                => new PolygonEdgeEnumerator(_ply);
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+        public IEnumerable<Line2d> Lines => new PolygonEdgeEnumerable(this);
         public Line2d[] ToLine2dArray()
         {
             var line = new Line2d[_v.Length];

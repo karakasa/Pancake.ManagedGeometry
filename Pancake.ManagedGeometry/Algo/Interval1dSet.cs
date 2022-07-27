@@ -80,11 +80,11 @@ namespace Pancake.ManagedGeometry.Algo
         }
         public void SubtractBy(Interval1d interval)
         {
-
+            throw new NotImplementedException();
         }
         public void IntersectWith(Interval1d interval)
         {
-
+            throw new NotImplementedException();
         }
 
         public void UnionWith(IInterval1dSet set)

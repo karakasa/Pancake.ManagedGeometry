@@ -41,6 +41,19 @@ namespace Pancake.ManagedGeometry.Utility
             min = _min;
             max = _max;
         }
+        public static void MinMax(double num1, double num2, out double min, out double max)
+        {
+            if (num1 < num2)
+            {
+                min = num1;
+                max = num2;
+            }
+            else
+            {
+                min = num2;
+                max = num1;
+            }
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CloseToZero(this double v)
