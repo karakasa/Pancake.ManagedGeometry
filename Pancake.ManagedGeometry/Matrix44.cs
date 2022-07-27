@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Pancake.ManagedGeometry
 {
+    /// <summary>
+    /// Row-first representation of a 4x4 matrix (used for transformation).
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     [DebuggerDisplay(
         "({A11}, {A12}, {A13}, {A14}), " +

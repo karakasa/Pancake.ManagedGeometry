@@ -54,5 +54,10 @@ namespace Pancake.ManagedGeometry.Utility
         {
             return Math.Round(number / tolerance) * tolerance;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double FastAbs(this double number)
+        {
+            return number > 0 ? number : -number;
+        }
     }
 }

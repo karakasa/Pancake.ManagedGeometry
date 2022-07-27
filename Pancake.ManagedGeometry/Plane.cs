@@ -6,16 +6,16 @@ using System.Text;
 
 namespace Pancake.ManagedGeometry
 {
-    public struct ManagedPlane : ICloneable
+    public struct Plane : ICloneable
     {
         public Coord Origin { private set; get; }
         public Coord AxisX { private set; get; }
         public Coord AxisY { private set; get; }
         public Coord AxisZ { private set; get; }
 
-        public static ManagedPlane CreateFromComponents(Coord origin, Coord x, Coord y)
+        public static Plane CreateFromComponents(Coord origin, Coord x, Coord y)
         {
-            var pl = new ManagedPlane();
+            var pl = new Plane();
             pl.Origin = origin;
             pl.AxisX = x;
             pl.AxisY = y;
@@ -24,7 +24,7 @@ namespace Pancake.ManagedGeometry
             pl.NormalizeVectors();
             return pl;
         }
-        public ManagedPlane(Coord a, Coord b, Coord c)
+        public Plane(Coord a, Coord b, Coord c)
         {
             Origin = a;
             AxisX = b - a;
@@ -34,7 +34,7 @@ namespace Pancake.ManagedGeometry
             NormalizeVectors();
         }
 
-        public ManagedPlane(ManagedPlane plane)
+        public Plane(Plane plane)
         {
             Origin = plane.Origin;
             AxisX = plane.AxisX;
@@ -150,9 +150,9 @@ namespace Pancake.ManagedGeometry
             }
         }
 
-        public ManagedPlane Clone()
+        public Plane Clone()
         {
-            return new ManagedPlane(this);
+            return new Plane(this);
         }
         object ICloneable.Clone()
         {
@@ -163,7 +163,7 @@ namespace Pancake.ManagedGeometry
         {
             return (Projected(ptr) - ptr).SquareLength < MathUtils.ZeroTolerance;
         }
-        public bool CoplanarWith(ManagedPlane other)
+        public bool CoplanarWith(Plane other)
         {
             if (Math.Abs(other.AxisZ * AxisZ) > MathUtils.ZeroTolerance)
                 return false;
@@ -171,7 +171,7 @@ namespace Pancake.ManagedGeometry
             return OnPlane(other.Origin);
         }
 
-        public static bool TryCreateFromPoints(IList<Coord> polygon, out ManagedPlane plane)
+        public static bool TryCreateFromPoints(IList<Coord> polygon, out Plane plane)
         {
             if (polygon.Count < 3)
             {
@@ -201,7 +201,7 @@ namespace Pancake.ManagedGeometry
                 return false;
             }
 
-            plane = new ManagedPlane(ptr1, ptr2, ptr3);
+            plane = new Plane(ptr1, ptr2, ptr3);
             return true;
         }
     }

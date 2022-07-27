@@ -81,7 +81,7 @@ namespace Pancake.ManagedGeometry.Algo
 
         public static IEnumerable<List<SortedCurveRepresentation>> MergeCurves(Curve[] curves)
         {
-            return MergeCurves(curves.Select(s => new CurveRepresentation(s.Start, s.End)).ToArray());
+            return MergeCurves(curves.Select(static s => new CurveRepresentation(s.Start, s.End)).ToArray());
         }
         public static IEnumerable<List<SortedCurveRepresentation>> MergeCurves(CurveRepresentation[] curves)
         {

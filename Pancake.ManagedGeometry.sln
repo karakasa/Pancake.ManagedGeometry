@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31613.86
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32408.312
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pancake.ManagedGeometry", "Pancake.ManagedGeometry\Pancake.ManagedGeometry.csproj", "{533AE43B-FE05-4D98-B1C9-8C12583B9C02}"
 EndProject
@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pancake.ManagedGeometry.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrossLibBenchmark", "CrossLibBenchmark\CrossLibBenchmark.csproj", "{E6CAB7BF-C20E-49AE-A273-70A6DD69190A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pancake.ModernUtility", "Pancake.ModernUtility\Pancake.ModernUtility.csproj", "{09EC2934-BFC8-4470-9F3C-C2A3B165E247}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pancake.ModernUtility", "Pancake.ModernUtility\Pancake.ModernUtility.csproj", "{09EC2934-BFC8-4470-9F3C-C2A3B165E247}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pancake.ExpressionEvaluator", "Pancake.ExpressionEvaluator\Pancake.ExpressionEvaluator.csproj", "{2B58B498-DB09-4C3A-9872-37B3B77992ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{09EC2934-BFC8-4470-9F3C-C2A3B165E247}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09EC2934-BFC8-4470-9F3C-C2A3B165E247}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09EC2934-BFC8-4470-9F3C-C2A3B165E247}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B58B498-DB09-4C3A-9872-37B3B77992ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B58B498-DB09-4C3A-9872-37B3B77992ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B58B498-DB09-4C3A-9872-37B3B77992ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B58B498-DB09-4C3A-9872-37B3B77992ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

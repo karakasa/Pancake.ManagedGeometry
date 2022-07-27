@@ -19,6 +19,12 @@ namespace Pancake.ManagedGeometry
             Y = y;
         }
 
+        /// <summary>
+        /// Rotate the point around another point.
+        /// </summary>
+        /// <param name="center">Rotation center</param>
+        /// <param name="angle">Angle. Counter-clockwise.</param>
+        /// <returns>Rotated point</returns>
         public Coord2d Rotate(Coord2d center, double angle)
         {
             var x0 = X - center.X;
@@ -31,7 +37,11 @@ namespace Pancake.ManagedGeometry
 
             return (x, y);
         }
-
+        /// <summary>
+        /// Rotate the point around the origin point (0,0).
+        /// </summary>
+        /// <param name="angle">Angle. Counter-clockwise.</param>
+        /// <returns>Rotated point</returns>
         public Coord2d Rotate(double angle)
         {
             var x0 = X;

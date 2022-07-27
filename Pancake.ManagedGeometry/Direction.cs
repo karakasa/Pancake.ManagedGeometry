@@ -44,6 +44,9 @@ namespace Pancake.ManagedGeometry
         }
     }
 
+    /// <summary>
+    /// Represents an 8-way 2D direction.
+    /// </summary>
     public enum Direction : int
     {
         Right,

@@ -171,7 +171,7 @@ namespace Pancake.ManagedGeometry.Algo
         public IEnumerable<Coord2d> GetPath()
         {
             if (!HasResult)
-                throw new InvalidOperationException();
+                throw new InvalidOperationException("Result hasn't been generated yet.");
 
             yield return _from;
 

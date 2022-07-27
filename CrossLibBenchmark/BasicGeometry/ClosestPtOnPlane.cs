@@ -25,7 +25,7 @@ namespace CrossLibBenchmark.BasicGeometry
         private GShark.Geometry.Point3[] samplePt2;
         private Elements.Geometry.Vector3[] samplePt3;
 
-        private ManagedPlane sampleLine1;
+        private Plane sampleLine1;
         private GShark.Geometry.Plane sampleLine2;
         private Elements.Geometry.Plane sampleLine3;
 
@@ -36,7 +36,7 @@ namespace CrossLibBenchmark.BasicGeometry
             samplePt2 = samplePt1.Select(pt => new GShark.Geometry.Point3(pt.X, pt.Y, pt.Z)).ToArray();
             samplePt3 = samplePt1.Select(pt => new Elements.Geometry.Vector3(pt.X, pt.Y, pt.Z)).ToArray();
 
-            sampleLine1 = ManagedPlane.CreateFromComponents((0, 0, 0), (1, 1, 1), (-1, 1, -1));
+            sampleLine1 = Plane.CreateFromComponents((0, 0, 0), (1, 1, 1), (-1, 1, -1));
             sampleLine2 = new GShark.Geometry.Plane(
                 new GShark.Geometry.Point3(0, 0, 0),
                 new GShark.Geometry.Vector3(1, 1, 1),

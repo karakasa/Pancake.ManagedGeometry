@@ -1,0 +1,23 @@
+LiteralToken: A literal, function name, variable name, numeric constant, etc.
+StringLiteralToken: A string literal wrapped in double quotes. e.g. "aaaa"
+SpecialCharacterToken: (, ), ",",, {, }, operators, etc.
+
+constant=null,integer,double,string
+
+SetVariableCount
+InitVariableAsList
+PushInteger
+PushDouble
+PushString
+PushNull
+PushVariable
+PushDerefernecedVariable
+PushReference
+PopVariable
+PopReference: 
+PopEmpty
+Call
+
+PushNumber
+PopNumber
+Call

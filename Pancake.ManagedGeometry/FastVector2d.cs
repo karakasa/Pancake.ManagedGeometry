@@ -6,6 +6,8 @@ namespace Pancake.ManagedGeometry
 {
     /// <summary>
     /// 辅助结构，标准化 Z 轴为单位长度后用于存储退化的三维向量，可以更快的计算射线与平面是否相交。
+    /// Supplemental structure that stores a degenerate 3D vector whose Z compound is unitized.
+    /// It is used for faster ray intersection calculation with the XY plane.
     /// </summary>
     public readonly struct FastVector2d
     {

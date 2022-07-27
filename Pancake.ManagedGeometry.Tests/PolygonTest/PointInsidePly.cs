@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Pancake.ManagedGeometry.Tests.AlgoTest
+namespace Pancake.ManagedGeometry.Tests.PolygonTest
 {
     public class PointInsidePly
     {
