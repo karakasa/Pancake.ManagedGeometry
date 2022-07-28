@@ -50,12 +50,12 @@ namespace Pancake.ManagedGeometry.Algo
         }
 
         /// <summary>
-        /// Group data by bilateral judger
+        /// Group data by binary judger. The implementation is based on disjoint set and its overall time complexity is close to O(n^2).
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="judger"></param>
-        /// <retu2rns></returns>
+        /// <typeparam name="T">Type of input data</typeparam>
+        /// <param name="data">Input data</param>
+        /// <param name="judger">A function determines if two data should be unioned into one set. It should be commutative.</param>
+        /// <returns>Grouped data</returns>
         public static IEnumerable<IEnumerable<T>> CategorizeData<T>(List<T> data, Func<T, T, bool> judger)
         {
             var cnt = data.Count;
@@ -71,8 +71,8 @@ namespace Pancake.ManagedGeometry.Algo
                 Item = item,
                 GroupIndex = union.Find(i)
             })
-                .GroupBy(it => it.GroupIndex)
-                .Select(grp => grp.Select(it2 => it2.Item));
+                .GroupBy(static it => it.GroupIndex)
+                .Select(static grp => grp.Select(static it2 => it2.Item));
         }
     }
 }

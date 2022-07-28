@@ -1,4 +1,4 @@
-﻿#define HIDE_BBOX_2D_IENUMERABLE_INTERFACE
+﻿// #define HIDE_BBOX_2D_IENUMERABLE_INTERFACE
 
 using Pancake.ManagedGeometry.Utility;
 using System;

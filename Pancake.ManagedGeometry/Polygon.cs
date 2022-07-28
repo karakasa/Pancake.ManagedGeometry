@@ -62,7 +62,7 @@ namespace Pancake.ManagedGeometry
     /// XY 平面上的多边形。第一个点不需要重复一遍。
     /// Immutable 2D Polygon on the XY plane. Stores n points for a n-sided polygon.
     /// </summary>
-    public class Polygon : ICloneable
+    public class Polygon : ICloneable, IEnumerable<Line2d>
     {
         private Coord2d[] _v;
 
@@ -143,11 +143,6 @@ namespace Pancake.ManagedGeometry
         }
 
         public int VerticeCount => _v.Length;
-        public Coord2d this[int index]
-        {
-            get => _v[index.UnboundIndex(_v.Length)];
-            set => _v[index.UnboundIndex(_v.Length)] = value;
-        }
 
         public static Polygon CreateByCoords(params Coord2d[] vertices)
                     => CreateByRef(vertices);
@@ -208,7 +203,7 @@ namespace Pancake.ManagedGeometry
         {
             var sum = 0.0;
             for (var i = 0; i < _v.Length; i++)
-                sum += LineAt(i).Length;
+                sum += EdgeAt(i).Length;
 
             return sum;
         }
@@ -297,7 +292,7 @@ namespace Pancake.ManagedGeometry
 
             for (var i = 0; i < thisEdgeCnt; i++)
             {
-                var dist = LineAt(i).SquareDistanceToPoint(pt);
+                var dist = EdgeAt(i).SquareDistanceToPoint(pt);
                 if (dist < minDistance)
                     minDistance = dist;
             }
@@ -305,29 +300,42 @@ namespace Pancake.ManagedGeometry
             return Math.Sqrt(minDistance);
         }
 
-        public double ClosestDistToAnother(Polygon another, out Coord2d thisPt, out Coord2d anotherPt)
+        public double ClosestDistToAnother(Polygon another,
+            out Coord2d thisPt, out Coord2d anotherPt)
+            => ClosestDistanceTo(another, out thisPt, out anotherPt, out _, out _);
+        public double ClosestDistanceTo(Polygon another, 
+            out Coord2d thisPt, out Coord2d anotherPt,
+            out int edgeIndexOnThis, out int edgeIndexOnAnother)
         {
             var minDist = double.MaxValue;
             thisPt = default;
             anotherPt = default;
+            var thisEdgeId = -1;
+            var thatEdgeId = -1;
 
             for (var i = 0; i < _v.Length; i++)
             {
-                var line1 = LineAt(i);
+                var line1 = EdgeAt(i);
 
                 for (var j = 0; j < another._v.Length; j++)
                 {
-                    var line2 = another.LineAt(j);
+                    var line2 = another.EdgeAt(j);
 
                     var dist = line1.NearestPtToAnotherLine(line2, out var ptOnThis, out var outsidePt);
                     if (dist < minDist)
                     {
+                        thisEdgeId = i;
+                        thatEdgeId = j;
+
                         minDist = dist;
                         thisPt = ptOnThis;
                         anotherPt = outsidePt;
                     }
                 }
             }
+
+            edgeIndexOnThis = thisEdgeId;
+            edgeIndexOnAnother = thatEdgeId;
 
             return minDist;
         }
@@ -347,10 +355,10 @@ namespace Pancake.ManagedGeometry
             var edgeCnt = _v.Length;
             for (var i = 0; i < edgeCnt; i++)
             {
-                var l1 = LineAt(i);
+                var l1 = EdgeAt(i);
                 for (var j = i + 2; j <= edgeCnt; j++)
                 {
-                    var l2 = LineAtUnbounded(j);
+                    var l2 = EdgeAt(j.UnboundIndex(edgeCnt));
 
                     var result = l1.DoesIntersectWith(l2);
                     if (result == LineRelation.Intersected || result == LineRelation.Collinear)
@@ -392,24 +400,25 @@ namespace Pancake.ManagedGeometry
             return !HasSeparatingAxis(this, b) && !HasSeparatingAxis(b, this);
         }
 
+        [Obsolete("The method is renamed to EdgeAt", true)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Line2d LineAt(int startPtId)
         {
             return new Line2d(_v[startPtId], _v[(startPtId + 1) % _v.Length]);
         }
-
-        public Line2d LineAtUnbounded(int startPtId)
+        public Line2d EdgeAt(int startPtId)
         {
-            startPtId = startPtId.UnboundIndex(_v.Length);
+            if (startPtId == _v.Length - 1)
+                return new Line2d(_v[startPtId], _v[0]);
 
-            return new Line2d(_v[startPtId], _v[(startPtId + 1) % _v.Length]);
+            return new Line2d(_v[startPtId], _v[startPtId + 1]);
         }
 
         public int OnWhichEdge(Coord2d pt, out PointOnEdgeRelation relation)
         {
             for (var i = 0; i < _v.Length; i++)
             {
-                var line = LineAt(i);
+                var line = EdgeAt(i);
 
                 var t = line.NearestPoint(pt);
                 var closetPt = line.PointAt(t);
@@ -482,13 +491,20 @@ namespace Pancake.ManagedGeometry
         {
             private readonly Polygon _ply;
             private int _index;
+            private Coord2d lastPt;
+            private Coord2d currentPt;
             public PolygonEdgeEnumerator(Polygon ply)
             {
+                if (ply._v.Length <= 1)
+                    throw new ArgumentException("Invalid polygon.");
+
+                lastPt = default;
+                currentPt = ply._v[0];
                 _index = -1;
                 _ply = ply;
             }
 
-            public Line2d Current => _ply.LineAt(_index);
+            public Line2d Current => (lastPt, currentPt);
 
             object IEnumerator.Current => Current;
 
@@ -499,7 +515,21 @@ namespace Pancake.ManagedGeometry
             public bool MoveNext()
             {
                 ++_index;
-                return _index < _ply._v.Length;
+
+                if (_index >= _ply._v.Length)
+                    return false;
+
+                if (_index == _ply._v.Length - 1)
+                {
+                    lastPt = currentPt;
+                    currentPt = _ply._v[0];
+                    return true;
+                }
+
+                lastPt = currentPt;
+                currentPt = _ply._v[_index + 1];
+
+                return true;
             }
 
             public void Reset()
@@ -507,25 +537,15 @@ namespace Pancake.ManagedGeometry
                 _index = -1;
             }
         }
-        private struct PolygonEdgeEnumerable : IEnumerable<Line2d>
-        {
-            private readonly Polygon _ply;
-            public PolygonEdgeEnumerable(Polygon ply)
-            {
-                _ply = ply;
-            }
+        public IEnumerator<Line2d> GetEnumerator()
+                => new PolygonEdgeEnumerator(this);
 
-            public IEnumerator<Line2d> GetEnumerator()
-                => new PolygonEdgeEnumerator(_ply);
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        }
-        public IEnumerable<Line2d> Lines => new PolygonEdgeEnumerable(this);
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         public Line2d[] ToLine2dArray()
         {
             var line = new Line2d[_v.Length];
             for (var i = 0; i < line.Length; i++)
-                line[i] = LineAt(i);
+                line[i] = EdgeAt(i);
 
             return line;
         }

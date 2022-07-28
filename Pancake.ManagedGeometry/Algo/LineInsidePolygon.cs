@@ -35,7 +35,7 @@ namespace Pancake.ManagedGeometry.Algo
             // 先检查就是边的特殊情况
             for (var i = 0; i < cnt; i++)
             {
-                var plyLine = ply.LineAt(i);
+                var plyLine = ply.EdgeAt(i);
                 if (plyLine.AlmostEqualTo(line)) return true;
             }
 
@@ -48,7 +48,7 @@ namespace Pancake.ManagedGeometry.Algo
             // 枚举边和线段的相交情况
             for (var i = 0; i < cnt; i++)
             {
-                var plyLine = ply.LineAt(i);
+                var plyLine = ply.EdgeAt(i);
                 var relation = plyLine.IntersectWith(line, out var plyEdgeParam, out var param);
 
                 if (relation != LineRelation.Intersected) continue;

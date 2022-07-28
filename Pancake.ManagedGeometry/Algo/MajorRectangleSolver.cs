@@ -63,7 +63,7 @@ namespace Pancake.ManagedGeometry.Algo
 
             var edges = new PolygonEdge[ply.VerticeCount];
             for (var i = 0; i < ply.VerticeCount; i++)
-                edges[i] = ClassifyLine(ply.LineAt(i));
+                edges[i] = ClassifyLine(ply.EdgeAt(i));
 
             BoundingBox2d maximumBBox = default;
             double areaBBox = 0;
