@@ -574,9 +574,9 @@ namespace Pancake.ManagedGeometry
             for (var i = 0; i < VerticeCount; i++)
                 _v[i] += vec;
         }
-        public bool TrySimplify(out Polygon simplified)
+        public bool TrySimplify(out Polygon simplified, double tolerance = MathUtils.ZeroTolerance)
         {
-            if (PolylineSimplifier.TrySimplify(_v, true, out var coords))
+            if (PolylineSimplifier.TrySimplify(_v, true, out var coords, tolerance))
             {
                 simplified = Polygon.CreateByRef(coords.ToArray());
                 return true;
@@ -586,9 +586,9 @@ namespace Pancake.ManagedGeometry
             return false;
         }
 
-        public bool TrySimplifyInplace()
+        public bool TrySimplifyInplace(double tolerance = MathUtils.ZeroTolerance)
         {
-            if (PolylineSimplifier.TrySimplify(_v, true, out var coords))
+            if (PolylineSimplifier.TrySimplify(_v, true, out var coords, tolerance))
             {
                 _v = coords.ToArray();
                 return true;

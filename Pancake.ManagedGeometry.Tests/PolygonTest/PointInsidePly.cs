@@ -39,5 +39,62 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
             Assert.AreEqual(PointInsidePolygon.Contains(ply, (1.5, 1)), PointInsidePolygon.PointContainment.Coincident);
             Assert.AreEqual(PointInsidePolygon.Contains(ply, (3, 1)), PointInsidePolygon.PointContainment.Outside);
         }
+        [Test]
+        public void Bug20220728()
+        {
+            var ply = Polygon.CreateByCoords((-42.486876640512754, 1.6404199350379609),
+                                            (-42.486876640511753, -6.5616798024764664),
+                                            (-50.1968503936883, -6.5616798024750222),
+                                            (-50.196850393688713, -19.356955393031729),
+                                            (-37.729658808666684, -19.356955393031768),
+                                            (-37.729658808750521, 1.6404199350376896));
+
+            var testPt = new Coord2d(-50.1968503936883, 1.6404199350379609);
+
+            Assert.IsFalse(ply.Contains(testPt));
+        }
+
+        [Test]
+        public void WindingNumberMethod()
+        {
+            {
+                var hole1 = new Polygon(new Coord2d[] {
+            (1.25, 0.25),
+            (1.75, 0.25),
+            (1.75, 0.75),
+            (1.25, 0.75)
+            });
+
+                var ply = new Polygon(new Coord2d[] {
+            (0,0),
+            (2,0),
+            (2,1),
+            (1,1),
+            (1,2),
+            (0,2)
+            });
+
+                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(hole1.InternalVerticeArray, (0.75, 0.75)), false);
+                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(hole1.InternalVerticeArray, (3, 0.75)), false);
+
+                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(ply.InternalVerticeArray, (-1, 1)), false);
+                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(ply.InternalVerticeArray, (0.5, 1)), true);
+                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(ply.InternalVerticeArray, (3, 1)), false);
+
+            }
+
+            {
+                var ply = Polygon.CreateByCoords((-42.486876640512754, 1.6404199350379609),
+                                           (-42.486876640511753, -6.5616798024764664),
+                                           (-50.1968503936883, -6.5616798024750222),
+                                           (-50.196850393688713, -19.356955393031729),
+                                           (-37.729658808666684, -19.356955393031768),
+                                           (-37.729658808750521, 1.6404199350376896));
+
+                var testPt = new Coord2d(-50.1968503936883, 1.6404199350379609);
+
+                Assert.IsFalse(PointInsidePolygon.ContainsWindingNumberMethod(ply.InternalVerticeArray, testPt));
+            }
+        }
     }
 }

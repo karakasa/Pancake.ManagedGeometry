@@ -113,7 +113,11 @@ namespace Pancake.ManagedGeometry
 
         public static bool IsColinear(Coord2d a, Coord2d b, Coord2d c)
         {
-            return CrossProductLength(b - a, c - a).CloseToZero();
+            return CrossProductLength((b - a).Unitize(), (c - b).Unitize()).CloseToZero();
+        }
+        public static bool IsColinear(Coord2d a, Coord2d b, Coord2d c, double tolerance)
+        {
+            return CrossProductLength((b - a).Unitize(), (c - b).Unitize()).CloseToZero(tolerance);
         }
         public bool IsValid => X.IsFinite() && Y.IsFinite();
         public Coord2d Unitize()

@@ -59,5 +59,11 @@ namespace Pancake.ManagedGeometry.Utility
         {
             return number > 0 ? number : -number;
         }
+
+        public static int SignWithTolerance(this double number, double tolerance)
+        {
+            if (number.CloseToZero(tolerance)) return 0;
+            return number > 0 ? 1 : -1;
+        }
     }
 }

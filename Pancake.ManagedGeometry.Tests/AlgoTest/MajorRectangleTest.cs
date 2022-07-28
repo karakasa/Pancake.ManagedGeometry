@@ -59,5 +59,27 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
 
             Assert.IsFalse(solver.TryGreedyLookup(ply, out _));
         }
+        [Test]
+        public void Bug20220708()
+        {
+            var tolerance = 1.0 / 1000 * 3.280839895;
+
+            var ply = Polygon.CreateByCoords(
+                (-42.486876640512754, 1.6404199350379609),
+                (-42.486876640511753, -6.5616798024764664),
+                (-50.1968503936883, -6.5616798024750222),
+                (-50.196850393688713, -19.356955393031729),
+                (-37.729658808666684, -19.356955393031768),
+                (-37.729658808683794, -16.404205259639),
+                (-37.729658808743693, -6.0695538182211255),
+                (-37.729658808750528, -5.5675538182192277),
+                (-37.729658808750521, 1.6404199350376896));
+
+            var solver = new MajorRectangleSolver { OrthoTolerance = tolerance };
+
+            Assert.IsTrue(solver.TryGreedyLookup(ply, out var rect));
+            Assert.AreEqual(12.4672, rect.SpanX, 0.0001);
+            Assert.AreEqual(12.7953, rect.SpanY, 0.0001);
+        }
     }
 }

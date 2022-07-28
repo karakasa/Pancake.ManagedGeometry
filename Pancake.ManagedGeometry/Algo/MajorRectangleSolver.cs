@@ -59,7 +59,7 @@ namespace Pancake.ManagedGeometry.Algo
         /// <returns>Whether a rectangle can be found</returns>
         public bool TryGreedyLookup(Polygon polygon, out BoundingBox2d rectangle)
         {
-            polygon.TrySimplify(out var ply);
+            polygon.TrySimplify(out var ply, OrthoTolerance);
 
             var edges = new PolygonEdge[ply.VerticeCount];
             for (var i = 0; i < ply.VerticeCount; i++)
