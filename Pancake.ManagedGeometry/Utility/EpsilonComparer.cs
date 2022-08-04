@@ -18,4 +18,17 @@ namespace Pancake.ManagedGeometry.Utility
             return (x < y) ? -1 : 1;
         }
     }
+    public struct EpsilonComparerStruct : IComparer<double>
+    {
+        private double _tolerance;
+        public EpsilonComparerStruct(double tolerance)
+        {
+            _tolerance = tolerance;
+        }
+        public int Compare(double x, double y)
+        {
+            if ((x - y).CloseToZero(_tolerance)) return 0;
+            return (x < y) ? -1 : 1;
+        }
+    }
 }

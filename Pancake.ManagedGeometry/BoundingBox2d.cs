@@ -178,5 +178,16 @@ namespace Pancake.ManagedGeometry
         }
 
         public Coord2d Center => ((MinX + MaxX) / 2, (MinY + MaxY) / 2);
+        public Coord2d Min => (MinX, MinY);
+        public Coord2d Max => (MaxX, MaxY);
+        public Coord2d this[int index] 
+            => index switch
+            {
+                0 => (MinX, MinY),
+                1 => (MaxX, MinY),
+                2 => (MaxX, MaxY),
+                3 => (MinX, MaxY),
+                _ => throw new ArgumentOutOfRangeException(nameof(index))
+            };
     }
 }

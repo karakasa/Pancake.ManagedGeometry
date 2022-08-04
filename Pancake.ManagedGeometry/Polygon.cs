@@ -86,10 +86,56 @@ namespace Pancake.ManagedGeometry
             }
             return false;
         }
+        private static bool HasSeparatingAxis(Polygon a, BoundingBox2d b)
+        {
+            // test each side of a in turn:
+            for (var i = 0; i < a.VerticeCount; i++)
+            {
+                var normal_x = a._v[(i + 1) % a.VerticeCount].Y - a._v[i].Y;
+                var normal_y = a._v[i].X - a._v[(i + 1) % a.VerticeCount].X;
+
+                for (var j = 0; j < 4; j++)
+                {
+                    var dot_product = ((b[j].X - a._v[i].X) * normal_x) +
+                        ((b[j].Y - a._v[i].Y) * normal_y);
+                    if (dot_product <= MathUtils.ZeroTolerance) // change sign of test based on winding order
+                        break;
+                    if (j == 3)
+                        return true; // all dots were +ve, we found a separating axis
+                }
+            }
+            return false;
+        }
+        private static bool HasSeparatingAxis(BoundingBox2d a, Polygon b)
+        {
+            // test each side of a in turn:
+            for (var i = 0; i < 4; i++)
+            {
+                var normal_x = a[(i + 1) % 4].Y - a[i].Y;
+                var normal_y = a[i].X - a[(i + 1) % 4].X;
+
+                for (var j = 0; j < b.VerticeCount; j++)
+                {
+                    var dot_product = ((b._v[j].X - a[i].X) * normal_x) +
+                        ((b._v[j].Y - a[i].Y) * normal_y);
+                    if (dot_product <= MathUtils.ZeroTolerance) // change sign of test based on winding order
+                        break;
+                    if (j == b.VerticeCount - 1)
+                        return true; // all dots were +ve, we found a separating axis
+                }
+            }
+            return false;
+        }
 
         private bool ContainsAllPoint(Polygon another)
         {
             foreach (var pt in another._v)
+                if (!Contains(pt)) return false;
+            return true;
+        }
+        private bool ContainsAllPoint(BoundingBox2d another)
+        {
+            foreach (var pt in another)
                 if (!Contains(pt)) return false;
             return true;
         }
@@ -349,6 +395,10 @@ namespace Pancake.ManagedGeometry
         {
             return ContainsAllPoint(another) && !IntersectWith(another);
         }
+        public bool Contains(BoundingBox2d another)
+        {
+            return ContainsAllPoint(another) && !IntersectWith(another);
+        }
 
         public bool DoesSelfIntersect()
         {
@@ -394,6 +444,13 @@ namespace Pancake.ManagedGeometry
         public BoundingBox2d GetBoundingbox() => new(_v);
 
         public bool IntersectWith(Polygon b)
+        {
+            // https://stackoverflow.com/questions/42464399/2d-rotated-rectangle-collision
+
+            return !HasSeparatingAxis(this, b) && !HasSeparatingAxis(b, this);
+        }
+
+        public bool IntersectWith(BoundingBox2d b)
         {
             // https://stackoverflow.com/questions/42464399/2d-rotated-rectangle-collision
 
@@ -454,6 +511,9 @@ namespace Pancake.ManagedGeometry
             return PolygonRelation.OutsideAnother;
         }
 
+        /// <summary>
+        /// Flip the direction of the polygon
+        /// </summary>
         public void Reverse()
         {
             Array.Reverse(_v);

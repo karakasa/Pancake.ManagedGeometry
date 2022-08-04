@@ -7,7 +7,7 @@ using System.Text;
 namespace Pancake.ManagedGeometry.Algo
 {
     /// <summary>
-    /// Get the "major" (usually the largest) rectangle inside a simple polygon.
+    /// Get the "major" ortho rectangle inside a simple polygon.
     /// </summary>
     public class MajorRectangleSolver
     {
@@ -195,6 +195,8 @@ namespace Pancake.ManagedGeometry.Algo
         /// <exception cref="NotImplementedException"></exception>
         public bool TryDiscreteLookup(Polygon polygon, out BoundingBox2d rectangle)
         {
+            // polygon.v
+
             throw new NotImplementedException();
         }
         #endregion
