@@ -146,5 +146,35 @@ namespace Pancake.ManagedGeometry
         IEnumerator IEnumerable.GetEnumerator()
             => GetEnumerator();
 #endif
+        private static readonly Direction[] DirectionSide = new Direction[] {
+            Direction.LeftTop,
+            Direction.Left,
+            Direction.LeftBottom,
+            Direction.Top,
+            Direction.Center,
+            Direction.Bottom,
+            Direction.RightTop,
+            Direction.Right,
+            Direction.RightBottom
+        };
+        public Direction PointOnWhichSide(Coord2d ptToTest)
+        {
+            var xState = IntervalSign(ptToTest.X, MinX, MaxX);
+            var yState = IntervalSign(ptToTest.Y, MinY, MaxY);
+
+            var seq = (xState + 1) * 3 + yState + 1;
+            return DirectionSide[seq];
+        }
+
+        private static int IntervalSign(double pt, double min, double max)
+        {
+            if (pt < min - MathUtils.ZeroTolerance)
+                return -1;
+
+            if (pt > max + MathUtils.ZeroTolerance)
+                return 1;
+
+            return 0;
+        }
     }
 }

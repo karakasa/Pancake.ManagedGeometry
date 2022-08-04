@@ -17,6 +17,7 @@ namespace Pancake.ManagedGeometry
                 Direction.LeftTop => (-1, 1),
                 Direction.Top => (0, 1),
                 Direction.RightTop => (1, 1),
+                Direction.Center => (0, 0),
                 _ => throw new ArgumentOutOfRangeException(),
             };
         }
@@ -33,6 +34,7 @@ namespace Pancake.ManagedGeometry
                 Direction.LeftTop => "↖",
                 Direction.Top => "↑",
                 Direction.RightTop => "↗",
+                Direction.Center => "·",
                 _ => throw new ArgumentOutOfRangeException(),
             };
         }
@@ -56,6 +58,7 @@ namespace Pancake.ManagedGeometry
         RightTop,
         LeftTop,
         RightBottom,
-        LeftBottom
+        LeftBottom,
+        Center
     }
 }
