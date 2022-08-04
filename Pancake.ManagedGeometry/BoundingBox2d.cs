@@ -176,5 +176,7 @@ namespace Pancake.ManagedGeometry
 
             return 0;
         }
+
+        public Coord2d Center => ((MinX + MaxX) / 2, (MinY + MaxY) / 2);
     }
 }
