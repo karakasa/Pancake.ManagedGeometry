@@ -162,7 +162,7 @@ namespace Pancake.ManagedGeometry
             var xState = IntervalSign(ptToTest.X, MinX, MaxX);
             var yState = IntervalSign(ptToTest.Y, MinY, MaxY);
 
-            var seq = (xState + 1) * 3 + yState + 1;
+            var seq = (xState + 1) * 3 + 2 - (yState + 1);
             return DirectionSide[seq];
         }
 
