@@ -4,11 +4,13 @@ using Pancake.ManagedGeometry.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Pancake.ManagedGeometry
 {
+    [DebuggerDisplay("({Min}), ({Max})")]
     public struct BoundingBox2d
 #if !HIDE_BBOX_2D_IENUMERABLE_INTERFACE
     : IEnumerable<Coord2d>
