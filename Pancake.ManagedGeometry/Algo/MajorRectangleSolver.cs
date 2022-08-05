@@ -31,6 +31,11 @@ namespace Pancake.ManagedGeometry.Algo
         /// </summary>
         public Func<BoundingBox2d, bool> ExtraFilter { get; set; } = null;
 
+        private struct Coord2dWithMetadata<T>
+        {
+            public Coord2d Coords;
+            public T Metadata;
+        }
         #region Greedy Algorithm
         private struct PolygonEdge
         {
@@ -44,11 +49,30 @@ namespace Pancake.ManagedGeometry.Algo
             NotOrthogonal
         }
         private Coord2d[] _bboxPts = new Coord2d[4];
+        private double _orthoTolerance = MathUtils.ZeroTolerance;
         /// <summary>
         /// Extra tolerance option, specially for <see cref="TryGreedyLookup(Polygon, out BoundingBox2d)"/>,
         /// because some inputs are not strictly ortho.
         /// </summary>
-        public double OrthoTolerance { get; set; } = MathUtils.ZeroTolerance;
+        public double OrthoTolerance
+        {
+            get => _orthoTolerance;
+            set
+            {
+                _orthoTolerance = value;
+                EnsureEpsComparer(value);
+            }
+        }
+
+        private EpsilonComparerStruct _comparerStruct = new();
+        private EpsilonComparer _comparerClass;
+        private void EnsureEpsComparer(double eps)
+        {
+            _comparerClass ??= new();
+
+            _comparerClass.Tolerance = eps;
+            _comparerStruct.Tolerance = eps;
+        }
         /// <summary>
         /// This implementation is a fast greedy algorithm.
         /// Output rectangle will use at least 2 pendicular edges from the input polygon, which must be ortho.
@@ -61,8 +85,8 @@ namespace Pancake.ManagedGeometry.Algo
         {
             polygon.TrySimplify(out var ply, OrthoTolerance);
 
-            var edges = new PolygonEdge[ply.VerticeCount];
-            for (var i = 0; i < ply.VerticeCount; i++)
+            var edges = new PolygonEdge[ply.VertexCount];
+            for (var i = 0; i < ply.VertexCount; i++)
                 edges[i] = ClassifyLine(ply.EdgeAt(i));
 
             BoundingBox2d maximumBBox = default;
@@ -95,7 +119,7 @@ namespace Pancake.ManagedGeometry.Algo
 
                 var badPolygon = false;
 
-                foreach(var it in bbox)
+                foreach(var it in bbox.Vertices)
                 {
                     var found = false;
 
@@ -195,7 +219,33 @@ namespace Pancake.ManagedGeometry.Algo
         /// <exception cref="NotImplementedException"></exception>
         public bool TryDiscreteLookup(Polygon polygon, out BoundingBox2d rectangle)
         {
-            // polygon.v
+            var vertices = polygon.InternalVerticeArray;
+            var count = vertices.Length;
+            var coordinatesX = new double[count];
+            var coordinatesY = new double[count];
+
+            for (var i = 0; i < count; i++)
+            {
+                coordinatesX[i] = vertices[i].X;
+                coordinatesY[i] = vertices[i].Y;
+            }
+
+            var lenCoordX = Distincter.SortAndDistinctArrayInplace(coordinatesX,
+                _comparerStruct, _comparerClass);
+            var lenCoordY = Distincter.SortAndDistinctArrayInplace(coordinatesY,
+                _comparerStruct, _comparerClass);
+
+            var pts = new Coord2dWithMetadata<bool>[lenCoordX, lenCoordY];
+            for (var i = 0; i < lenCoordX; i++)
+                for (var j = 0; j < lenCoordY; j++)
+                {
+                    var pt = new Coord2d(coordinatesX[i], coordinatesX[j]);
+                    pts[i, j] = new Coord2dWithMetadata<bool>
+                    {
+                        Coords = pt,
+                        Metadata = polygon.Contains(pt)
+                    };
+                }
 
             throw new NotImplementedException();
         }

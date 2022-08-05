@@ -20,7 +20,7 @@ namespace Pancake.ManagedGeometry.Algo
 
             listOfParameters.Clear();
 
-            var cnt = ply.VerticeCount;
+            var cnt = ply.VertexCount;
 
             var lineFrom = line.From;
             var lineTo = line.To;

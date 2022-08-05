@@ -378,5 +378,49 @@ namespace Pancake.ManagedGeometry
 
             return false;
         }
+
+        internal bool CrossXAxis(double yValue, double minX, double maxX)
+        {
+            if (Direction.Y.CloseToZero())
+            {
+                if (!From.Y.CloseTo(yValue))
+                {
+                    return false;
+                }
+
+                var x1 = From.X;
+                var x2 = x1 + Direction.X;
+
+                return !((x1 < minX - MathUtils.ZeroTolerance && x2 < minX - MathUtils.ZeroTolerance)
+                    || (x1 > maxX + MathUtils.ZeroTolerance && x2 > maxX + MathUtils.ZeroTolerance));
+            }
+            else
+            {
+                var xValue = From.X + Direction.X * (yValue - From.Y) / Direction.Y;
+                return xValue.BetweenRange(minX, maxX);
+            }
+        }
+
+        internal bool CrossYAxis(double xValue, double minY, double maxY)
+        {
+            if (Direction.X.CloseToZero())
+            {
+                if (!From.X.CloseTo(xValue))
+                {
+                    return false;
+                }
+
+                var y1 = From.Y;
+                var y2 = y1 + Direction.Y;
+
+                return !((y1 < minY - MathUtils.ZeroTolerance && y2 < minY - MathUtils.ZeroTolerance)
+                    || (y1 > maxY + MathUtils.ZeroTolerance && y2 > maxY + MathUtils.ZeroTolerance));
+            }
+            else
+            {
+                var yValue = From.Y + Direction.Y * (xValue - From.X) / Direction.X;
+                return yValue.BetweenRange(minY, maxY);
+            }
+        }
     }
 }

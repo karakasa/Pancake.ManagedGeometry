@@ -1,4 +1,5 @@
 ﻿using Pancake.ManagedGeometry.Algo;
+using Pancake.ManagedGeometry.DataModel;
 using Pancake.ManagedGeometry.Utility;
 using System;
 using System.Collections;
@@ -62,65 +63,145 @@ namespace Pancake.ManagedGeometry
     /// XY 平面上的多边形。第一个点不需要重复一遍。
     /// Immutable 2D Polygon on the XY plane. Stores n points for a n-sided polygon.
     /// </summary>
-    public class Polygon : ICloneable, IEnumerable<Line2d>
+    public class Polygon : ICloneable, IPolygon
     {
-        private Coord2d[] _v;
 
+        private Coord2d[] _v;
+        public void CopyVerticesTo(Coord2d[] array, int startIndex)
+        {
+            Array.Copy(InternalVerticeArray, 0, array, startIndex, InternalVerticeArray.Length);
+        }
         private static bool HasSeparatingAxis(Polygon a, Polygon b)
         {
             // test each side of a in turn:
-            for (var i = 0; i < a.VerticeCount; i++)
+            for (var i = 0; i < a.VertexCount; i++)
             {
-                var normal_x = a._v[(i + 1) % a.VerticeCount].Y - a._v[i].Y;
-                var normal_y = a._v[i].X - a._v[(i + 1) % a.VerticeCount].X;
+                var normal_x = a._v[(i + 1) % a.VertexCount].Y - a._v[i].Y;
+                var normal_y = a._v[i].X - a._v[(i + 1) % a.VertexCount].X;
 
-                for (var j = 0; j < b.VerticeCount; j++)
+                for (var j = 0; j < b.VertexCount; j++)
                 {
                     var dot_product = ((b._v[j].X - a._v[i].X) * normal_x) +
                         ((b._v[j].Y - a._v[i].Y) * normal_y);
                     if (dot_product <= MathUtils.ZeroTolerance) // change sign of test based on winding order
                         break;
-                    if (j == b.VerticeCount - 1)
+                    if (j == b.VertexCount - 1)
                         return true; // all dots were +ve, we found a separating axis
                 }
             }
             return false;
         }
-        private static bool HasSeparatingAxis(Polygon a, BoundingBox2d b)
+        private static bool HasSeparatingAxis(Polygon a, ref BoundingBox2d b)
         {
             // test each side of a in turn:
-            for (var i = 0; i < a.VerticeCount; i++)
+            for (var i = 0; i < a.VertexCount; i++)
             {
-                var normal_x = a._v[(i + 1) % a.VerticeCount].Y - a._v[i].Y;
-                var normal_y = a._v[i].X - a._v[(i + 1) % a.VerticeCount].X;
+                var normal_x = a._v[(i + 1) % a.VertexCount].Y - a._v[i].Y;
+                var normal_y = a._v[i].X - a._v[(i + 1) % a.VertexCount].X;
 
-                for (var j = 0; j < 4; j++)
-                {
-                    var dot_product = ((b[j].X - a._v[i].X) * normal_x) +
-                        ((b[j].Y - a._v[i].Y) * normal_y);
-                    if (dot_product <= MathUtils.ZeroTolerance) // change sign of test based on winding order
-                        break;
-                    if (j == 3)
-                        return true; // all dots were +ve, we found a separating axis
-                }
+                double dot_product;
+
+                dot_product = ((b[0].X - a._v[i].X) * normal_x) + ((b[0].Y - a._v[i].Y) * normal_y);
+                if (dot_product <= MathUtils.ZeroTolerance)
+                    goto endOfFirstLoop;
+
+                dot_product = ((b[1].X - a._v[i].X) * normal_x) + ((b[1].Y - a._v[i].Y) * normal_y);
+                if (dot_product <= MathUtils.ZeroTolerance)
+                    goto endOfFirstLoop;
+
+                dot_product = ((b[2].X - a._v[i].X) * normal_x) + ((b[2].Y - a._v[i].Y) * normal_y);
+                if (dot_product <= MathUtils.ZeroTolerance)
+                    goto endOfFirstLoop;
+
+                dot_product = ((b[3].X - a._v[i].X) * normal_x) + ((b[3].Y - a._v[i].Y) * normal_y);
+                if (dot_product <= MathUtils.ZeroTolerance)
+                    goto endOfFirstLoop;
+
+                return true;
+
+endOfFirstLoop:
+                ;
             }
             return false;
         }
-        private static bool HasSeparatingAxis(BoundingBox2d a, Polygon b)
+        private static bool HasSeparatingAxis(ref BoundingBox2d a, Polygon b)
         {
-            // test each side of a in turn:
-            for (var i = 0; i < 4; i++)
-            {
-                var normal_x = a[(i + 1) % 4].Y - a[i].Y;
-                var normal_y = a[i].X - a[(i + 1) % 4].X;
+            double normal_x, normal_y;
 
-                for (var j = 0; j < b.VerticeCount; j++)
+            normal_x = a[1].Y - a[0].Y;
+            normal_y = a[0].X - a[1].X;
+
+            for (var j = 0; j < b.VertexCount; j++)
+            {
+                var dot_product = ((b._v[j].X - a[0].X) * normal_x) +
+                    ((b._v[j].Y - a[0].Y) * normal_y);
+                if (dot_product <= MathUtils.ZeroTolerance) // change sign of test based on winding order
+                    break;
+                if (j == b.VertexCount - 1)
+                    return true; // all dots were +ve, we found a separating axis
+            }
+
+            normal_x = a[2].Y - a[1].Y;
+            normal_y = a[1].X - a[2].X;
+
+            for (var j = 0; j < b.VertexCount; j++)
+            {
+                var dot_product = ((b._v[j].X - a[1].X) * normal_x) +
+                    ((b._v[j].Y - a[1].Y) * normal_y);
+                if (dot_product <= MathUtils.ZeroTolerance) // change sign of test based on winding order
+                    break;
+                if (j == b.VertexCount - 1)
+                    return true; // all dots were +ve, we found a separating axis
+            }
+
+            normal_x = a[3].Y - a[2].Y;
+            normal_y = a[2].X - a[3].X;
+
+            for (var j = 0; j < b.VertexCount; j++)
+            {
+                var dot_product = ((b._v[j].X - a[2].X) * normal_x) +
+                    ((b._v[j].Y - a[2].Y) * normal_y);
+                if (dot_product <= MathUtils.ZeroTolerance) // change sign of test based on winding order
+                    break;
+                if (j == b.VertexCount - 1)
+                    return true; // all dots were +ve, we found a separating axis
+            }
+
+            normal_x = a[0].Y - a[3].Y;
+            normal_y = a[3].X - a[0].X;
+
+            for (var j = 0; j < b.VertexCount; j++)
+            {
+                var dot_product = ((b._v[j].X - a[3].X) * normal_x) +
+                    ((b._v[j].Y - a[3].Y) * normal_y);
+                if (dot_product <= MathUtils.ZeroTolerance) // change sign of test based on winding order
+                    break;
+                if (j == b.VertexCount - 1)
+                    return true; // all dots were +ve, we found a separating axis
+            }
+
+            return false;
+        }
+        private static bool HasSeparatingAxisGeneric<T1, T2>(T1 a, T2 b)
+            where T1 : IPolygon
+            where T2 : IPolygon
+        {
+            var lenA = a.VertexCount;
+            var lenB = b.VertexCount;
+
+            // test each side of a in turn:
+            for (var i = 0; i < lenA; i++)
+            {
+                var normal_x = a[(i + 1) % lenA].Y - a[i].Y;
+                var normal_y = a[i].X - a[(i + 1) % lenA].X;
+
+                for (var j = 0; j < lenB; j++)
                 {
-                    var dot_product = ((b._v[j].X - a[i].X) * normal_x) +
-                        ((b._v[j].Y - a[i].Y) * normal_y);
+                    var dot_product = ((b[j].X - a[i].X) * normal_x) +
+                        ((b[j].Y - a[i].Y) * normal_y);
                     if (dot_product <= MathUtils.ZeroTolerance) // change sign of test based on winding order
                         break;
-                    if (j == b.VerticeCount - 1)
+                    if (j == lenB - 1)
                         return true; // all dots were +ve, we found a separating axis
                 }
             }
@@ -135,7 +216,7 @@ namespace Pancake.ManagedGeometry
         }
         private bool ContainsAllPoint(BoundingBox2d another)
         {
-            foreach (var pt in another)
+            foreach (var pt in another.Vertices)
                 if (!Contains(pt)) return false;
             return true;
         }
@@ -188,7 +269,7 @@ namespace Pancake.ManagedGeometry
             internal set => _v = value;
         }
 
-        public int VerticeCount => _v.Length;
+        public int VertexCount => _v.Length;
 
         public static Polygon CreateByCoords(params Coord2d[] vertices)
                     => CreateByRef(vertices);
@@ -400,6 +481,20 @@ namespace Pancake.ManagedGeometry
             return ContainsAllPoint(another) && !IntersectWith(another);
         }
 
+        public bool Contains(Line2d line)
+        {
+            if (!Contains(line.From) || !Contains(line.To))
+                return false;
+
+            foreach (var edge in Edges)
+            {
+                var result = edge.DoesIntersectWith(line);
+                if (result == LineRelation.Intersected || result == LineRelation.Collinear)
+                    return false;
+            }
+
+            return true;
+        }
         public bool DoesSelfIntersect()
         {
             var edgeCnt = _v.Length;
@@ -445,30 +540,80 @@ namespace Pancake.ManagedGeometry
 
         public bool IntersectWith(Polygon b)
         {
-            // https://stackoverflow.com/questions/42464399/2d-rotated-rectangle-collision
-
             return !HasSeparatingAxis(this, b) && !HasSeparatingAxis(b, this);
         }
 
         public bool IntersectWith(BoundingBox2d b)
         {
+            return !HasSeparatingAxis(this, ref b) && !HasSeparatingAxis(ref b, this);
+        }
+        public bool IntersectWithFastCheck(BoundingBox2d b)
+        {
+            var result = b.Contains(_v[0]);
+
+            double minX, maxX, minY, maxY;
+
+            minX = maxX = _v[0].X;
+            minY = maxY = _v[0].Y;
+
+            for (var i = 1; i < _v.Length; i++)
+            {
+                var tResult = b.Contains(_v[i]);
+                if (tResult != result)
+                    return true;
+
+                var x = _v[i].X;
+                var y = _v[i].Y;
+
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+            }
+
+            var plyBbox = new BoundingBox2d
+            {
+                MinX = minX,
+                MaxX = maxX,
+                MinY = minY,
+                MaxY = maxY
+            };
+
+            if (!plyBbox.IntersectsWith(b))
+                return false;
+
+            return IntersectWith(b);
+        }
+
+        public static bool IntersectsWith<T1, T2>(T1 a, T2 b)
+            where T1 : IPolygon
+            where T2 : IPolygon
+        {
             // https://stackoverflow.com/questions/42464399/2d-rotated-rectangle-collision
 
-            return !HasSeparatingAxis(this, b) && !HasSeparatingAxis(b, this);
+            return !HasSeparatingAxisGeneric(a, b) && !HasSeparatingAxisGeneric(b, a);
         }
 
         [Obsolete("The method is renamed to EdgeAt", true)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Line2d LineAt(int startPtId)
+        public Line2d LineAt(int startPtId) => EdgeAt(startPtId);
+        public Line2d EdgeAt(int startPtId)
         {
             return new Line2d(_v[startPtId], _v[(startPtId + 1) % _v.Length]);
         }
-        public Line2d EdgeAt(int startPtId)
+        public Coord2d VertexAt(int verticeId)
         {
-            if (startPtId == _v.Length - 1)
-                return new Line2d(_v[startPtId], _v[0]);
+            if (verticeId < 0 || verticeId >= InternalVerticeArray.Length)
+                return default;
+                // ThrowHelperOutOfRange();
 
-            return new Line2d(_v[startPtId], _v[startPtId + 1]);
+            return InternalVerticeArray[verticeId];
+        }
+
+        private static void ThrowHelperOutOfRange()
+        {
+            throw new ArgumentOutOfRangeException();
         }
 
         public int OnWhichEdge(Coord2d pt, out PointOnEdgeRelation relation)
@@ -521,7 +666,7 @@ namespace Pancake.ManagedGeometry
 
         public void Rotate(Coord2d center, double angle)
         {
-            for (var i = 0; i < VerticeCount; i++)
+            for (var i = 0; i < VertexCount; i++)
                 _v[i] = _v[i].Rotate(center, angle);
         }
 
@@ -597,10 +742,13 @@ namespace Pancake.ManagedGeometry
                 _index = -1;
             }
         }
-        public IEnumerator<Line2d> GetEnumerator()
-                => new PolygonEdgeEnumerator(this);
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public IEnumerable<Line2d> Edges 
+            => BasedEnumerable.Create<Line2d, PolygonEdgeEnumerator>(new(this));
+        public IEnumerable<Coord2d> Vertices => InternalVerticeArray;
+
+        public Coord2d this[int index] => InternalVerticeArray[index];
+
         public Line2d[] ToLine2dArray()
         {
             var line = new Line2d[_v.Length];
@@ -612,13 +760,13 @@ namespace Pancake.ManagedGeometry
 
         public void Transform(Matrix44 xform)
         {
-            for (var i = 0; i < VerticeCount; i++)
+            for (var i = 0; i < VertexCount; i++)
                 _v[i] = _v[i].Transform(xform);
         }
 
         public void Transform(Func<Coord2d, Coord2d> func)
         {
-            for (var i = 0; i < VerticeCount; i++)
+            for (var i = 0; i < VertexCount; i++)
                 _v[i] = func(_v[i]);
         }
 
@@ -631,7 +779,7 @@ namespace Pancake.ManagedGeometry
 
         public void Translate(Coord2d vec)
         {
-            for (var i = 0; i < VerticeCount; i++)
+            for (var i = 0; i < VertexCount; i++)
                 _v[i] += vec;
         }
         public bool TrySimplify(out Polygon simplified, double tolerance = MathUtils.ZeroTolerance)

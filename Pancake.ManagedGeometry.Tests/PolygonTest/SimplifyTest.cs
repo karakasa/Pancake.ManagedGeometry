@@ -24,7 +24,7 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
             });
 
             Assert.IsTrue(ply.TrySimplify(out var newPly));
-            Assert.AreEqual(newPly.VerticeCount, 4);
+            Assert.AreEqual(newPly.VertexCount, 4);
             Assert.AreEqual(newPly.CalculateArea(), 1, 1e-9);
             Assert.AreEqual(newPly.CalculatePerimeter(), 4, 1e-9);
         }
@@ -45,7 +45,7 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
             });
 
             Assert.IsTrue(ply.TrySimplify(out newPly));
-            Assert.AreEqual(newPly.VerticeCount, 4);
+            Assert.AreEqual(newPly.VertexCount, 4);
             Assert.AreEqual(newPly.CalculateArea(), 1, 1e-9);
             Assert.AreEqual(newPly.CalculatePerimeter(), 4, 1e-9);
 
@@ -60,7 +60,7 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
             });
 
             Assert.IsTrue(ply.TrySimplify(out newPly));
-            Assert.AreEqual(newPly.VerticeCount, 4);
+            Assert.AreEqual(newPly.VertexCount, 4);
             Assert.AreEqual(newPly.CalculateArea(), 1, 1e-9);
             Assert.AreEqual(newPly.CalculatePerimeter(), 4, 1e-9);
 
@@ -75,7 +75,7 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
             });
 
             Assert.IsTrue(ply.TrySimplify(out newPly));
-            Assert.AreEqual(newPly.VerticeCount, 4);
+            Assert.AreEqual(newPly.VertexCount, 4);
             Assert.AreEqual(newPly.CalculateArea(), 1, 1e-9);
             Assert.AreEqual(newPly.CalculatePerimeter(), 4, 1e-9);
         }
@@ -127,7 +127,7 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
                 (-37.729658808750521, 1.6404199350376896));
 
             Assert.IsTrue(ply.TrySimplify(out var ply2, tolerance));
-            Assert.AreEqual(ply2.VerticeCount, 6);
+            Assert.AreEqual(ply2.VertexCount, 6);
             Assert.AreEqual(ply2.CalculateArea(), 198.5403, 0.0001);
         }
     }

@@ -61,6 +61,16 @@ namespace Pancake.ManagedGeometry.Utility
             return v > -ZeroTolerance && v < ZeroTolerance;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool CloseTo(this double v, double refValue)
+        {
+            return (v - refValue).CloseToZero();
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool CloseTo(this double v, double refValue, double tolerance)
+        {
+            return (v - refValue).CloseToZero(tolerance);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CloseToZero(this double v, double tolerance)
         {
             return v > -tolerance && v < tolerance;

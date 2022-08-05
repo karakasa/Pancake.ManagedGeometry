@@ -1,20 +1,18 @@
-﻿// #define HIDE_BBOX_2D_IENUMERABLE_INTERFACE
-
+﻿
+using Pancake.ManagedGeometry.DataModel;
 using Pancake.ManagedGeometry.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Pancake.ManagedGeometry
 {
     [DebuggerDisplay("({Min}), ({Max})")]
-    public struct BoundingBox2d
-#if !HIDE_BBOX_2D_IENUMERABLE_INTERFACE
-    : IEnumerable<Coord2d>
-#endif
+    public struct BoundingBox2d : IPolygon
     {
         public double MinX;
         public double MaxX;
@@ -80,10 +78,7 @@ namespace Pancake.ManagedGeometry
         }
         public bool Contains(Coord2d ptr)
         {
-            if (ptr.X < MinX || ptr.X > MaxX || ptr.Y < MinY || ptr.Y > MaxY)
-                return false;
-
-            return true;
+            return !(ptr.X < MinX || ptr.X > MaxX || ptr.Y < MinY || ptr.Y > MaxY);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -141,13 +136,33 @@ namespace Pancake.ManagedGeometry
             public void Reset()
                 => Index = -1;
         }
-        public IEnumerator<Coord2d> GetEnumerator()
-            => new BBoxEnumerator2d { Index = -1, BBox = this };
+        private struct BBoxLineEnumerator2d : IEnumerator<Line2d>
+        {
+            public int Index;
+            public BoundingBox2d BBox;
+            public Line2d Current
+                => Index switch
+                {
+                    0 => ((BBox.MinX, BBox.MinY), (BBox.MaxX, BBox.MinY)),
+                    1 => ((BBox.MaxX, BBox.MinY), (BBox.MaxX, BBox.MaxY)),
+                    2 => ((BBox.MaxX, BBox.MaxY), (BBox.MinX, BBox.MaxY)),
+                    3 => ((BBox.MinX, BBox.MaxY), (BBox.MinX, BBox.MinY)),
+                    _ => default
+                };
 
-#if !HIDE_BBOX_2D_IENUMERABLE_INTERFACE
-        IEnumerator IEnumerable.GetEnumerator()
-            => GetEnumerator();
-#endif
+            object IEnumerator.Current => Current;
+
+            public void Dispose()
+            {
+            }
+
+            public bool MoveNext()
+                => (++Index) <= 3;
+
+            public void Reset()
+                => Index = -1;
+        }
+
         private static readonly Direction[] DirectionSide = new Direction[] {
             Direction.LeftTop,
             Direction.Left,
@@ -179,17 +194,61 @@ namespace Pancake.ManagedGeometry
             return 0;
         }
 
-        public Coord2d Center => ((MinX + MaxX) / 2, (MinY + MaxY) / 2);
-        public Coord2d Min => (MinX, MinY);
-        public Coord2d Max => (MaxX, MaxY);
-        public Coord2d this[int index] 
-            => index switch
+        public Coord2d VertexAt(int verticeId)
+        {
+            return verticeId switch
             {
                 0 => (MinX, MinY),
                 1 => (MaxX, MinY),
                 2 => (MaxX, MaxY),
                 3 => (MinX, MaxY),
-                _ => throw new ArgumentOutOfRangeException(nameof(index))
+                _ => Coord2d.Unset
             };
+        }
+
+        public Line2d EdgeAt(int startPtId)
+        {
+            return startPtId switch
+            {
+                0 => ((MinX, MinY), (MaxX, MinY)),
+                1 => ((MaxX, MinY), (MaxX, MaxY)),
+                2 => ((MaxX, MaxY), (MinX, MaxY)),
+                3 => ((MinX, MaxY), (MinX, MinY)),
+                _ => default
+            };
+        }
+
+        public void CopyVerticesTo(Coord2d[] array, int startIndex)
+        {
+            array[startIndex] = this[0];
+            array[startIndex + 1] = this[1];
+            array[startIndex + 2] = this[2];
+            array[startIndex + 3] = this[3];
+        }
+
+        public Coord2d Center => ((MinX + MaxX) / 2, (MinY + MaxY) / 2);
+        public Coord2d Min => (MinX, MinY);
+        public Coord2d Max => (MaxX, MaxY);
+
+        public IEnumerable<Line2d> Edges
+            => BasedEnumerable.Create<Line2d, BBoxLineEnumerator2d>(new() { BBox = this, Index = -1 });
+
+        public IEnumerable<Coord2d> Vertices
+            => BasedEnumerable.Create<Coord2d, BBoxEnumerator2d>(new (){BBox = this, Index = -1});
+
+        public int VertexCount => 4;
+
+        public Coord2d this[int index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => index switch
+                {
+                    0 => (MinX, MinY),
+                    1 => (MaxX, MinY),
+                    2 => (MaxX, MaxY),
+                    3 => (MinX, MaxY),
+                    _ => default
+                };
+        }
     }
 }
