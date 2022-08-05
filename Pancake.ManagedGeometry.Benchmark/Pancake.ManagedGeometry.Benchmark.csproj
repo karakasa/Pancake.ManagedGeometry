@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Pancake.ManagedGeometry\Pancake.ManagedGeometry.csproj" />
+    <ProjectReference Include="..\Pancake.ModernUtility\Pancake.ModernUtility.csproj" />
   </ItemGroup>
 
 </Project>

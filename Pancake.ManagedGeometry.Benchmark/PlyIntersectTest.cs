@@ -1,7 +1,9 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnostics.Windows.Configs;
+using BenchmarkDotNet.Jobs;
 using Pancake.ManagedGeometry.Factory;
+using Pancake.ModernUtility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +12,8 @@ using System.Threading.Tasks;
 
 namespace Pancake.ManagedGeometry.Benchmark
 {
-    [MemoryDiagnoser]
+    // [SimpleJob(RuntimeMoniker.Net472, baseline: true)]
+    // [SimpleJob(RuntimeMoniker.HostProcess)]
     [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByParams)]
     public class PlyIntersectTest
     {
@@ -18,7 +21,7 @@ namespace Pancake.ManagedGeometry.Benchmark
         private static BoundingBox2d[] bboxes = new BoundingBox2d[5];
         private static Polygon[] bboxPly = new Polygon[5];
 
-        [Params(0, 1, 2, 3, 4)]
+        [Params(0,1,2,3,4)]
         public int Dataset { get; set; }
 
         [GlobalSetup]
@@ -36,7 +39,7 @@ namespace Pancake.ManagedGeometry.Benchmark
                 bboxPly[i] = bboxes[i].ToPolygon();
         }
 
-        [Benchmark]
+        // [Benchmark]
         public bool TwoPly()
         {
             return ply1.IntersectWith(bboxPly[Dataset]);
@@ -45,11 +48,6 @@ namespace Pancake.ManagedGeometry.Benchmark
         public bool BboxMethod()
         {
             return ply1.IntersectWith(bboxes[Dataset]);
-        }
-        [Benchmark]
-        public bool BboxMethodWithFastCheck()
-        {
-            return ply1.IntersectWithFastCheck(bboxes[Dataset]);
         }
         // [Benchmark]
         public bool IPolygon()

@@ -5,7 +5,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Threading;
+
+[assembly: InternalsVisibleTo("Pancake.ModernUtility")]
 
 namespace Pancake.ManagedGeometry
 {
@@ -66,24 +70,31 @@ namespace Pancake.ManagedGeometry
     public class Polygon : ICloneable, IPolygon
     {
 
-        private Coord2d[] _v;
+        internal Coord2d[] _v;
         public void CopyVerticesTo(Coord2d[] array, int startIndex)
         {
             Array.Copy(InternalVerticeArray, 0, array, startIndex, InternalVerticeArray.Length);
         }
-        private static bool HasSeparatingAxis(Polygon a, Polygon b)
+        internal static bool HasSeparatingAxis(Polygon a, Polygon b)
         {
             // test each side of a in turn:
             for (var i = 0; i < a.VertexCount; i++)
             {
-                var normal_x = a._v[(i + 1) % a.VertexCount].Y - a._v[i].Y;
-                var normal_y = a._v[i].X - a._v[(i + 1) % a.VertexCount].X;
+                var ax = a._v[i].X;
+                var ay = a._v[i].Y;
+
+                var nextId = (i + 1) % a.VertexCount;
+
+                var normal_x = a._v[nextId].Y - ay;
+                var normal_y = ax - a._v[nextId].X;
+
+                var comparision = ax * normal_x + ay * normal_y + MathUtils.ZeroTolerance;
 
                 for (var j = 0; j < b.VertexCount; j++)
                 {
-                    var dot_product = ((b._v[j].X - a._v[i].X) * normal_x) +
-                        ((b._v[j].Y - a._v[i].Y) * normal_y);
-                    if (dot_product <= MathUtils.ZeroTolerance) // change sign of test based on winding order
+                    var dot_product = ((b._v[j].X) * normal_x) +
+                        ((b._v[j].Y) * normal_y);
+                    if (dot_product <= comparision) // change sign of test based on winding order
                         break;
                     if (j == b.VertexCount - 1)
                         return true; // all dots were +ve, we found a separating axis
@@ -91,30 +102,36 @@ namespace Pancake.ManagedGeometry
             }
             return false;
         }
-        private static bool HasSeparatingAxis(Polygon a, ref BoundingBox2d b)
+        internal static bool HasSeparatingAxis(Polygon a, ref BoundingBox2d b)
         {
             // test each side of a in turn:
             for (var i = 0; i < a.VertexCount; i++)
             {
-                var normal_x = a._v[(i + 1) % a.VertexCount].Y - a._v[i].Y;
-                var normal_y = a._v[i].X - a._v[(i + 1) % a.VertexCount].X;
+                var ax = a._v[i].X;
+                var ay = a._v[i].Y;
+
+                var nextId = (i + 1) % a.VertexCount;
+
+                var normal_x = a._v[nextId].Y - ay;
+                var normal_y = ax - a._v[nextId].X;
 
                 double dot_product;
+                var comparision = ax * normal_x + ay * normal_y + MathUtils.ZeroTolerance;
 
-                dot_product = ((b[0].X - a._v[i].X) * normal_x) + ((b[0].Y - a._v[i].Y) * normal_y);
-                if (dot_product <= MathUtils.ZeroTolerance)
+                dot_product = ((b[0].X ) * normal_x) + ((b[0].Y ) * normal_y);
+                if (dot_product <= comparision)
                     goto endOfFirstLoop;
 
-                dot_product = ((b[1].X - a._v[i].X) * normal_x) + ((b[1].Y - a._v[i].Y) * normal_y);
-                if (dot_product <= MathUtils.ZeroTolerance)
+                dot_product = ((b[1].X ) * normal_x) + ((b[1].Y ) * normal_y);
+                if (dot_product <= comparision)
                     goto endOfFirstLoop;
 
-                dot_product = ((b[2].X - a._v[i].X) * normal_x) + ((b[2].Y - a._v[i].Y) * normal_y);
-                if (dot_product <= MathUtils.ZeroTolerance)
+                dot_product = ((b[2].X ) * normal_x) + ((b[2].Y ) * normal_y);
+                if (dot_product <= comparision)
                     goto endOfFirstLoop;
 
-                dot_product = ((b[3].X - a._v[i].X) * normal_x) + ((b[3].Y - a._v[i].Y) * normal_y);
-                if (dot_product <= MathUtils.ZeroTolerance)
+                dot_product = ((b[3].X ) * normal_x) + ((b[3].Y ) * normal_y);
+                if (dot_product <= comparision)
                     goto endOfFirstLoop;
 
                 return true;
@@ -124,18 +141,21 @@ endOfFirstLoop:
             }
             return false;
         }
-        private static bool HasSeparatingAxis(ref BoundingBox2d a, Polygon b)
+
+        internal static bool HasSeparatingAxis(ref BoundingBox2d a, Polygon b)
         {
             double normal_x, normal_y;
 
             normal_x = a[1].Y - a[0].Y;
             normal_y = a[0].X - a[1].X;
 
+            var comparision = a[0].X * normal_x + a[0].Y * normal_x + MathUtils.ZeroTolerance;
+
             for (var j = 0; j < b.VertexCount; j++)
             {
-                var dot_product = ((b._v[j].X - a[0].X) * normal_x) +
-                    ((b._v[j].Y - a[0].Y) * normal_y);
-                if (dot_product <= MathUtils.ZeroTolerance) // change sign of test based on winding order
+                var dot_product = ((b._v[j].X ) * normal_x) +
+                    ((b._v[j].Y) * normal_y);
+                if (dot_product <= comparision) // change sign of test based on winding order
                     break;
                 if (j == b.VertexCount - 1)
                     return true; // all dots were +ve, we found a separating axis
@@ -144,11 +164,13 @@ endOfFirstLoop:
             normal_x = a[2].Y - a[1].Y;
             normal_y = a[1].X - a[2].X;
 
+            comparision = a[1].X * normal_x + a[1].Y * normal_x + MathUtils.ZeroTolerance;
+
             for (var j = 0; j < b.VertexCount; j++)
             {
-                var dot_product = ((b._v[j].X - a[1].X) * normal_x) +
-                    ((b._v[j].Y - a[1].Y) * normal_y);
-                if (dot_product <= MathUtils.ZeroTolerance) // change sign of test based on winding order
+                var dot_product = ((b._v[j].X) * normal_x) +
+                    ((b._v[j].Y) * normal_y);
+                if (dot_product <= comparision) // change sign of test based on winding order
                     break;
                 if (j == b.VertexCount - 1)
                     return true; // all dots were +ve, we found a separating axis
@@ -157,11 +179,13 @@ endOfFirstLoop:
             normal_x = a[3].Y - a[2].Y;
             normal_y = a[2].X - a[3].X;
 
+            comparision = a[2].X * normal_x + a[2].Y * normal_x + MathUtils.ZeroTolerance;
+
             for (var j = 0; j < b.VertexCount; j++)
             {
-                var dot_product = ((b._v[j].X - a[2].X) * normal_x) +
-                    ((b._v[j].Y - a[2].Y) * normal_y);
-                if (dot_product <= MathUtils.ZeroTolerance) // change sign of test based on winding order
+                var dot_product = ((b._v[j].X) * normal_x) +
+                    ((b._v[j].Y) * normal_y);
+                if (dot_product <= comparision) // change sign of test based on winding order
                     break;
                 if (j == b.VertexCount - 1)
                     return true; // all dots were +ve, we found a separating axis
@@ -170,11 +194,13 @@ endOfFirstLoop:
             normal_x = a[0].Y - a[3].Y;
             normal_y = a[3].X - a[0].X;
 
+            comparision = a[3].X * normal_x + a[3].Y * normal_x + MathUtils.ZeroTolerance;
+
             for (var j = 0; j < b.VertexCount; j++)
             {
-                var dot_product = ((b._v[j].X - a[3].X) * normal_x) +
-                    ((b._v[j].Y - a[3].Y) * normal_y);
-                if (dot_product <= MathUtils.ZeroTolerance) // change sign of test based on winding order
+                var dot_product = ((b._v[j].X) * normal_x) +
+                    ((b._v[j].Y) * normal_y);
+                if (dot_product <= comparision) // change sign of test based on winding order
                     break;
                 if (j == b.VertexCount - 1)
                     return true; // all dots were +ve, we found a separating axis
@@ -182,7 +208,7 @@ endOfFirstLoop:
 
             return false;
         }
-        private static bool HasSeparatingAxisGeneric<T1, T2>(T1 a, T2 b)
+        internal static bool HasSeparatingAxisGeneric<T1, T2>(T1 a, T2 b)
             where T1 : IPolygon
             where T2 : IPolygon
         {
@@ -547,44 +573,6 @@ endOfFirstLoop:
         {
             return !HasSeparatingAxis(this, ref b) && !HasSeparatingAxis(ref b, this);
         }
-        public bool IntersectWithFastCheck(BoundingBox2d b)
-        {
-            var result = b.Contains(_v[0]);
-
-            double minX, maxX, minY, maxY;
-
-            minX = maxX = _v[0].X;
-            minY = maxY = _v[0].Y;
-
-            for (var i = 1; i < _v.Length; i++)
-            {
-                var tResult = b.Contains(_v[i]);
-                if (tResult != result)
-                    return true;
-
-                var x = _v[i].X;
-                var y = _v[i].Y;
-
-                if (x < minX) minX = x;
-                if (x > maxX) maxX = x;
-
-                if (y < minY) minY = y;
-                if (y > maxY) maxY = y;
-            }
-
-            var plyBbox = new BoundingBox2d
-            {
-                MinX = minX,
-                MaxX = maxX,
-                MinY = minY,
-                MaxY = maxY
-            };
-
-            if (!plyBbox.IntersectsWith(b))
-                return false;
-
-            return IntersectWith(b);
-        }
 
         public static bool IntersectsWith<T1, T2>(T1 a, T2 b)
             where T1 : IPolygon
@@ -806,4 +794,5 @@ endOfFirstLoop:
         }
     }
 }
+
 
