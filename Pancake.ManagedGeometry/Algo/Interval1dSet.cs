@@ -256,8 +256,8 @@ namespace Pancake.ManagedGeometry.Algo
 
             for (var i = 0; i < listCnt; i++)
             {
-                if (list[i].From.CloseToExtended(interval.From, _tolerance)
-                    || list[i].From > interval.From)
+                if (list[i].From.CloseTo(interval.From, _tolerance)
+                    || list[i].From >= interval.From)
                 {
                     startIndex = i;
                     operationAtStart = EndOperation.OutsideEnd;
@@ -280,8 +280,8 @@ namespace Pancake.ManagedGeometry.Algo
 
             for (var i = startIndex; i < listCnt; i++)
             {
-                if (list[i].To.CloseToExtended(interval.To, _tolerance)
-                    || (list[i].To < interval.To
+                if (list[i].To.CloseTo(interval.To, _tolerance)
+                    || (list[i].To <= interval.To
                     && (i == listCnt - 1 || list[i + 1].From >= interval.To - _tolerance)))
                 {
                     endIndex = i;
