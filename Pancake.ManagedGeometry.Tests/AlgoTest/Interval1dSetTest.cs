@@ -11,7 +11,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
     public class Interval1dSetTest
     {
         [Test]
-        public void SimpleCase()
+        public void UnionTest()
         {
             var set = new Interval1dSet();
 
@@ -76,6 +76,130 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
 
             Assert.AreEqual(set.Count, 1);
             Assert.AreEqual(set.Intervals.ToArray(), new[] { iv });
+        }
+        [Test]
+        public void SubtractTest()
+        {
+            var baseSet = new Interval1dSet();
+            baseSet.UnionWith((1, 2));
+            Interval1dSet set;
+
+            {
+                set = baseSet.Clone();
+
+                set.SubtractBy((1, 2));
+                set.Compact();
+
+                Assert.AreEqual(0, set.Count);
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.SubtractBy((0, 2));
+                set.Compact();
+
+                Assert.AreEqual(0, set.Count);
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.SubtractBy((1, 3));
+                set.Compact();
+
+                Assert.AreEqual(0, set.Count);
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.SubtractBy((0, 3));
+                set.Compact();
+
+                Assert.AreEqual(0, set.Count);
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.SubtractBy((3, 4));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.SubtractBy((2, 3));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.SubtractBy((0, 1));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.SubtractBy((-1, 0));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.SubtractBy((1.5, 1.6));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1, 1.5), (1.6, 2) }, set.Intervals.ToArray());
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.SubtractBy((1, 1.4));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1.4, 2) }, set.Intervals.ToArray());
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.SubtractBy((0, 1.4));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1.4, 2) }, set.Intervals.ToArray());
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.SubtractBy((1.6, 2));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1, 1.6) }, set.Intervals.ToArray());
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.SubtractBy((1.6, 3));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1, 1.6) }, set.Intervals.ToArray());
+            }
         }
     }
 }

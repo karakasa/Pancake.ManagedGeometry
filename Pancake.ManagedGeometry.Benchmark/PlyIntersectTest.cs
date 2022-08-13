@@ -3,7 +3,6 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnostics.Windows.Configs;
 using BenchmarkDotNet.Jobs;
 using Pancake.ManagedGeometry.Factory;
-using Pancake.ModernUtility;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -7,7 +7,7 @@ namespace Pancake.ManagedGeometry.Utility
 {
     public static class Interval1dUtils
     {
-        public static IEnumerable<Interval1d> SplitAt(
+        public static ICollection<Interval1d> SplitAt(
             this IEnumerable<Interval1d> src,
             IEnumerable<double> points,
             double tolerance = MathUtils.ZeroTolerance)
@@ -15,7 +15,7 @@ namespace Pancake.ManagedGeometry.Utility
             return SplitAtSorted(src, points.OrderBy(p => p), tolerance);
         }
 
-        public static IEnumerable<Interval1d> SplitAtSorted(
+        public static ICollection<Interval1d> SplitAtSorted(
             this IEnumerable<Interval1d> src,
             IEnumerable<double> sorted,
             double tolerance = MathUtils.ZeroTolerance)

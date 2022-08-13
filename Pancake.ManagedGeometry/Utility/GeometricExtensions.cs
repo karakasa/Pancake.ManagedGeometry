@@ -71,6 +71,21 @@ namespace Pancake.ManagedGeometry.Utility
             return (v - refValue).CloseToZero(tolerance);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool CloseToExtended(this double v, double refValue, double tolerance)
+        {
+            return SubtractExtended(v, refValue).CloseToZero(tolerance);
+        }
+        public static double SubtractExtended(double a, double b)
+        {
+            if (a == b) return 0;
+            if (a == double.PositiveInfinity && b == double.NegativeInfinity)
+                return double.PositiveInfinity;
+            if (a == double.NegativeInfinity && b == double.PositiveInfinity)
+                return double.NegativeInfinity;
+
+            return a - b;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CloseToZero(this double v, double tolerance)
         {
             return v > -tolerance && v < tolerance;

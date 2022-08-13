@@ -11,7 +11,7 @@ using System.Text;
 
 namespace Pancake.ManagedGeometry
 {
-    [DebuggerDisplay("({Min}), ({Max})")]
+    [DebuggerDisplay("{Min} -> {Max}")]
     public struct BoundingBox2d : IPolygon
     {
         public double MinX;

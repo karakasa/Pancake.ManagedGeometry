@@ -507,19 +507,12 @@ endOfFirstLoop:
             return ContainsAllPoint(another) && !IntersectWith(another);
         }
 
+        private LineInsidePolygon _lineSideSolver;
+
         public bool Contains(Line2d line)
         {
-            if (!Contains(line.From) || !Contains(line.To))
-                return false;
-
-            foreach (var edge in Edges)
-            {
-                var result = edge.DoesIntersectWith(line);
-                if (result == LineRelation.Intersected || result == LineRelation.Collinear)
-                    return false;
-            }
-
-            return true;
+            _lineSideSolver ??= new();
+            return _lineSideSolver.IsInside(this, line);
         }
         public bool DoesSelfIntersect()
         {
