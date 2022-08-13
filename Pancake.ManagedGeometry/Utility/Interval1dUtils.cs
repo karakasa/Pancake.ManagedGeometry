@@ -37,19 +37,26 @@ namespace Pancake.ManagedGeometry.Utility
 
                 if (ptsTemp.Count == 0)
                 {
-                    result.Add(interval);
+                    AddToResult(result, tolerance, interval);
                     continue;
                 }
 
-                result.Add((interval.From, ptsTemp[0]));
+                AddToResult(result, tolerance, (interval.From, ptsTemp[0]));
 
                 for (var i = 0; i < ptsTemp.Count - 1; i++)
-                    result.Add((ptsTemp[i], ptsTemp[i + 1]));
+                    AddToResult(result, tolerance, (ptsTemp[i], ptsTemp[i + 1]));
 
-                result.Add((ptsTemp[ptsTemp.Count - 1], interval.To));
+                AddToResult(result, tolerance, (ptsTemp[ptsTemp.Count - 1], interval.To));
             }
 
             return result;
+        }
+
+        private static void AddToResult(List<Interval1d> result, double tolerance, Interval1d iv)
+        {
+            if (iv.Length <= tolerance)
+                return;
+            result.Add(iv);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using Pancake.ManagedGeometry.Algo;
 using Pancake.ManagedGeometry.Utility;
 using System;
@@ -118,9 +119,11 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
         [Test]
         public void DuplicateRemoveWithToleranceTest()
         {
+            const double TOLERANCE = 0.01;
+
             var merger = new LineMerger
             {
-                Tolerance = 0.01,
+                Tolerance = TOLERANCE,
                 SplitAtOriginalEndPoints = false
             };
 
@@ -132,25 +135,26 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
             var calculated = merger.Calculate(lines).ToArray();
 
             Assert.AreEqual(1, calculated.Length);
-            Assert.IsTrue(calculated[0].AlmostEqualTo(((0, 1), (0, 5))));
+            Assert.IsTrue(calculated[0].AlmostEqualTo(((0, 1), (0, 5)), TOLERANCE));
 
             merger.SplitAtOriginalEndPoints = true;
 
             calculated = merger.Calculate(lines).ToArray();
 
             Assert.AreEqual(1, calculated.Length);
-            Assert.IsTrue(calculated[0].AlmostEqualTo(((0, 1), (0, 5))));
+            Assert.IsTrue(calculated[0].AlmostEqualTo(((0, 1), (0, 5)), TOLERANCE));
         }
         [Test]
         public void DuplicateRemoveWithToleranceAndLargeCoordTest()
         {
             const double VERY_LARGE_COORDINATE = 1e8;
+            const double TOLERANCE = 0.01;
 
             var translation = new Coord2d(VERY_LARGE_COORDINATE, VERY_LARGE_COORDINATE);
 
             var merger = new LineMerger
             {
-                Tolerance = 0.01,
+                Tolerance = TOLERANCE,
                 SplitAtOriginalEndPoints = false
             };
 
@@ -165,14 +169,14 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
             var calculated = merger.Calculate(lines).ToArray();
 
             Assert.AreEqual(1, calculated.Length);
-            Assert.IsTrue(calculated[0].AlmostEqualTo(((0, 1 + VERY_LARGE_COORDINATE), (0, 5 + VERY_LARGE_COORDINATE))));
+            Assert.IsTrue(calculated[0].AlmostEqualTo(((0, 1 + VERY_LARGE_COORDINATE), (0, 5 + VERY_LARGE_COORDINATE)), TOLERANCE));
 
             merger.SplitAtOriginalEndPoints = true;
 
             calculated = merger.Calculate(lines).ToArray();
 
             Assert.AreEqual(1, calculated.Length);
-            Assert.IsTrue(calculated[0].AlmostEqualTo(((0, 1 + VERY_LARGE_COORDINATE), (0, 5 + VERY_LARGE_COORDINATE))));
+            Assert.IsTrue(calculated[0].AlmostEqualTo(((0, 1 + VERY_LARGE_COORDINATE), (0, 5 + VERY_LARGE_COORDINATE)), TOLERANCE));
         }
     }
 }

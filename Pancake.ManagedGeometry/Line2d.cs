@@ -352,6 +352,16 @@ namespace Pancake.ManagedGeometry
 
             return false;
         }
+        public bool AlmostEqualTo(Line2d another, double tolerance)
+        {
+            var end = To;
+            var anotherEnd = another.To;
+
+            if (From.AlmostEqualTo(another.From, tolerance) && end.AlmostEqualTo(anotherEnd, tolerance)) return true;
+            if (From.AlmostEqualTo(anotherEnd, tolerance) && end.AlmostEqualTo(another.From, tolerance)) return true;
+
+            return false;
+        }
 
         public static implicit operator Line2d((Coord2d, Coord2d) d) => new(d.Item1, d.Item2);
         public bool IsValid() =>

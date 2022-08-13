@@ -32,6 +32,20 @@ namespace Pancake.ManagedGeometry.Algo
             _dblComparer = new(_tolerance);
             _orderedList = new(null, _comparer);
         }
+        public Interval1dSet(IEnumerable<Interval1d> set) : this()
+        {
+            AddEnumerable(set);
+        }
+        public Interval1dSet(double tolerance, IEnumerable<Interval1d> set) : this(tolerance)
+        {
+            AddEnumerable(set);
+        }
+
+        private void AddEnumerable(IEnumerable<Interval1d> set)
+        {
+            foreach (var it in set)
+                UnionWith(it);
+        }
         private Interval1dSet(Interval1dSet another)
         {
             _tolerance = another._tolerance;
@@ -63,148 +77,182 @@ namespace Pancake.ManagedGeometry.Algo
             return set;
         }
         public int Count => _orderedList.Count;
-        private static void ThrowTooSmallInterval()
+        private void CheckIntervalArgument(Interval1d interval)
         {
-            throw new ArgumentException("Interval smaller than tolerance.");
+            if (interval.Length < _tolerance)
+                throw new ArgumentException("Interval smaller than tolerance.");
+
+            if (interval.From > interval.To)
+                throw new ArgumentException("Flipped tolerance.");
         }
+        //public void UnionWithOld(Interval1d interval)
+        //{
+        //    if (interval.Length < _tolerance)
+        //        ThrowTooSmallInterval();
+
+        //    if (_orderedList.Count == 0)
+        //    {
+        //        _orderedList.Add(interval);
+        //        return;
+        //    }
+
+        //    FindCharacteristicPoint(interval);
+
+        //    var list = _orderedList.UnderlyingList;
+
+        //    if (_tempListForSplitPoints.Count == 0)
+        //    {
+        //        if (list.All(iv => !iv.Contains(interval, _tolerance)))
+        //            _orderedList.Add(interval);
+
+        //        return;
+        //    }
+
+        //    var splitPoints = _tempListForSplitPoints.DistinctByComparer(_dblComparer);
+
+        //    _tempListForSegmentToAdd.Clear();
+
+        //    _tempArrayInterval[0] = interval;
+        //    foreach (var segment in _tempArrayInterval.SplitAtSorted(splitPoints))
+        //    {
+        //        if (list.All(iv => !iv.Contains(segment, _tolerance)))
+        //            _tempListForSegmentToAdd.Add(segment);
+        //    }
+
+        //    foreach (var it in _tempListForSegmentToAdd)
+        //        _orderedList.Add(it);
+
+        //    _tempListForSegmentToAdd.Clear();
+        //    _tempListForSplitPoints.Clear();
+        //}
+        // public void Add(Interval1d interval) => UnionWith(interval);
         public void UnionWith(Interval1d interval)
         {
-            if (interval.Length < _tolerance)
-                ThrowTooSmallInterval();
+            CheckIntervalArgument(interval);
 
-            if (_orderedList.Count == 0)
+            if (_orderedList.Count == 0
+                || !DetermineEndInformation(interval, out var operationAtStart, out var operationAtEnd,
+                out var startIndex, out var endIndex))
             {
-                _orderedList.Add(interval);
-                return;
-            }
-
-            FindCharacteristicPoint(interval);
-
-            var list = _orderedList.UnderlyingList;
-
-            if (_tempListForSplitPoints.Count == 0)
-            {
-                if (list.All(iv => !iv.Contains(interval, _tolerance)))
-                    _orderedList.Add(interval);
-
-                return;
-            }
-
-            var splitPoints = _tempListForSplitPoints.DistinctByComparer(_dblComparer);
-
-            _tempListForSegmentToAdd.Clear();
-
-            _tempArrayInterval[0] = interval;
-            foreach (var segment in _tempArrayInterval.SplitAtSorted(splitPoints))
-            {
-                if (list.All(iv => !iv.Contains(segment, _tolerance)))
-                    _tempListForSegmentToAdd.Add(segment);
-            }
-
-            foreach (var it in _tempListForSegmentToAdd)
-                _orderedList.Add(it);
-
-            _tempListForSegmentToAdd.Clear();
-            _tempListForSplitPoints.Clear();
-        }
-        public void SubtractByCopied(Interval1d interval)
-        {
-            if (interval.Length < _tolerance)
-                ThrowTooSmallInterval();
-
-            if (_orderedList.Count == 0)
-            {
+                _orderedList.UnderlyingList.Add(interval);
                 return;
             }
 
             var list = _orderedList.UnderlyingList;
-            var list2 = new List<Interval1d>();
 
-            var from = interval.From;
-            var to = interval.To;
-
-            foreach (var it in list)
+            if (operationAtStart == EndOperation.OutsideEnd
+                    && operationAtEnd == EndOperation.OutsideEnd)
             {
-                var containsFrom = it.Contains(from, _tolerance);
-                var containsTo = it.Contains(to, _tolerance);
-
-                if (!containsFrom && !containsTo)
-                {
-                    if (from < it.From && to > it.To)
-                    {
-
-                    }
-                    else
-                    {
-                        list2.Add(it);
-                    }
-
-                    continue;
-                }
-
-                if (containsFrom && !containsTo)
-                {
-                    AddToList(list2, it.From, from);
-                    continue;
-                }
-
-                if (!containsFrom && containsTo)
-                {
-                    AddToList(list2, to, it.To);
-                    continue;
-                }
-
-                if (containsFrom && containsTo)
-                {
-                    AddToList(list2, it.From, from);
-                    AddToList(list2, to, it.To);
-                }
+                list[startIndex] = interval;
+                if (endIndex > startIndex)
+                    list.RemoveRange(startIndex + 1, endIndex - startIndex);
+                return;
             }
 
-            _orderedList.ReplaceUnderlyingList(list2);
+            if (operationAtStart == EndOperation.InsideInterval
+                    && operationAtEnd == EndOperation.OutsideEnd)
+            {
+                list[startIndex] = (list[startIndex].From, interval.To);
+                if (endIndex > startIndex)
+                    list.RemoveRange(startIndex + 1, endIndex - startIndex);
+                return;
+            }
+
+            if (operationAtStart == EndOperation.OutsideEnd
+                && operationAtEnd == EndOperation.InsideInterval)
+            {
+                list[startIndex] = (interval.From, list[endIndex].To);
+                if (endIndex > startIndex)
+                    list.RemoveRange(startIndex + 1, endIndex - startIndex);
+                return;
+            }
+
+            if (endIndex > startIndex)
+            {
+                list[startIndex] = (list[startIndex].From, list[endIndex].To);
+                list.RemoveRange(startIndex + 1, endIndex - startIndex);
+            }
         }
-        private void AddToList(List<Interval1d> list, double from, double to)
-        {
-            if (to.CloseToExtended(from, _tolerance)) return;
-            list.Add(new Interval1d(from, to));
-        }
-        private enum SubtractionEndOperation
+        //private void SubtractByCopied(Interval1d interval)
+        //{
+        //    if (interval.Length < _tolerance)
+        //        ThrowTooSmallInterval();
+
+        //    if (_orderedList.Count == 0)
+        //    {
+        //        return;
+        //    }
+
+        //    var list = _orderedList.UnderlyingList;
+        //    var list2 = new List<Interval1d>();
+
+        //    var from = interval.From;
+        //    var to = interval.To;
+
+        //    foreach (var it in list)
+        //    {
+        //        var containsFrom = it.Contains(from, _tolerance);
+        //        var containsTo = it.Contains(to, _tolerance);
+
+        //        if (!containsFrom && !containsTo)
+        //        {
+        //            if (from < it.From && to > it.To)
+        //            {
+
+        //            }
+        //            else
+        //            {
+        //                list2.Add(it);
+        //            }
+
+        //            continue;
+        //        }
+
+        //        if (containsFrom && !containsTo)
+        //        {
+        //            AddToList(list2, it.From, from);
+        //            continue;
+        //        }
+
+        //        if (!containsFrom && containsTo)
+        //        {
+        //            AddToList(list2, to, it.To);
+        //            continue;
+        //        }
+
+        //        if (containsFrom && containsTo)
+        //        {
+        //            AddToList(list2, it.From, from);
+        //            AddToList(list2, to, it.To);
+        //        }
+        //    }
+
+        //    _orderedList.ReplaceUnderlyingList(list2);
+        //}
+        //private void AddToList(List<Interval1d> list, double from, double to)
+        //{
+        //    if (to.CloseToExtended(from, _tolerance)) return;
+        //    list.Add(new Interval1d(from, to));
+        //}
+        private enum EndOperation
         {
             Undefined,
-            Remove,
-            Manipulate
+            OutsideEnd,
+            InsideInterval
         }
 
-        private const bool UseInplaceSubtraction = true;
-        public void SubtractBy(Interval1d interval)
+        private bool DetermineEndInformation(Interval1d interval,
+            out EndOperation operationAtStart, out EndOperation operationAtEnd,
+            out int startIndex, out int endIndex)
         {
-            if (UseInplaceSubtraction)
-            {
-                SubtractByInplace(interval);
-            }
-            else
-            {
-                SubtractByCopied(interval);
-            }
-        }
-        public void SubtractByInplace(Interval1d interval)
-        {
-            if (interval.Length < _tolerance)
-                ThrowTooSmallInterval();
-
-            if (_orderedList.Count == 0)
-            {
-                return;
-            }
-
             var list = _orderedList.UnderlyingList;
             var listCnt = list.Count;
 
-            SubtractionEndOperation operationAtStart = SubtractionEndOperation.Undefined;
-            SubtractionEndOperation operationAtEnd = SubtractionEndOperation.Undefined;
+            operationAtStart = EndOperation.Undefined;
+            operationAtEnd = EndOperation.Undefined;
 
-            var startIndex = -1;
-            var endIndex = -1;
+            startIndex = -1;
+            endIndex = -1;
 
             for (var i = 0; i < listCnt; i++)
             {
@@ -212,14 +260,14 @@ namespace Pancake.ManagedGeometry.Algo
                     || list[i].From > interval.From)
                 {
                     startIndex = i;
-                    operationAtStart = SubtractionEndOperation.Remove;
+                    operationAtStart = EndOperation.OutsideEnd;
                     break;
                 }
 
                 if (list[i].ContainsOpen(interval.From, _tolerance))
                 {
                     startIndex = i;
-                    operationAtStart = SubtractionEndOperation.Manipulate;
+                    operationAtStart = EndOperation.InsideInterval;
                     break;
                 }
             }
@@ -227,7 +275,7 @@ namespace Pancake.ManagedGeometry.Algo
             if (startIndex == -1)
             {
                 // The interval is larger than the largest in the current set
-                return;
+                return false;
             }
 
             for (var i = startIndex; i < listCnt; i++)
@@ -237,14 +285,14 @@ namespace Pancake.ManagedGeometry.Algo
                     && (i == listCnt - 1 || list[i + 1].From >= interval.To - _tolerance)))
                 {
                     endIndex = i;
-                    operationAtEnd = SubtractionEndOperation.Remove;
+                    operationAtEnd = EndOperation.OutsideEnd;
                     break;
                 }
 
                 if (list[i].ContainsOpen(interval.To, _tolerance))
                 {
                     endIndex = i;
-                    operationAtEnd = SubtractionEndOperation.Manipulate;
+                    operationAtEnd = EndOperation.InsideInterval;
                     break;
                 }
             }
@@ -252,21 +300,38 @@ namespace Pancake.ManagedGeometry.Algo
             if (endIndex == -1)
             {
                 // The interval is smaller than the smallest in the current set
+                return false;
+            }
+
+            return true;
+        }
+        public void SubtractBy(Interval1d interval)
+        {
+            CheckIntervalArgument(interval);
+
+            if (_orderedList.Count == 0)
+            {
                 return;
             }
+
+            if (!DetermineEndInformation(interval, out var operationAtStart, out var operationAtEnd,
+                out var startIndex, out var endIndex))
+                return;
 
             // Debug.Assert(operationAtStart == SubtractionEndOperation.Undefined);
             // Debug.Assert(operationAtEnd == SubtractionEndOperation.Undefined);
 
-            if (operationAtStart == SubtractionEndOperation.Remove
-                    && operationAtEnd == SubtractionEndOperation.Remove)
+            var list = _orderedList.UnderlyingList;
+
+            if (operationAtStart == EndOperation.OutsideEnd
+                    && operationAtEnd == EndOperation.OutsideEnd)
             {
                 list.RemoveRange(startIndex, endIndex - startIndex + 1);
                 return;
             }
 
-            if (operationAtStart == SubtractionEndOperation.Manipulate
-                && operationAtEnd == SubtractionEndOperation.Remove)
+            if (operationAtStart == EndOperation.InsideInterval
+                && operationAtEnd == EndOperation.OutsideEnd)
             {
                 list[startIndex] = (list[startIndex].From, interval.From);
                 if (endIndex > startIndex)
@@ -274,8 +339,8 @@ namespace Pancake.ManagedGeometry.Algo
                 return;
             }
 
-            if (operationAtStart == SubtractionEndOperation.Remove
-                && operationAtEnd == SubtractionEndOperation.Manipulate)
+            if (operationAtStart == EndOperation.OutsideEnd
+                && operationAtEnd == EndOperation.InsideInterval)
             {
                 list[endIndex] = (interval.To, list[endIndex].To);
                 list.RemoveRange(startIndex, endIndex - startIndex);
@@ -304,15 +369,57 @@ namespace Pancake.ManagedGeometry.Algo
         }
         public void IntersectWith(Interval1d interval)
         {
-            if (interval.Length < _tolerance)
-                ThrowTooSmallInterval();
+            CheckIntervalArgument(interval);
 
-            if (_orderedList.Count == 0)
+            if (_orderedList.Count == 0
+                || !DetermineEndInformation(interval, out var operationAtStart, out var operationAtEnd,
+                out var startIndex, out var endIndex))
             {
+                _orderedList.Clear();
+
                 return;
             }
 
-            FindCharacteristicPoint(interval);
+            var list = _orderedList.UnderlyingList;
+
+            if (operationAtStart == EndOperation.OutsideEnd
+                    && operationAtEnd == EndOperation.OutsideEnd)
+            {
+                goto removeOtherIntervals;
+            }
+
+            if (operationAtStart == EndOperation.InsideInterval
+                    && operationAtEnd == EndOperation.OutsideEnd)
+            {
+                list[startIndex] = (interval.From, list[startIndex].To);
+                goto removeOtherIntervals;
+            }
+
+            if (operationAtStart == EndOperation.OutsideEnd
+                && operationAtEnd == EndOperation.InsideInterval)
+            {
+                list[endIndex] = (list[endIndex].From, interval.To);
+                goto removeOtherIntervals;
+            }
+
+            if (endIndex == startIndex)
+            {
+                list[0] = interval;
+                list.RemoveRange(1, list.Count - 1);
+
+                return;
+            }
+            else
+            {
+                list[startIndex] = (interval.From, list[startIndex].To);
+                list[endIndex] = (list[endIndex].From, interval.To);
+            }
+
+            removeOtherIntervals:
+
+            if (endIndex > startIndex)
+                list.RemoveRange(startIndex + 1, endIndex - startIndex);
+            list.RemoveRange(0, startIndex);
         }
 
         public void UnionWith(IInterval1dSet set)
@@ -333,28 +440,28 @@ namespace Pancake.ManagedGeometry.Algo
                 IntersectWith(it);
         }
 
-        /// <summary>
-        /// Find split points in <paramref name="interval"/>, according to existing intervals in the set.
-        /// </summary>
-        /// <param name="interval"></param>
-        private void FindCharacteristicPoint(Interval1d interval)
-        {
-            var list = _orderedList.UnderlyingList;
-            _tempListForSplitPoints.Clear();
+        ///// <summary>
+        ///// Find split points in <paramref name="interval"/>, according to existing intervals in the set.
+        ///// </summary>
+        ///// <param name="interval"></param>
+        //private void FindCharacteristicPoint(Interval1d interval)
+        //{
+        //    var list = _orderedList.UnderlyingList;
+        //    _tempListForSplitPoints.Clear();
 
-            for (var i = 0; i < list.Count; i++)
-            {
-                var pt = list[i].From;
+        //    for (var i = 0; i < list.Count; i++)
+        //    {
+        //        var pt = list[i].From;
 
-                if (interval.ContainsOpen(pt, _tolerance))
-                    _tempListForSplitPoints.Add(pt);
+        //        if (interval.ContainsOpen(pt, _tolerance))
+        //            _tempListForSplitPoints.Add(pt);
 
-                pt = list[i].To;
+        //        pt = list[i].To;
 
-                if (interval.ContainsOpen(pt, _tolerance))
-                    _tempListForSplitPoints.Add(pt);
-            }
-        }
+        //        if (interval.ContainsOpen(pt, _tolerance))
+        //            _tempListForSplitPoints.Add(pt);
+        //    }
+        //}
 
         /// <summary>
         /// Compact continous segments into one.
@@ -393,8 +500,7 @@ namespace Pancake.ManagedGeometry.Algo
             }
         }
 
-        object ICloneable.Clone()
-            => Clone();
+        object ICloneable.Clone() => Clone();
 
         public ICollection<Interval1d> Intervals => _orderedList;
     }

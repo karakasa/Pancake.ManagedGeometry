@@ -75,7 +75,7 @@ namespace Pancake.ManagedGeometry.Algo
                 if (SplitAtOriginalEndPoints)
                 {
                     intervals = intervals.SplitAt(
-                        listOfEnds.DistinctByComparer(epsComparer));
+                        listOfEnds.DistinctByComparer(epsComparer), Tolerance);
                 }
 
                 foreach (var it in intervals)

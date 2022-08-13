@@ -11,7 +11,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
     public class Interval1dSetTest
     {
         [Test]
-        public void UnionTest()
+        public void BasicTest()
         {
             var set = new Interval1dSet();
 
@@ -199,6 +199,131 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.Compact();
 
                 Assert.AreEqual(new Interval1d[] { (1, 1.6) }, set.Intervals.ToArray());
+            }
+        }
+
+        [Test]
+        public void IntersectTest()
+        {
+            var baseSet = new Interval1dSet();
+            baseSet.UnionWith((1, 2));
+            Interval1dSet set;
+
+            {
+                set = baseSet.Clone();
+
+                set.IntersectWith((1, 2));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.IntersectWith((0, 2));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.IntersectWith((1, 3));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.IntersectWith((0, 3));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.IntersectWith((3, 4));
+                set.Compact();
+
+                Assert.AreEqual(0, set.Count);
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.IntersectWith((2, 3));
+                set.Compact();
+
+                Assert.AreEqual(0, set.Count);
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.IntersectWith((0, 1));
+                set.Compact();
+
+                Assert.AreEqual(0, set.Count);
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.IntersectWith((-1, 0));
+                set.Compact();
+
+                Assert.AreEqual(0, set.Count);
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.IntersectWith((1.5, 1.6));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1.5, 1.6) }, set.Intervals.ToArray());
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.IntersectWith((1, 1.4));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1, 1.4) }, set.Intervals.ToArray());
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.IntersectWith((0, 1.4));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1, 1.4) }, set.Intervals.ToArray());
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.IntersectWith((1.6, 2));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1.6, 2) }, set.Intervals.ToArray());
+            }
+
+            {
+                set = baseSet.Clone();
+
+                set.IntersectWith((1.6, 3));
+                set.Compact();
+
+                Assert.AreEqual(new Interval1d[] { (1.6, 2) }, set.Intervals.ToArray());
             }
         }
     }
