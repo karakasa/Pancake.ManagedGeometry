@@ -23,17 +23,24 @@ namespace Pancake.ManagedGeometry.Benchmark
             set.UnionWith((7, 9));
         }
         [Benchmark]
-        public int NewMethod()
+        public int Union()
         {
             var set2 = set.Clone();
             set2.UnionWith((1.5, 7.5));
             return set2.Count;
         }
         [Benchmark]
-        public int OldMethod()
+        public int Intersect()
         {
             var set2 = set.Clone();
-            // set2.UnionWithOld((1.5, 7.5));
+            set2.IntersectWith((1.5, 7.5));
+            return set2.Count;
+        }
+        [Benchmark]
+        public int Subtract()
+        {
+            var set2 = set.Clone();
+            set2.SubtractBy((1.5, 7.5));
             return set2.Count;
         }
     }

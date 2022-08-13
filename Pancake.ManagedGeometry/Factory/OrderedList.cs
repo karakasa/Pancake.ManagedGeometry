@@ -9,7 +9,7 @@ namespace Pancake.ManagedGeometry.Factory
     {
         public static IOrderedList<T> Create<T>(IEnumerable<T> data = null, IComparer<T> comparer = null)
         {
-            return new OrderedListBasicImpl<T>(data, comparer);
+            return new OrderedListBasicImpl<T, IComparer<T>>(data, comparer);
         }
     }
 }

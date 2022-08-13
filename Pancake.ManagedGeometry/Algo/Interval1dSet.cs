@@ -11,10 +11,10 @@ namespace Pancake.ManagedGeometry.Algo
 {
     public class Interval1dSet : IInterval1dSet, ICloneable
     {
-        private readonly OrderedListBasicImplWithComparer
-            <Interval1d, NonOverlappingInterval1dComparerStruct> _orderedList;
+        private readonly OrderedListBasicImpl
+            <Interval1d, NonOverlappingInterval1dComparer> _orderedList;
         private readonly double _tolerance;
-        private readonly NonOverlappingInterval1dComparerStruct _comparer;
+        private readonly NonOverlappingInterval1dComparer _comparer;
         private readonly EpsilonComparer _dblComparer;
 
         private readonly List<double> _tempListForSplitPoints = new();
@@ -52,8 +52,8 @@ namespace Pancake.ManagedGeometry.Algo
             _comparer = new(_tolerance);
             _dblComparer = new(_tolerance);
 
-            _orderedList = OrderedListBasicImplWithComparer<Interval1d,
-                NonOverlappingInterval1dComparerStruct>.CreateWithSortedData(
+            _orderedList = OrderedListBasicImpl<Interval1d,
+                NonOverlappingInterval1dComparer>.CreateWithSortedData(
                 another._orderedList.UnderlyingList, _comparer);
         }
         public Interval1dSet Clone()
