@@ -11,6 +11,13 @@ namespace Pancake.ManagedGeometry.Algo
 {
     public class Interval1dSet : IInterval1dSet, ICloneable
     {
+        private struct BasicDoubleComparer : IComparer<double>
+        {
+            public int Compare(double x, double y) => x.CompareTo(y);
+        }
+
+        private static readonly BasicDoubleComparer _indexComparer = default;
+
         private readonly OrderedListBasicImpl
             <Interval1d, NonOverlappingInterval1dComparer> _orderedList;
         private readonly double _tolerance;
@@ -241,6 +248,7 @@ namespace Pancake.ManagedGeometry.Algo
             InsideInterval
         }
 
+        private const bool UseBinarySearchToEstimatePosition = false;
         private bool DetermineEndInformation(Interval1d interval,
             out EndOperation operationAtStart, out EndOperation operationAtEnd,
             out int startIndex, out int endIndex)
@@ -254,7 +262,22 @@ namespace Pancake.ManagedGeometry.Algo
             startIndex = -1;
             endIndex = -1;
 
-            for (var i = 0; i < listCnt; i++)
+            int searchStart = 0;
+
+            if (UseBinarySearchToEstimatePosition)
+            {
+                searchStart = _orderedList
+                    .LowerBoundIndex(interval.From, static iv => iv.From, _indexComparer) - 1;
+
+                if (searchStart < 0)
+                    searchStart = 0;
+            }
+            else
+            {
+                searchStart = 0;
+            }
+
+            for (var i = searchStart; i < listCnt; i++)
             {
                 if (list[i].From.CloseTo(interval.From, _tolerance)
                     || list[i].From >= interval.From)
@@ -278,7 +301,20 @@ namespace Pancake.ManagedGeometry.Algo
                 return false;
             }
 
-            for (var i = startIndex; i < listCnt; i++)
+            if (UseBinarySearchToEstimatePosition)
+            {
+                searchStart = _orderedList
+                    .LowerBoundIndex(interval.To, static iv => iv.To, _indexComparer) - 1;
+
+                if (searchStart < startIndex)
+                    searchStart = startIndex;
+            }
+            else
+            {
+                searchStart = startIndex;
+            }
+
+            for (var i = searchStart; i < listCnt; i++)
             {
                 if (list[i].To.CloseTo(interval.To, _tolerance)
                     || (list[i].To <= interval.To
