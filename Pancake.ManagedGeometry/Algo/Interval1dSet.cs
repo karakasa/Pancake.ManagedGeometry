@@ -134,7 +134,7 @@ namespace Pancake.ManagedGeometry.Algo
                 || !DetermineEndInformation(interval, out var operationAtStart, out var operationAtEnd,
                 out var startIndex, out var endIndex))
             {
-                _orderedList.UnderlyingList.Add(interval);
+                _orderedList.Add(interval);
                 return;
             }
 
