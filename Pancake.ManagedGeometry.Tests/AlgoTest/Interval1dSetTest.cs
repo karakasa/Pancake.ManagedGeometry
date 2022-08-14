@@ -32,6 +32,9 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
             Assert.AreEqual(set.Intervals.ToArray(), new Interval1d[] { (1, 4) });
 
             set.UnionWith((-8, 10));
+
+            Assert.AreEqual(18, set.GetTotalLength(), 1e-7);
+
             set.Compact();
 
             Assert.AreEqual(set.Count, 1);
@@ -60,7 +63,11 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
             set.UnionWith((1, double.PositiveInfinity));
             set.UnionWith((-1, 2));
 
+            Assert.AreEqual(double.PositiveInfinity, set.GetTotalLength());
+
             set.Compact();
+
+            Assert.AreEqual(double.PositiveInfinity, set.GetTotalLength());
 
             Assert.AreEqual(set.Count, 1);
             Assert.AreEqual(set.Intervals.ToArray(), new Interval1d[] { (-1, double.PositiveInfinity) });

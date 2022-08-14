@@ -21,7 +21,7 @@ namespace Pancake.ManagedGeometry.Algo
                 .ToList();
 
             var ptComparer = new Coord2dComparer(Tolerance);
-            var epsComparer = new EpsilonComparer(Tolerance);
+            var epsComparer = new EpsilonComparerStruct(Tolerance);
 
             // The algorithm here is generally O(n^2).
             // There's an O(nlogn) algorithm, using directional angle & cross product as hashes,
@@ -75,7 +75,7 @@ namespace Pancake.ManagedGeometry.Algo
                 if (SplitAtOriginalEndPoints)
                 {
                     intervals = intervals.SplitAt(
-                        listOfEnds.DistinctByComparer(epsComparer), Tolerance);
+                        listOfEnds.DistinctByComparerInline(epsComparer), Tolerance);
                 }
 
                 foreach (var it in intervals)

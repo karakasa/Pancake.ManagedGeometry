@@ -4,10 +4,10 @@ using System.Text;
 
 namespace Pancake.ManagedGeometry.Utility
 {
-    public struct NonOverlappingInterval1dComparer : IComparer<Interval1d>
+    internal struct Interval1dComparer : IComparer<Interval1d>
     {
         private readonly double _tolerance;
-        public NonOverlappingInterval1dComparer(double tolerance)
+        public Interval1dComparer(double tolerance)
         {
             _tolerance = tolerance;
         }

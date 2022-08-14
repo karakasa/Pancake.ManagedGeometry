@@ -10,7 +10,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
 {
     public class ComplexInterval1dSetTest
     {
-        private Interval1dSet GetBaseSet()
+        private static Interval1dSet GetBaseSet()
         {
             var baseSet = new Interval1dSet();
 
@@ -249,7 +249,12 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((1, 1.4));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 1.4) }, set.Intervals.ToArray());
+                Assert.AreEqual(1, set.Count);
+
+                var iv = set.Intervals.First();
+
+                Assert.AreEqual(1, iv.From, 1e-7);
+                Assert.AreEqual(1.4, iv.To, 1e-7);
             }
 
             {
@@ -258,7 +263,12 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((0, 1.4));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 1.4) }, set.Intervals.ToArray());
+                Assert.AreEqual(1, set.Count);
+
+                var iv = set.Intervals.First();
+
+                Assert.AreEqual(1, iv.From, 1e-7);
+                Assert.AreEqual(1.4, iv.To, 1e-7);
             }
 
             {
@@ -267,7 +277,12 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((1.6, 2));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1.6, 2) }, set.Intervals.ToArray());
+                Assert.AreEqual(1, set.Count);
+
+                var iv = set.Intervals.First();
+
+                Assert.AreEqual(1.6, iv.From, 1e-7);
+                Assert.AreEqual(2, iv.To, 1e-7);
             }
 
             {
@@ -276,7 +291,12 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((1.6, 3));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1.6, 2) }, set.Intervals.ToArray());
+                Assert.AreEqual(1, set.Count);
+
+                var iv = set.Intervals.First();
+
+                Assert.AreEqual(1.6, iv.From, 1e-7);
+                Assert.AreEqual(2, iv.To, 1e-7);
             }
         }
         [Test]

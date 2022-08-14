@@ -42,5 +42,32 @@ namespace Pancake.ManagedGeometry.Utility
                 yield return it;
             }
         }
+
+        public static IEnumerable<T> DistinctByComparerInline<T, TComparer>(
+            this IEnumerable<T> src,
+            TComparer comparer
+            )
+            where TComparer : IComparer<T>
+        {
+            var hasElement = false;
+            T last = default;
+
+            foreach (var it in src.OrderBy(s => s, comparer))
+            {
+                if (!hasElement)
+                {
+                    last = it;
+                    yield return it;
+                    hasElement = true;
+                    continue;
+                }
+
+                if (comparer.Compare(last, it) == 0)
+                    continue;
+
+                last = it;
+                yield return it;
+            }
+        }
     }
 }

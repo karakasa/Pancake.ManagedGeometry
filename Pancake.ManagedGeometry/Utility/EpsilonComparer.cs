@@ -27,7 +27,7 @@ namespace Pancake.ManagedGeometry.Utility
         }
         public int Compare(double x, double y)
         {
-            if ((x - y).CloseToZero(Tolerance)) return 0;
+            if (x == y || x.CloseTo(y, Tolerance)) return 0;
             return (x < y) ? -1 : 1;
         }
     }

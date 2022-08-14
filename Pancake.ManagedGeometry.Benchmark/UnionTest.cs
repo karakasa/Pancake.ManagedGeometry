@@ -14,13 +14,16 @@ namespace Pancake.ManagedGeometry.Benchmark
     [MemoryDiagnoser]
     public class UnionTest
     {
-        Interval1dSet set;
+        readonly Interval1dSet set;
         public UnionTest()
         {
             set = new Interval1dSet();
-            set.UnionWith((1, 2));
-            set.UnionWith((3, 5));
-            set.UnionWith((7, 9));
+            for (var i = 0; i < 100; i++)
+                set.UnionWith((1 + 0.01 * i, 1 + 0.01 * i + 0.01));
+            for (var i = 0; i < 100; i++)
+                set.UnionWith((3 + 0.01 * i, 3 + 0.01 * i + 0.01));
+            for (var i = 0; i < 100; i++)
+                set.UnionWith((7 + 0.01 * i, 7 + 0.01 * i + 0.01));
         }
         [Benchmark]
         public int Union()

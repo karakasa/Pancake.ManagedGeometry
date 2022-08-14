@@ -9,24 +9,19 @@ using System.Diagnostics;
 
 namespace Pancake.ManagedGeometry.Algo
 {
-    public class Interval1dSet : IInterval1dSet, ICloneable
+    public sealed class Interval1dSet : IInterval1dSet, ICloneable
     {
-        private struct BasicDoubleComparer : IComparer<double>
-        {
-            public int Compare(double x, double y) => x.CompareTo(y);
-        }
-
-        private static readonly BasicDoubleComparer _indexComparer = default;
+        private readonly EpsilonComparerStruct _dblComparer;
 
         private readonly OrderedListBasicImpl
-            <Interval1d, NonOverlappingInterval1dComparer> _orderedList;
+            <Interval1d, Interval1dComparer> _orderedList;
         private readonly double _tolerance;
-        private readonly NonOverlappingInterval1dComparer _comparer;
-        private readonly EpsilonComparer _dblComparer;
+        /// <summary>
+        /// Get the tolerance of the current set. You can operate on two sets of different tolerances.
+        /// The new set will follow the setting of the first operand.
+        /// </summary>
+        public double Tolerance => _tolerance;
 
-        private readonly List<double> _tempListForSplitPoints = new();
-        private readonly List<Interval1d> _tempListForSegmentToAdd = new();
-        private Interval1d[] _tempArrayInterval = new Interval1d[1];
         public Interval1dSet() : this(MathUtils.ZeroTolerance)
         {
 
@@ -35,9 +30,8 @@ namespace Pancake.ManagedGeometry.Algo
         public Interval1dSet(double tolerance)
         {
             _tolerance = tolerance;
-            _comparer = new(_tolerance);
             _dblComparer = new(_tolerance);
-            _orderedList = new(null, _comparer);
+            _orderedList = new(null, new(_tolerance));
         }
         public Interval1dSet(IEnumerable<Interval1d> set) : this()
         {
@@ -48,6 +42,14 @@ namespace Pancake.ManagedGeometry.Algo
             AddEnumerable(set);
         }
 
+        public Interval1dSet(Interval1d iv) : this()
+        {
+            _orderedList.Add(iv);
+        }
+        public Interval1dSet(double tolerance, Interval1d iv) : this(tolerance)
+        {
+            _orderedList.Add(iv);
+        }
         private void AddEnumerable(IEnumerable<Interval1d> set)
         {
             foreach (var it in set)
@@ -56,41 +58,78 @@ namespace Pancake.ManagedGeometry.Algo
         private Interval1dSet(Interval1dSet another)
         {
             _tolerance = another._tolerance;
-            _comparer = new(_tolerance);
             _dblComparer = new(_tolerance);
-
             _orderedList = OrderedListBasicImpl<Interval1d,
-                NonOverlappingInterval1dComparer>.CreateWithSortedData(
-                another._orderedList.UnderlyingList, _comparer);
+                Interval1dComparer>.CreateWithSortedData(
+                another._orderedList.UnderlyingList, new(_tolerance));
         }
+        /// <summary>
+        /// Get a deep copy of the set.
+        /// </summary>
+        /// <returns></returns>
         public Interval1dSet Clone()
         {
             return new Interval1dSet(this);
         }
+        /// <summary>
+        /// Clear the set.
+        /// </summary>
         public void Clear()
         {
             _orderedList.Clear();
         }
 
+        /// <summary>
+        /// Add <paramref name="intervals"/> to the underlying data structure without any check.
+        /// <paramref name="intervals"/> must be non-overlapping, ordered from small to large and the minimal one must follow the largest existing interval.
+        /// Otherwise the set's behavior will become unpredictable.
+        /// This method is designed for fast creation directly after the set is created.
+        /// </summary>
+        /// <param name="intervals">Intervals to add</param>
+        public Interval1dSet AddUnchecked(IEnumerable<Interval1d> intervals)
+        {
+            _orderedList.UnderlyingList.AddRange(intervals);
+            return this;
+        }
+        /// <summary>
+        /// Create the complement set against (-∞, ∞).
+        /// </summary>
+        /// <returns></returns>
         public Interval1dSet CreateComplement()
             => CreateComplement((double.NegativeInfinity, double.PositiveInfinity));
+        /// <summary>
+        /// Create the complement set against a designated range.
+        /// When the universe is another set, use <see cref="SubtractBy(IInterval1dSet)"/>.
+        /// </summary>
+        /// <param name="totalRange"></param>
+        /// <returns></returns>
         public Interval1dSet CreateComplement(Interval1d totalRange)
         {
-            var set = new Interval1dSet();
-            set.UnionWith(totalRange);
+            var set = new Interval1dSet(totalRange);
             set.SubtractBy(this);
             set.Compact();
 
             return set;
         }
+        /// <summary>
+        /// Get the count of intervals in this set.
+        /// </summary>
         public int Count => _orderedList.Count;
+        /// <summary>
+        /// Get or set the capacity of the underlying data structure.
+        /// </summary>
+        public int Capacity
+        {
+            get => _orderedList.UnderlyingList.Capacity;
+            set => _orderedList.UnderlyingList.Capacity = value;
+        }
         private void CheckIntervalArgument(Interval1d interval)
         {
             if (interval.Length < _tolerance)
                 throw new ArgumentException("Interval smaller than tolerance.");
 
             if (interval.From > interval.To)
-                throw new ArgumentException("Flipped tolerance.");
+                throw new ArgumentException("Flipped interval.");
         }
         //public void UnionWithOld(Interval1d interval)
         //{
@@ -133,7 +172,7 @@ namespace Pancake.ManagedGeometry.Algo
         //    _tempListForSplitPoints.Clear();
         //}
         // public void Add(Interval1d interval) => UnionWith(interval);
-        public void UnionWith(Interval1d interval)
+        public Interval1dSet UnionWith(Interval1d interval)
         {
             CheckIntervalArgument(interval);
 
@@ -142,7 +181,7 @@ namespace Pancake.ManagedGeometry.Algo
                 out var startIndex, out var endIndex))
             {
                 _orderedList.Add(interval);
-                return;
+                return this;
             }
 
             var list = _orderedList.UnderlyingList;
@@ -153,7 +192,7 @@ namespace Pancake.ManagedGeometry.Algo
                 list[startIndex] = interval;
                 if (endIndex > startIndex)
                     list.RemoveRange(startIndex + 1, endIndex - startIndex);
-                return;
+                return this;
             }
 
             if (operationAtStart == EndOperation.InsideInterval
@@ -162,7 +201,7 @@ namespace Pancake.ManagedGeometry.Algo
                 list[startIndex] = (list[startIndex].From, interval.To);
                 if (endIndex > startIndex)
                     list.RemoveRange(startIndex + 1, endIndex - startIndex);
-                return;
+                return this;
             }
 
             if (operationAtStart == EndOperation.OutsideEnd
@@ -171,7 +210,7 @@ namespace Pancake.ManagedGeometry.Algo
                 list[startIndex] = (interval.From, list[endIndex].To);
                 if (endIndex > startIndex)
                     list.RemoveRange(startIndex + 1, endIndex - startIndex);
-                return;
+                return this;
             }
 
             if (endIndex > startIndex)
@@ -179,6 +218,8 @@ namespace Pancake.ManagedGeometry.Algo
                 list[startIndex] = (list[startIndex].From, list[endIndex].To);
                 list.RemoveRange(startIndex + 1, endIndex - startIndex);
             }
+
+            return this;
         }
         //private void SubtractByCopied(Interval1d interval)
         //{
@@ -248,13 +289,15 @@ namespace Pancake.ManagedGeometry.Algo
             InsideInterval
         }
 
-        private const bool UseBinarySearchToEstimatePosition = false;
         private bool DetermineEndInformation(Interval1d interval,
             out EndOperation operationAtStart, out EndOperation operationAtEnd,
             out int startIndex, out int endIndex)
         {
+            const int LIST_LENGTH_HEURISTIC_FOR_BINARY_SEARCH = 16;
+
             var list = _orderedList.UnderlyingList;
             var listCnt = list.Count;
+            var useBinary = listCnt > LIST_LENGTH_HEURISTIC_FOR_BINARY_SEARCH;
 
             operationAtStart = EndOperation.Undefined;
             operationAtEnd = EndOperation.Undefined;
@@ -264,10 +307,10 @@ namespace Pancake.ManagedGeometry.Algo
 
             int searchStart = 0;
 
-            if (UseBinarySearchToEstimatePosition)
+            if (useBinary)
             {
                 searchStart = _orderedList
-                    .LowerBoundIndex(interval.From, static iv => iv.From, _indexComparer) - 1;
+                    .LowerBoundIndex(interval.From, static iv => iv.From, _dblComparer) - 1;
 
                 if (searchStart < 0)
                     searchStart = 0;
@@ -301,10 +344,10 @@ namespace Pancake.ManagedGeometry.Algo
                 return false;
             }
 
-            if (UseBinarySearchToEstimatePosition)
+            if (useBinary)
             {
                 searchStart = _orderedList
-                    .LowerBoundIndex(interval.To, static iv => iv.To, _indexComparer) - 1;
+                    .LowerBoundIndex(interval.To, static iv => iv.To, _dblComparer) - 1;
 
                 if (searchStart < startIndex)
                     searchStart = startIndex;
@@ -341,18 +384,18 @@ namespace Pancake.ManagedGeometry.Algo
 
             return true;
         }
-        public void SubtractBy(Interval1d interval)
+        public Interval1dSet SubtractBy(Interval1d interval)
         {
             CheckIntervalArgument(interval);
 
             if (_orderedList.Count == 0)
             {
-                return;
+                return this;
             }
 
             if (!DetermineEndInformation(interval, out var operationAtStart, out var operationAtEnd,
                 out var startIndex, out var endIndex))
-                return;
+                return this;
 
             // Debug.Assert(operationAtStart == SubtractionEndOperation.Undefined);
             // Debug.Assert(operationAtEnd == SubtractionEndOperation.Undefined);
@@ -363,7 +406,7 @@ namespace Pancake.ManagedGeometry.Algo
                     && operationAtEnd == EndOperation.OutsideEnd)
             {
                 list.RemoveRange(startIndex, endIndex - startIndex + 1);
-                return;
+                return this;
             }
 
             if (operationAtStart == EndOperation.InsideInterval
@@ -372,7 +415,7 @@ namespace Pancake.ManagedGeometry.Algo
                 list[startIndex] = (list[startIndex].From, interval.From);
                 if (endIndex > startIndex)
                     list.RemoveRange(startIndex + 1, endIndex - startIndex);
-                return;
+                return this;
             }
 
             if (operationAtStart == EndOperation.OutsideEnd
@@ -380,7 +423,7 @@ namespace Pancake.ManagedGeometry.Algo
             {
                 list[endIndex] = (interval.To, list[endIndex].To);
                 list.RemoveRange(startIndex, endIndex - startIndex);
-                return;
+                return this;
             }
 
             // if (operationAtStart == SubtractionEndOperation.Manipulate
@@ -402,8 +445,10 @@ namespace Pancake.ManagedGeometry.Algo
                 if (removeCnt > 0)
                     list.RemoveRange(startIndex + 1, removeCnt);
             }
+
+            return this;
         }
-        public void IntersectWith(Interval1d interval)
+        public Interval1dSet IntersectWith(Interval1d interval)
         {
             CheckIntervalArgument(interval);
 
@@ -413,7 +458,7 @@ namespace Pancake.ManagedGeometry.Algo
             {
                 _orderedList.Clear();
 
-                return;
+                return this;
             }
 
             var list = _orderedList.UnderlyingList;
@@ -443,7 +488,7 @@ namespace Pancake.ManagedGeometry.Algo
                 list[0] = interval;
                 list.RemoveRange(1, list.Count - 1);
 
-                return;
+                return this;
             }
             else
             {
@@ -453,27 +498,35 @@ namespace Pancake.ManagedGeometry.Algo
 
             removeOtherIntervals:
 
-            if (endIndex > startIndex)
-                list.RemoveRange(startIndex + 1, endIndex - startIndex);
+            if (endIndex != list.Count - 1)
+                list.RemoveRange(endIndex + 1, list.Count - endIndex - 1);
             list.RemoveRange(0, startIndex);
+
+            return this;
         }
 
-        public void UnionWith(IInterval1dSet set)
+        public Interval1dSet UnionWith(IInterval1dSet set)
         {
             foreach (var it in set.Intervals)
                 UnionWith(it);
+
+            return this;
         }
         
-        public void SubtractBy(IInterval1dSet set)
+        public Interval1dSet SubtractBy(IInterval1dSet set)
         {
             foreach (var it in set.Intervals)
                 SubtractBy(it);
+
+            return this;
         }
         
-        public void IntersectWith(IInterval1dSet set)
+        public Interval1dSet IntersectWith(IInterval1dSet set)
         {
             foreach (var it in set.Intervals)
                 IntersectWith(it);
+
+            return this;
         }
 
         ///// <summary>
@@ -503,9 +556,9 @@ namespace Pancake.ManagedGeometry.Algo
         /// Compact continous segments into one.
         /// This may have no effect depending on implementation.
         /// </summary>
-        public void Compact()
+        public Interval1dSet Compact()
         {
-            if (_orderedList.Count <= 1) return;
+            if (_orderedList.Count <= 1) return this;
 
             var list = _orderedList.UnderlyingList;
             for (var i = 0; i < list.Count; i++)
@@ -534,11 +587,87 @@ namespace Pancake.ManagedGeometry.Algo
                     list.RemoveRange(i + 1, j - i);
                 }
             }
+
+            return this;
         }
 
         object ICloneable.Clone() => Clone();
 
+        /// <summary>
+        /// Get the current intervals.
+        /// Modifying the collection is highly unrecommended as it may break consistency and yield unpredicted outcomes.
+        /// </summary>
         public ICollection<Interval1d> Intervals => _orderedList;
+        /// <summary>
+        /// Determines if the set is valid and compactable by <see cref="Compact"/>.
+        /// </summary>
+        /// <param name="compactable">If the set is compactable</param>
+        /// <returns></returns>
+        public bool CheckValidity(out bool compactable)
+        {
+            var compactableout = false;
+            compactable = false;
+            var list = _orderedList.UnderlyingList;
+
+            for (var i = 0; i < list.Count; i++)
+            {
+                var iv = list[i];
+                if (iv.Length < Tolerance || !iv.IsValid)
+                    return false;
+
+                if (i != list.Count - 1)
+                {
+                    var iv2 = list[i + 1];
+                    var compareResult = _dblComparer.Compare(iv.To, iv2.From);
+                    if (compareResult > 0)
+                        return false;
+
+                    if (compareResult == 0)
+                        compactableout = true;
+                }
+            }
+
+            compactable = compactableout;
+            return true;
+        }
+
+        /// <summary>
+        /// Get the total length of intervals inside the set.
+        /// </summary>
+        /// <returns><see cref="double.PositiveInfinity"/> if the set includes the infinity point.</returns>
+        public double GetTotalLength()
+        {
+            var sum = 0.0;
+            foreach (var it in _orderedList.UnderlyingList)
+            {
+                if (!it.From.IsFinite() || !it.To.IsFinite())
+                    return double.PositiveInfinity;
+
+                sum += it.Length;
+            }
+
+            return sum;
+        }
+
+        void IInterval1dSet.UnionWith(Interval1d interval)
+            => UnionWith(interval);
+
+        void IInterval1dSet.UnionWith(IInterval1dSet set)
+            => UnionWith(set);
+
+        void IInterval1dSet.SubtractBy(Interval1d interval)
+            => SubtractBy(interval);
+
+        void IInterval1dSet.SubtractBy(IInterval1dSet set)
+            => SubtractBy(set);
+
+        void IInterval1dSet.IntersectWith(Interval1d interval)
+            => IntersectWith(interval);
+
+        void IInterval1dSet.IntersectWith(IInterval1dSet set)
+            => IntersectWith(set);
+
+        void IInterval1dSet.Compact() => Compact();
     }
 }
 

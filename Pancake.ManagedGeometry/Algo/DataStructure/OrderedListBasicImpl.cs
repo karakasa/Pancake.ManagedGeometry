@@ -6,15 +6,15 @@ using System.Text;
 
 namespace Pancake.ManagedGeometry.Algo.DataStructure
 {
-    internal class OrderedListBasicImpl<TValue, TComparer> : IOrderedList<TValue>
+    internal sealed class OrderedListBasicImpl<TValue, TComparer> : IOrderedList<TValue>
         where TComparer : IComparer<TValue>
     {
         private List<TValue> _underlying;
         internal List<TValue> UnderlyingList => _underlying;
-        private TComparer _comparer;
+        public TComparer Comparer { get; set; }
         public OrderedListBasicImpl(IEnumerable<TValue> dataSrc = null, TComparer comparer = default)
         {
-            _comparer = comparer;
+            Comparer = comparer;
 
             if (dataSrc is null)
             {
@@ -23,7 +23,7 @@ namespace Pancake.ManagedGeometry.Algo.DataStructure
             else
             {
                 _underlying = new(dataSrc);
-                _underlying.Sort(_comparer);
+                _underlying.Sort(Comparer);
             }
         }
 
@@ -75,7 +75,7 @@ namespace Pancake.ManagedGeometry.Algo.DataStructure
             while (lo < hi)
             {
                 var pivot = (hi + lo) >> 1;
-                if (_comparer.Compare(_underlying[pivot], value) < 0)
+                if (Comparer.Compare(_underlying[pivot], value) < 0)
                 {
                     lo = pivot + 1;
                 }
@@ -85,7 +85,7 @@ namespace Pancake.ManagedGeometry.Algo.DataStructure
                 }
             }
 
-            if (_comparer.Compare(_underlying[lo], value) < 0) 
+            if (Comparer.Compare(_underlying[lo], value) < 0) 
                 lo++;
 
             return lo;
