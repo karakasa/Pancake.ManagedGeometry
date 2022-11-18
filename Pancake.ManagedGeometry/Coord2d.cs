@@ -110,6 +110,12 @@ namespace Pancake.ManagedGeometry
                 (X - another.X).CloseToZero()
                 && (Y - another.Y).CloseToZero();
         }
+        public bool AlmostEqualTo(Coord2d another, double tolerance)
+        {
+            return
+                (X - another.X).CloseToZero(tolerance)
+                && (Y - another.Y).CloseToZero(tolerance);
+        }
 
         public static bool IsColinear(Coord2d a, Coord2d b, Coord2d c)
         {

@@ -8,87 +8,32 @@ using System.Threading.Tasks;
 
 namespace Pancake.ManagedGeometry.Tests.AlgoTest
 {
-    public class Interval1dSetTest
+    public class ComplexInterval1dSetTest
     {
-        [Test]
-        public void BasicTest()
+        private static Interval1dSet GetBaseSet()
         {
-            var set = new Interval1dSet();
+            var baseSet = new Interval1dSet();
 
-            Assert.AreEqual(set.Count, 0);
 
-            set.UnionWith((1, 2));
+            for (var i = 0; i < 10; i++)
+            {
+                baseSet.UnionWith((1 + i * 0.1, 1 + i * 0.1 + 0.1));
+            }
 
-            Assert.AreEqual(set.Count, 1);
-
-            set.UnionWith((3, 4));
-
-            Assert.AreEqual(set.Count, 2);
-
-            set.UnionWith((1.5, 3.5));
-            set.Compact();
-
-            Assert.AreEqual(set.Count, 1);
-            Assert.AreEqual(set.Intervals.ToArray(), new Interval1d[] { (1, 4) });
-
-            set.UnionWith((-8, 10));
-
-            Assert.AreEqual(18, set.GetTotalLength(), 1e-7);
-
-            set.Compact();
-
-            Assert.AreEqual(set.Count, 1);
-            Assert.AreEqual(set.Intervals.ToArray(), new Interval1d[] { (-8, 10) });
+            return baseSet;
         }
         [Test]
-        public void CaseWithTolerance()
+        public void BaseSetConformityTest()
         {
-            var set = new Interval1dSet(0.01);
-
-            set.UnionWith((1, 2));
-            set.UnionWith((3, 4));
-
-            Assert.AreEqual(set.Count, 2);
-
-            set.UnionWith((2.00001, 3.5));
+            var set = GetBaseSet();
             set.Compact();
-
-            Assert.AreEqual(set.Count, 1);
-            Assert.AreEqual(set.Intervals.ToArray(), new Interval1d[] { (1, 4) });
-        }
-        [Test]
-        public void InfiniteTest()
-        {
-            var set = new Interval1dSet();
-            set.UnionWith((1, double.PositiveInfinity));
-            set.UnionWith((-1, 2));
-
-            Assert.AreEqual(double.PositiveInfinity, set.GetTotalLength());
-
-            set.Compact();
-
-            Assert.AreEqual(double.PositiveInfinity, set.GetTotalLength());
-
-            Assert.AreEqual(set.Count, 1);
-            Assert.AreEqual(set.Intervals.ToArray(), new Interval1d[] { (-1, double.PositiveInfinity) });
-        }
-        [Test]
-        public void RemoveDuplicateTest()
-        {
-            var iv = new Interval1d(1, 2);
-
-            var set = new Interval1dSet();
-            set.UnionWith(iv);
-            set.UnionWith(iv);
-
-            Assert.AreEqual(set.Count, 1);
-            Assert.AreEqual(set.Intervals.ToArray(), new[] { iv });
+            Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
         }
         [Test]
         public void SubtractTest()
         {
-            var baseSet = new Interval1dSet();
-            baseSet.UnionWith((1, 2));
+            var baseSet = GetBaseSet();
+            
             Interval1dSet set;
 
             {
@@ -212,8 +157,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
         [Test]
         public void IntersectTest()
         {
-            var baseSet = new Interval1dSet();
-            baseSet.UnionWith((1, 2));
+            var baseSet = GetBaseSet();
             Interval1dSet set;
 
             {
@@ -221,6 +165,8 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
 
                 set.IntersectWith((1, 2));
                 set.Compact();
+
+                // BUG
 
                 Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
             }
@@ -303,7 +249,12 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((1, 1.4));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 1.4) }, set.Intervals.ToArray());
+                Assert.AreEqual(1, set.Count);
+
+                var iv = set.Intervals.First();
+
+                Assert.AreEqual(1, iv.From, 1e-7);
+                Assert.AreEqual(1.4, iv.To, 1e-7);
             }
 
             {
@@ -312,7 +263,12 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((0, 1.4));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 1.4) }, set.Intervals.ToArray());
+                Assert.AreEqual(1, set.Count);
+
+                var iv = set.Intervals.First();
+
+                Assert.AreEqual(1, iv.From, 1e-7);
+                Assert.AreEqual(1.4, iv.To, 1e-7);
             }
 
             {
@@ -321,7 +277,12 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((1.6, 2));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1.6, 2) }, set.Intervals.ToArray());
+                Assert.AreEqual(1, set.Count);
+
+                var iv = set.Intervals.First();
+
+                Assert.AreEqual(1.6, iv.From, 1e-7);
+                Assert.AreEqual(2, iv.To, 1e-7);
             }
 
             {
@@ -330,14 +291,18 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((1.6, 3));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1.6, 2) }, set.Intervals.ToArray());
+                Assert.AreEqual(1, set.Count);
+
+                var iv = set.Intervals.First();
+
+                Assert.AreEqual(1.6, iv.From, 1e-7);
+                Assert.AreEqual(2, iv.To, 1e-7);
             }
         }
         [Test]
         public void UnionTest()
         {
-            var baseSet = new Interval1dSet();
-            baseSet.UnionWith((1, 2));
+            var baseSet = GetBaseSet();
             Interval1dSet set;
 
             {

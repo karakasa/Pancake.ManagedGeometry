@@ -7,7 +7,7 @@ namespace Pancake.ManagedGeometry.Benchmark
     {
         static void Main(string[] args)
         {
-            BenchmarkRunner.Run<DistincterBenchmark>();
+            BenchmarkRunner.Run<UnionTest>();
         }
     }
 }

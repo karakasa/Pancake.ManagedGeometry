@@ -21,6 +21,6 @@ namespace Pancake.ManagedGeometry.Factory
         /// This may have no effect depending on implementation.
         /// </summary>
         public void Compact();
-        public IEnumerable<Interval1d> Intervals { get; }
+        public ICollection<Interval1d> Intervals { get; }
     }
 }
