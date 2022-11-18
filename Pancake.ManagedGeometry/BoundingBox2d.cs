@@ -11,10 +11,7 @@ using System.Text;
 namespace Pancake.ManagedGeometry
 {
     [DebuggerDisplay("({Min}), ({Max})")]
-    public struct BoundingBox2d
-#if !HIDE_BBOX_2D_IENUMERABLE_INTERFACE
-    : IEnumerable<Coord2d>
-#endif
+    public struct BoundingBox2d : IEnumerable<Coord2d>
     {
         public double MinX;
         public double MaxX;
@@ -144,10 +141,9 @@ namespace Pancake.ManagedGeometry
         public IEnumerator<Coord2d> GetEnumerator()
             => new BBoxEnumerator2d { Index = -1, BBox = this };
 
-#if !HIDE_BBOX_2D_IENUMERABLE_INTERFACE
         IEnumerator IEnumerable.GetEnumerator()
             => GetEnumerator();
-#endif
+
         private static readonly Direction[] DirectionSide = new Direction[] {
             Direction.LeftTop,
             Direction.Left,

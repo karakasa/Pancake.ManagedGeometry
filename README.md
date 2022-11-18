@@ -14,15 +14,14 @@ The core module should be ...
 * Having neutral data model, and free of host applications.
 * Free of platform-specific functions.
 * Free of any proprietary dependency.
-* Free of any projects of "viral" licenses, such as GPL.
-
+* Free of "viral" licenses, such as GPL.
 * Fast.
 * Reduce memory allocations as many as possible.
 
-The objectives don't include:
+Objectives don't include:
 
 * High abstractions of elements, including NURBS curve, BRep solid, AEC elements (walls, windows, etc.)
-* Serialization support, which is designed to be the responsibility of caller. This repo may include tool library to help you with this.
+* Serialization support, which is designed to be the responsibility of caller. This repo may include tool libraries to help you with this.
 
 ## Similar projects you may be interested in
 * [Hypar.Elements](https://github.com/hypar-io/Elements). A comprehensive library regarding BIM practice (and related geometric operations)
