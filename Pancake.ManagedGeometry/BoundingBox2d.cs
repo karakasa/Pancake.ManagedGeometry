@@ -163,6 +163,8 @@ namespace Pancake.ManagedGeometry
                 => Index = -1;
         }
 
+        public IEnumerator<Coord2d> GetEnumerator()
+            => new BBoxEnumerator2d { BBox = this, Index = -1 };
         IEnumerator IEnumerable.GetEnumerator()
             => GetEnumerator();
         private static readonly Direction[] DirectionSide = new Direction[] {
