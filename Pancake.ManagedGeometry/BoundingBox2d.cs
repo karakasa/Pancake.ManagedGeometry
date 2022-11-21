@@ -12,7 +12,7 @@ using System.Text;
 namespace Pancake.ManagedGeometry
 {
     [DebuggerDisplay("{Min} -> {Max}")]
-    public struct BoundingBox2d : IPolygon
+    public struct BoundingBox2d : IPolygon, IEnumerable<Coord2d>
     {
         public double MinX;
         public double MaxX;
@@ -163,6 +163,8 @@ namespace Pancake.ManagedGeometry
                 => Index = -1;
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+            => GetEnumerator();
         private static readonly Direction[] DirectionSide = new Direction[] {
             Direction.LeftTop,
             Direction.Left,
