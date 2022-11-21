@@ -50,7 +50,7 @@ namespace CrossLibBenchmark.Algo
         [SuppressUnmanagedCodeSecurity]
         private static partial class SafeNativeMethods
         {
-            [LibraryImport("shlwapi.dll", EntryPoint = "StrCmpLogicalWW", StringMarshalling = StringMarshalling.Utf16)]
+            [LibraryImport("shlwapi.dll", EntryPoint = "StrCmpLogicalW", StringMarshalling = StringMarshalling.Utf16)]
             public static partial int StrCmpLogicalW(string psz1, string psz2);
         }
         public int Compare(string a, string b)
@@ -196,8 +196,8 @@ namespace CrossLibBenchmark.Algo
     }
 
     [MemoryDiagnoser]
-    [SimpleJob(runtimeMoniker: RuntimeMoniker.Net48, baseline: true)]
-    [SimpleJob(runtimeMoniker: RuntimeMoniker.Net60)]
+    // [SimpleJob(runtimeMoniker: RuntimeMoniker.Net48, baseline: true)]
+    // [SimpleJob(runtimeMoniker: RuntimeMoniker.Net60)]
     [SimpleJob(runtimeMoniker: RuntimeMoniker.HostProcess)]
     public class NaturalSort
     {
