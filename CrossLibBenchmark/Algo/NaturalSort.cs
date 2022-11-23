@@ -221,6 +221,12 @@ namespace CrossLibBenchmark.Algo
             return UnsortedData;
         }
         [Benchmark]
+        public string[] PancakeWithCulture()
+        {
+            Array.Sort(UnsortedData, new SimpleNaturalSortWithCultureInfo(CultureInfo.InvariantCulture));
+            return UnsortedData;
+        }
+        [Benchmark]
         public string[] RegExLinq()
         {
             return UnsortedData.OrderByNatural(static x => x).ToArray();
