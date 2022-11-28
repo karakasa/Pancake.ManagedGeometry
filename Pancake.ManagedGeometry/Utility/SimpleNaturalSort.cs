@@ -1,11 +1,31 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.ComTypes;
 
 namespace Pancake.ManagedGeometry.Utility
 {
+    public static class NaturalSortExtensions
+    {
+        public static IOrderedEnumerable<TSrc> OrderByNatural<TSrc>(this IEnumerable<TSrc> src, Func<TSrc, string> keySelector)
+        {
+            return src.OrderBy(keySelector, SimpleNaturalSort.Instance);
+        }
+        public static IOrderedEnumerable<TSrc> OrderByNaturalDescending<TSrc>(this IEnumerable<TSrc> src, Func<TSrc, string> keySelector)
+        {
+            return src.OrderByDescending(keySelector, SimpleNaturalSort.Instance);
+        }
+        public static IOrderedEnumerable<TSrc> ThenByNatural<TSrc>(this IOrderedEnumerable<TSrc> src, Func<TSrc, string> keySelector)
+        {
+            return src.ThenBy(keySelector, SimpleNaturalSort.Instance);
+        }
+        public static IOrderedEnumerable<TSrc> ThenByNaturalDescending<TSrc>(this IOrderedEnumerable<TSrc> src, Func<TSrc, string> keySelector)
+        {
+            return src.ThenByDescending(keySelector, SimpleNaturalSort.Instance);
+        }
+    }
     public sealed class SimpleNaturalSort : IComparer<string>, IComparer
     {
         public static readonly SimpleNaturalSort Instance = new();
