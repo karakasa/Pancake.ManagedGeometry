@@ -149,5 +149,14 @@ namespace Pancake.ManagedGeometry
         {
             return $"({X}, {Y}, {Z})";
         }
+        public Coord Unitize()
+        {
+            var len = 1 / Length;
+            return (X * len, Y * len, Z * len);
+        }
+        public Coord2d StripDown()
+        {
+            return (X, Y);
+        }
     }
 }
