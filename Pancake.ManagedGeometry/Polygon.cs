@@ -234,13 +234,13 @@ endOfFirstLoop:
             return false;
         }
 
-        private bool ContainsAllPoint(Polygon another)
+        public bool ContainsAllPoint(Polygon another)
         {
             foreach (var pt in another._v)
                 if (!Contains(pt)) return false;
             return true;
         }
-        private bool ContainsAllPoint(BoundingBox2d another)
+        public bool ContainsAllPoint(BoundingBox2d another)
         {
             foreach (var pt in another.Vertices)
                 if (!Contains(pt)) return false;
