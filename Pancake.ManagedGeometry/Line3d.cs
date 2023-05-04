@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Pancake.ManagedGeometry
 {
-    [DebuggerDisplay("{From} -> {End}")]
+    [DebuggerDisplay("{From} -> {To}")]
     public struct Line3d
     {
         public Coord From;

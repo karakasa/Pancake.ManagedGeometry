@@ -158,5 +158,9 @@ namespace Pancake.ManagedGeometry
         {
             return this.X == other.X && this.Y == other.Y;
         }
+        public Coord Escalate()
+        {
+            return (X, Y, 0);
+        }
     }
 }
