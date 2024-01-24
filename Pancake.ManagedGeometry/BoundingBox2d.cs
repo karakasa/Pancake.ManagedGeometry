@@ -20,8 +20,8 @@ namespace Pancake.ManagedGeometry
         public double MinY;
         public double MaxY;
 
-        public double SpanX => MaxX - MinX;
-        public double SpanY => MaxY - MinY;
+        public readonly double SpanX => MaxX - MinX;
+        public readonly double SpanY => MaxY - MinY;
 
         public BoundingBox2d(Coord2d corner1, Coord2d corner2)
         {
@@ -76,20 +76,20 @@ namespace Pancake.ManagedGeometry
             if (MinX > MaxX) LanguageExtensions.Swap(ref MinX, ref MaxX);
             if (MinY > MaxY) LanguageExtensions.Swap(ref MinY, ref MaxY);
         }
-        public bool Contains(Coord2d ptr)
+        public readonly bool Contains(Coord2d ptr)
         {
             return !(ptr.X < MinX || ptr.X > MaxX || ptr.Y < MinY || ptr.Y > MaxY);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Contains(double ptrX, double ptrY)
+        public readonly bool Contains(double ptrX, double ptrY)
         {
             if (ptrX < MinX || ptrX > MaxX || ptrY < MinY || ptrY > MaxY)
                 return false;
 
             return true;
         }
-        public Polygon ToPolygon()
+        public readonly Polygon ToPolygon()
         {
             return new Polygon
             {
@@ -102,7 +102,7 @@ namespace Pancake.ManagedGeometry
             };
         }
 
-        public bool IntersectsWith(BoundingBox2d another)
+        public readonly bool IntersectsWith(BoundingBox2d another)
         {
             return MinX < another.MaxX
                 && MaxX > another.MinX
@@ -114,7 +114,7 @@ namespace Pancake.ManagedGeometry
         {
             public int Index;
             public BoundingBox2d BBox;
-            public Coord2d Current
+            public readonly Coord2d Current
                 => Index switch
                 {
                     0 => (BBox.MinX, BBox.MinY),
@@ -124,9 +124,9 @@ namespace Pancake.ManagedGeometry
                     _ => (0, 0)
                 };
 
-            object IEnumerator.Current => Current;
+            readonly object IEnumerator.Current => Current;
 
-            public void Dispose()
+            public readonly void Dispose()
             {
             }
 
@@ -140,7 +140,7 @@ namespace Pancake.ManagedGeometry
         {
             public int Index;
             public BoundingBox2d BBox;
-            public Line2d Current
+            public readonly Line2d Current
                 => Index switch
                 {
                     0 => ((BBox.MinX, BBox.MinY), (BBox.MaxX, BBox.MinY)),
@@ -152,7 +152,7 @@ namespace Pancake.ManagedGeometry
 
             object IEnumerator.Current => Current;
 
-            public void Dispose()
+            public readonly void Dispose()
             {
             }
 
@@ -163,9 +163,9 @@ namespace Pancake.ManagedGeometry
                 => Index = -1;
         }
 
-        public IEnumerator<Coord2d> GetEnumerator()
+        public readonly IEnumerator<Coord2d> GetEnumerator()
             => new BBoxEnumerator2d { BBox = this, Index = -1 };
-        IEnumerator IEnumerable.GetEnumerator()
+        readonly IEnumerator IEnumerable.GetEnumerator()
             => GetEnumerator();
         private static readonly Direction[] DirectionSide = new Direction[] {
             Direction.LeftTop,
@@ -178,7 +178,7 @@ namespace Pancake.ManagedGeometry
             Direction.Right,
             Direction.RightBottom
         };
-        public Direction PointOnWhichSide(Coord2d ptToTest)
+        public readonly Direction PointOnWhichSide(Coord2d ptToTest)
         {
             var xState = IntervalSign(ptToTest.X, MinX, MaxX);
             var yState = IntervalSign(ptToTest.Y, MinY, MaxY);
@@ -198,7 +198,7 @@ namespace Pancake.ManagedGeometry
             return 0;
         }
 
-        public Coord2d VertexAt(int verticeId)
+        public readonly Coord2d VertexAt(int verticeId)
         {
             return verticeId switch
             {
@@ -210,7 +210,7 @@ namespace Pancake.ManagedGeometry
             };
         }
 
-        public Line2d EdgeAt(int startPtId)
+        public readonly Line2d EdgeAt(int startPtId)
         {
             return startPtId switch
             {
@@ -222,7 +222,7 @@ namespace Pancake.ManagedGeometry
             };
         }
 
-        public void CopyVerticesTo(Coord2d[] array, int startIndex)
+        public readonly void CopyVerticesTo(Coord2d[] array, int startIndex)
         {
             array[startIndex] = this[0];
             array[startIndex + 1] = this[1];
@@ -230,19 +230,19 @@ namespace Pancake.ManagedGeometry
             array[startIndex + 3] = this[3];
         }
 
-        public Coord2d Center => ((MinX + MaxX) / 2, (MinY + MaxY) / 2);
-        public Coord2d Min => (MinX, MinY);
-        public Coord2d Max => (MaxX, MaxY);
+        public readonly Coord2d Center => ((MinX + MaxX) / 2, (MinY + MaxY) / 2);
+        public readonly Coord2d Min => (MinX, MinY);
+        public readonly Coord2d Max => (MaxX, MaxY);
 
-        public IEnumerable<Line2d> Edges
+        public readonly IEnumerable<Line2d> Edges
             => BasedEnumerable.Create<Line2d, BBoxLineEnumerator2d>(new() { BBox = this, Index = -1 });
 
-        public IEnumerable<Coord2d> Vertices
+        public readonly IEnumerable<Coord2d> Vertices
             => BasedEnumerable.Create<Coord2d, BBoxEnumerator2d>(new (){BBox = this, Index = -1});
 
-        public int VertexCount => 4;
+        public readonly int VertexCount => 4;
 
-        public Coord2d this[int index]
+        public readonly Coord2d this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => index switch
