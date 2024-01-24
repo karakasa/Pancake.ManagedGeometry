@@ -35,6 +35,10 @@ namespace Pancake.ManagedGeometry.Algo
     {
         public static IList<SortedCurveRepresentation> MergeCurveEndRepresentations(CurveRepresentation[] curves)
         {
+            return MergeCurveEndRepresentations(curves, Coord.Tolerance);
+        }
+        public static IList<SortedCurveRepresentation> MergeCurveEndRepresentations(CurveRepresentation[] curves, double tol)
+        {
             var result = new List<SortedCurveRepresentation>(curves.Length);
             result.Add(new(0, false));
             var lastEnd = curves[0].End;
@@ -50,14 +54,14 @@ namespace Pancake.ManagedGeometry.Algo
                 for (; i < remainingCrvs.Count; i++)
                 {
                     var curCrv = remainingCrvs[i];
-                    if (curCrv.Curve.Start.IdenticalTo(lastEnd))
+                    if (curCrv.Curve.Start.IdenticalTo(lastEnd, tol))
                     {
                         lastEnd = curCrv.Curve.End;
                         fndCurve = true;
                         result.Add(new(curCrv.Index, false));
                         break;
                     }
-                    else if (curCrv.Curve.End.IdenticalTo(lastEnd))
+                    else if (curCrv.Curve.End.IdenticalTo(lastEnd, tol))
                     {
                         lastEnd = curCrv.Curve.Start;
                         fndCurve = true;

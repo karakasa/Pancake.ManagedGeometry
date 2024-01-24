@@ -233,7 +233,19 @@ endOfFirstLoop:
             }
             return false;
         }
+        public Coord2d GetCenter()
+        {
+            var sumX = 0.0;
+            var sumY = 0.0;
 
+            foreach (var pt in InternalVerticeArray)
+            {
+                sumX += pt.X;
+                sumY += pt.Y;
+            }
+
+            return (sumX / VertexCount, sumY / VertexCount);
+        }
         public bool ContainsAllPoint(Polygon another)
         {
             foreach (var pt in another._v)

@@ -19,10 +19,14 @@ namespace Pancake.ManagedGeometry
         public readonly double X;
         public readonly double Y;
         public readonly double Z;
-        private const double Tolerance = 1e-7;
+        internal const double Tolerance = 1e-7;
         public bool IdenticalTo(Coord b)
         {
-            return Math.Abs(X - b.X) < Tolerance && Math.Abs(Y - b.Y) < Tolerance && Math.Abs(Z - b.Z) < Tolerance;
+            return IdenticalTo(b, Tolerance);
+        }
+        public bool IdenticalTo(Coord b, double tol)
+        {
+            return Math.Abs(X - b.X) < tol && Math.Abs(Y - b.Y) < tol && Math.Abs(Z - b.Z) < tol;
         }
 
         public Coord(double x, double y, double z)
