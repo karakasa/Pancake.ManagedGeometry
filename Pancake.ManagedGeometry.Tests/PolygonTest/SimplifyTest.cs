@@ -107,6 +107,27 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
             Assert.AreSame(ply, ply2);
         }
 
+        [Test]
+        public void MergePointsTest()
+        {
+            var ply = Polygon.CreateByCoords(
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (1, 1),
+                (1, 1),
+                (1, 1),
+                (1, 1),
+                (1, 1),
+                (1, 1),
+                (1, 0),
+                (0, 0)
+                );
+
+            Assert.IsTrue(ply.TrySimplifyInplace());
+            Assert.AreEqual(3, ply.VertexCount);
+            Assert.AreEqual(0.5, ply.CalculateArea(), 0.0001);
+        }
         /// <summary>
         /// Previously simplification tolerance is not supported, which causes issue in MajorRectangleSolver
         /// </summary>

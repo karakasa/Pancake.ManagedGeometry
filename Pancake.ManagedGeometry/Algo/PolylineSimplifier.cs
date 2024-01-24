@@ -13,18 +13,54 @@ namespace Pancake.ManagedGeometry.Algo
             var originalLength = list.Count;
             var index = 0;
 
+            while (TryMergeIdenticalPoints(list, closedPolyline, ref index, tolerance)) ;
+
+            index = 0;
+
             while (TryRemovePairFromList(list, closedPolyline, ref index, tolerance)) ;
 
             outCoords = list;
             return list.Count < originalLength;
         }
+        private static bool TryMergeIdenticalPoints(List<Coord2d> coords, bool closedPolyline, ref int latestScannedIndex, double tolerance)
+        {
+            for (; ; )
+            {
+                ThrowForDegeneratedPolygon(coords);
 
+                if (latestScannedIndex >= coords.Count)
+                    return false;
+
+                if (latestScannedIndex == coords.Count - 1)
+                {
+                    // 最后一个点
+
+                    if (!closedPolyline)
+                        return false;
+
+                    if (coords[latestScannedIndex].AlmostEqualTo(coords[0]))
+                    {
+                        coords.RemoveAt(latestScannedIndex);
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (coords[latestScannedIndex].AlmostEqualTo(coords[latestScannedIndex + 1]))
+                    {
+                        coords.RemoveAt(latestScannedIndex + 1);
+                        continue;
+                    }
+                }
+
+                ++latestScannedIndex;
+            }
+        }
         private static bool TryRemovePairFromList(List<Coord2d> coords, bool closedPolyline, ref int latestScannedIndex, double tolerance)
         {
             for (; ; )
             {
-                if (coords.Count < 3)
-                    throw new InvalidOperationException("Polygon has fewer than 3 vertices. Is it a degenerate polygon?");
+                ThrowForDegeneratedPolygon(coords);
 
                 if (latestScannedIndex >= coords.Count)
                     return false;
@@ -68,5 +104,11 @@ namespace Pancake.ManagedGeometry.Algo
                 ++latestScannedIndex;
             }
         }
+        private static void ThrowForDegeneratedPolygon(List<Coord2d> coords)
+        {
+            if (coords.Count < 3)
+                throw new InvalidOperationException("多段线顶点数小于 3，有可能是退化的多段线。");
+        }
     }
+
 }
