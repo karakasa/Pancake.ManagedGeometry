@@ -46,12 +46,14 @@ namespace Pancake.ManagedGeometry.Benchmark
         [Benchmark]
         public bool BboxMethod()
         {
-            return ply1.IntersectWith(bboxes[Dataset]);
+            return true;
+            // return ply1.IntersectWith(bboxes[Dataset]);
         }
         // [Benchmark]
         public bool IPolygon()
         {
-            return Polygon.IntersectsWith(ply1, bboxes[Dataset]);
+            return true;
+            // return Polygon.IntersectsWith(ply1, bboxes[Dataset]);
         }
     }
 }

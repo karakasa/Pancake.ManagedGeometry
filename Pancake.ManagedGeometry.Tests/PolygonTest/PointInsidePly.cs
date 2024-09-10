@@ -74,12 +74,12 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
             (0,2)
             });
 
-                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(hole1.InternalVerticeArray, (0.75, 0.75)), false);
-                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(hole1.InternalVerticeArray, (3, 0.75)), false);
+                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(hole1, (0.75, 0.75)), false);
+                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(hole1, (3, 0.75)), false);
 
-                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(ply.InternalVerticeArray, (-1, 1)), false);
-                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(ply.InternalVerticeArray, (0.5, 1)), true);
-                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(ply.InternalVerticeArray, (3, 1)), false);
+                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(ply, (-1, 1)), false);
+                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(ply, (0.5, 1)), true);
+                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(ply, (3, 1)), false);
 
             }
 
@@ -93,7 +93,7 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
 
                 var testPt = new Coord2d(-50.1968503936883, 1.6404199350379609);
 
-                Assert.IsFalse(PointInsidePolygon.ContainsWindingNumberMethod(ply.InternalVerticeArray, testPt));
+                Assert.IsFalse(PointInsidePolygon.ContainsWindingNumberMethod(ply, testPt));
             }
         }
     }

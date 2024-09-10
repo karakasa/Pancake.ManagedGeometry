@@ -91,15 +91,14 @@ namespace Pancake.ManagedGeometry
         }
         public readonly Polygon ToPolygon()
         {
-            return new Polygon
-            {
-                InternalVerticeArray = new Coord2d[] {
+            return Polygon.CreateByRef(
+                [
                 (MinX, MinY),
                 (MaxX, MinY),
                 (MaxX, MaxY),
-                (MinX, MaxY)
-                }
-            };
+                (MinX, MaxY) 
+                ]
+                );
         }
 
         public readonly bool IntersectsWith(BoundingBox2d another)

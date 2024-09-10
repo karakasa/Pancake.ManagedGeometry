@@ -124,9 +124,9 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
                 (0, 0)
                 );
 
-            Assert.IsTrue(ply.TrySimplifyInplace());
-            Assert.AreEqual(3, ply.VertexCount);
-            Assert.AreEqual(0.5, ply.CalculateArea(), 0.0001);
+            Assert.IsTrue(ply.TrySimplify(out var ply2));
+            Assert.AreEqual(3, ply2.VertexCount);
+            Assert.AreEqual(0.5, ply2.CalculateArea(), 0.0001);
         }
         /// <summary>
         /// Previously simplification tolerance is not supported, which causes issue in MajorRectangleSolver

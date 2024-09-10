@@ -54,7 +54,7 @@ namespace Pancake.ManagedGeometry.Algo
                     var pt = new Coord2d(x, y);
                     foreach (var it in regions)
                     {
-                        if (PointInsidePolygon.Contains(it.Polygon.InternalVerticeArray, pt)
+                        if (PointInsidePolygon.Contains(it.Polygon, pt)
                             != PointInsidePolygon.PointContainment.Outside)
                         {
                             list.Add(new Coord(x, y, it.Height));

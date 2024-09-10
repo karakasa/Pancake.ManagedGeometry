@@ -41,10 +41,10 @@ namespace Pancake.ManagedGeometry.Algo
                 InBetweenNode = inbetween;
             }
         }
-        private readonly Polygon _exterior = null;
-        private readonly Polygon[] _holes = null;
+        private readonly Polygon _exterior = default;
+        private readonly Polygon[]? _holes = null;
 
-        private Coord2d[] _mergedVertices = null;
+        private Coord2d[]? _mergedVertices = null;
 
         private FloydDistance[,] _vertexDistance;
         public PathOfTravel(Polygon shape)

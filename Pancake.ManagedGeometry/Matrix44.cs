@@ -249,7 +249,7 @@ namespace Pancake.ManagedGeometry
 
             return true;
         }
-        public bool TryGetInverse(out Matrix44 inversed)
+        public bool TryGetInverse(out Matrix44? inversed)
         {
             // 其实就是行列式的值
             var denom =

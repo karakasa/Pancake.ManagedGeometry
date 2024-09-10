@@ -90,7 +90,7 @@ namespace Pancake.ManagedGeometry.Algo
             for (var i = 0; i < listCnt; i++)
             {
                 var pt = line.PointAt((listOfParameters[i] + listOfParameters[i + 1]) / 2);
-                var containment = PointInsidePolygon.Contains(ply.InternalVerticeArray, pt);
+                var containment = PointInsidePolygon.Contains(ply, pt);
 
                 if (containment == disallowed) return false;
             }
@@ -114,8 +114,8 @@ namespace Pancake.ManagedGeometry.Algo
             var lineFrom = line.From;
             var lineTo = line.To;
 
-            var relationAtLineStart = PointInsidePolygon.Contains(ply.InternalVerticeArray, lineFrom);
-            var relationAtLineEnd = PointInsidePolygon.Contains(ply.InternalVerticeArray, lineTo);
+            var relationAtLineStart = PointInsidePolygon.Contains(ply, lineFrom);
+            var relationAtLineEnd = PointInsidePolygon.Contains(ply, lineTo);
 
             // 如果线段有一点在多边形外部，那么线段肯定不全在多边形里
             if (relationAtLineStart == PointInsidePolygon.PointContainment.Outside
