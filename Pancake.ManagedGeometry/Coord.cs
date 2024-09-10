@@ -37,9 +37,9 @@ namespace Pancake.ManagedGeometry
         }
 
 
-        public static readonly Coord Unset =
-            (double.PositiveInfinity, double.PositiveInfinity, double.PositiveInfinity);
-        public static readonly Coord Origin = (0, 0, 0);
+        public static Coord Unset =>
+            new(double.PositiveInfinity, double.PositiveInfinity, double.PositiveInfinity);
+        public static Coord Origin => default;
 
         public override bool Equals(object obj)
         {

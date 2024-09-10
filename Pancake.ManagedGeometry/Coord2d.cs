@@ -35,7 +35,7 @@ namespace Pancake.ManagedGeometry
             var x = x0 * cos - y0 * sin + center.X;
             var y = x0 * sin + y0 * cos + center.Y;
 
-            return (x, y);
+            return new(x, y);
         }
         /// <summary>
         /// Rotate the point around the origin point (0,0).
@@ -52,7 +52,22 @@ namespace Pancake.ManagedGeometry
             var x = x0 * cos - y0 * sin;
             var y = x0 * sin + y0 * cos;
 
-            return (x, y);
+            return new(x, y);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static Coord2d ThrowHelper_OutOfRange()
+        {
+            throw new ArgumentOutOfRangeException("dir");
+        }
+        public Coord2d Rotate(ClockwiseDirection dir)
+        {
+            return dir switch
+            {
+                ClockwiseDirection.Clockwise => new(Y, -X),
+                ClockwiseDirection.CounterClockwise => new(-Y, X),
+                _ => ThrowHelper_OutOfRange()
+            };
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -97,8 +112,8 @@ namespace Pancake.ManagedGeometry
         public static implicit operator Coord2d((double, double) d) => new Coord2d(d.Item1, d.Item2);
         public double Length => Math.Sqrt(X * X + Y * Y);
         public double SquareLength => X * X + Y * Y;
-        public static readonly Coord2d Zero = (0, 0);
-        public static readonly Coord2d Unset = (double.NaN, double.NaN);
+        public static Coord2d Zero => default;
+        public static Coord2d Unset => new(double.NaN, double.NaN);
         public Coord2d Transform(Matrix44 xform)
         {
             return (xform * this).TwoDPart;
