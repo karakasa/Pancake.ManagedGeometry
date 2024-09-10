@@ -154,14 +154,7 @@ public readonly struct Polygon : ICloneable, IPolygon
 
     public ClockwiseDirection CalculateDirection()
     {
-        var sum = 0.0;
-
-        for (var i = 0; i < _v.Length - 1; i++)
-            sum += (_v[i + 1].X - _v[i].X) * (_v[i].Y + _v[i + 1].Y);
-
-        sum += (_v[0].X - _v[_v.Length - 1].X) * (_v[_v.Length - 1].Y + _v[0].Y);
-
-        return sum < 0 ? ClockwiseDirection.CounterClockwise : ClockwiseDirection.Clockwise;
+        return this.CalculateDirection<Polygon>();
     }
 
     /// <summary>
@@ -171,20 +164,7 @@ public readonly struct Polygon : ICloneable, IPolygon
     /// <returns>Directional area</returns>
     public double CalculateDirectionalArea()
     {
-        var area1 = 0.0;
-        var area2 = 0.0;
-
-        for (var i = 0; i < _v.Length - 1; i++)
-        {
-            area1 += _v[i].X * _v[i + 1].Y;
-            area2 += _v[i].Y * _v[i + 1].X;
-        }
-
-        area1 += _v[_v.Length - 1].X * _v[0].Y;
-        area2 += _v[_v.Length - 1].Y * _v[0].X;
-
-        var area = (area1 - area2) / 2;
-        return area;
+        return this.CalculateDirectionalArea<Polygon>();
     }
 
     public double CalculatePerimeter()
@@ -273,19 +253,9 @@ public readonly struct Polygon : ICloneable, IPolygon
 
     object ICloneable.Clone() => Duplicate();
 
-    public double ClosestDistanceTo(Coord2d pt)
+    public double ClosestDistanceTo(in Coord2d pt)
     {
-        var minDistance = double.MaxValue;
-        var thisEdgeCnt = _v.Length;
-
-        for (var i = 0; i < thisEdgeCnt; i++)
-        {
-            var dist = EdgeAt(i).SquareDistanceToPoint(pt);
-            if (dist < minDistance)
-                minDistance = dist;
-        }
-
-        return Math.Sqrt(minDistance);
+        return this.ClosestDistanceTo<Polygon>(pt);
     }
 
     public double ClosestDistToAnother(Polygon another,
@@ -295,37 +265,7 @@ public readonly struct Polygon : ICloneable, IPolygon
         out Coord2d thisPt, out Coord2d anotherPt,
         out int edgeIndexOnThis, out int edgeIndexOnAnother)
     {
-        var minDist = double.MaxValue;
-        thisPt = default;
-        anotherPt = default;
-        var thisEdgeId = -1;
-        var thatEdgeId = -1;
-
-        for (var i = 0; i < _v.Length; i++)
-        {
-            var line1 = EdgeAt(i);
-
-            for (var j = 0; j < another._v.Length; j++)
-            {
-                var line2 = another.EdgeAt(j);
-
-                var dist = line1.NearestPtToAnotherLine(line2, out var ptOnThis, out var outsidePt);
-                if (dist < minDist)
-                {
-                    thisEdgeId = i;
-                    thatEdgeId = j;
-
-                    minDist = dist;
-                    thisPt = ptOnThis;
-                    anotherPt = outsidePt;
-                }
-            }
-        }
-
-        edgeIndexOnThis = thisEdgeId;
-        edgeIndexOnAnother = thatEdgeId;
-
-        return minDist;
+        return this.ClosestDistanceTo<Polygon, Polygon>(another, out thisPt, out anotherPt, out edgeIndexOnThis, out edgeIndexOnAnother);
     }
 
     public bool Contains(Coord2d pt)
@@ -480,13 +420,13 @@ public readonly struct Polygon : ICloneable, IPolygon
         return false;
     }
 
-    private struct PolygonEdgeEnumerator : IEnumerator<Line2d>
+    internal struct PolygonEdgeEnumeratorBoxed : IEnumerator<Line2d>
     {
         private readonly Polygon _ply;
         private int _index;
         private Coord2d lastPt;
         private Coord2d currentPt;
-        public PolygonEdgeEnumerator(Polygon ply)
+        public PolygonEdgeEnumeratorBoxed(Polygon ply)
         {
             if (ply._v.Length <= 1)
                 throw new ArgumentException("Invalid polygon.");
@@ -497,11 +437,11 @@ public readonly struct Polygon : ICloneable, IPolygon
             _ply = ply;
         }
 
-        public Line2d Current => (lastPt, currentPt);
+        public readonly Line2d Current => (lastPt, currentPt);
 
-        object IEnumerator.Current => Current;
+        readonly object IEnumerator.Current => Current;
 
-        public void Dispose()
+        public readonly void Dispose()
         {
         }
 
@@ -531,10 +471,10 @@ public readonly struct Polygon : ICloneable, IPolygon
         }
     }
 
-    public IEnumerable<Line2d> Edges 
-        => BasedEnumerable.Create<Line2d, PolygonEdgeEnumerator>(new(this));
+    IEnumerable<Line2d> IPolygon.Edges => BasedEnumerable.Create<Line2d, PolygonEdgeEnumeratorBoxed>(new(this));
     IEnumerable<Coord2d> IPolygon.Vertices => InternalVerticeArray;
 
+    public PolygonEdgeEnumerable Edges => new(this);
     public Coord2d this[int index] => InternalVerticeArray[index];
 
     public Line2d[] ToLine2dArray()
