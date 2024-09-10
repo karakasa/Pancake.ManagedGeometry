@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Jobs;
 using CrossLibBenchmark.Utils;
 using Pancake.ManagedGeometry;
 using System;
@@ -10,6 +11,8 @@ using System.Threading.Tasks;
 namespace CrossLibBenchmark.Algo
 {
     [MemoryDiagnoser]
+    [SimpleJob(RuntimeMoniker.Net60)]
+    [SimpleJob(RuntimeMoniker.Net80)]
     public class PlyIntersect
     {
         private Elements.Geometry.Polygon plyElements1;

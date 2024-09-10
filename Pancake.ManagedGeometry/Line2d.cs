@@ -25,14 +25,12 @@ namespace Pancake.ManagedGeometry
         public Coord2d Direction;
 
         public Coord2d To
-        {
-            get => From + Direction;
+        { readonly get => From + Direction;
             set => Direction = value - From;
         }
 
         public double Length
-        {
-            get => Direction.Length;
+        { readonly get => Direction.Length;
             set => Direction = Direction / Direction.Length * value;
         }
 
@@ -42,29 +40,29 @@ namespace Pancake.ManagedGeometry
 
         public void ReverseTranslate(Coord2d vec) => From -= vec;
 
-        public Coord2d PointAt(double k) => From + k * Direction;
+        public readonly Coord2d PointAt(double k) => From + k * Direction;
 
         public Line2d(Coord2d start, Coord2d end)
         {
             From = start;
             Direction = end - start;
         }
-        public bool IsOnLine(Coord2d pt)
+        public readonly bool IsOnLine(Coord2d pt)
         {
             return NearestPointInfinite(pt).BetweenRange(0, 1);
         }
-        public bool IsOnLine(Coord2d pt, double tolerance)
+        public readonly bool IsOnLine(Coord2d pt, double tolerance)
         {
             return NearestPointInfinite(pt).BetweenRange(0, 1, tolerance);
         }
-        public void GetEquation(out double a, out double b, out double c)
+        public readonly void GetEquation(out double a, out double b, out double c)
         {
             a = Direction.Y;
             b = -Direction.X;
             c = From.Y * Direction.X - From.X * Direction.Y;
         }
         
-        public double NearestPointInfinite(Coord2d outsidePt)
+        public readonly double NearestPointInfinite(Coord2d outsidePt)
         {
             var l = Direction.SquareLength;
             if (l.CloseToZero()) return 0;
@@ -76,7 +74,7 @@ namespace Pancake.ManagedGeometry
         /// </summary>
         /// <param name="outsidePt"></param>
         /// <returns>参数</returns>
-        public double NearestPoint(Coord2d outsidePt)
+        public readonly double NearestPoint(Coord2d outsidePt)
         {
             var l = Direction.SquareLength;
 
@@ -86,38 +84,38 @@ namespace Pancake.ManagedGeometry
 
             return t;
         }
-        public double DistanceToPoint(Coord2d outsidePt)
+        public readonly double DistanceToPoint(Coord2d outsidePt)
         {
             return (PointAt(NearestPoint(outsidePt)) - outsidePt).Length;
         }
 
-        public double DistanceToPoint(Coord2d outsidePt, out Coord2d closestPt)
+        public readonly double DistanceToPoint(Coord2d outsidePt, out Coord2d closestPt)
         {
             closestPt = PointAt(NearestPoint(outsidePt));
             return (closestPt - outsidePt).Length;
         }
 
-        public double SquareDistanceToPoint(Coord2d outsidePt)
+        public readonly double SquareDistanceToPoint(Coord2d outsidePt)
         {
             return (PointAt(NearestPoint(outsidePt)) - outsidePt).SquareLength;
         }
-        public double DistanceToPointInfinite(Coord2d ptr)
+        public readonly double DistanceToPointInfinite(Coord2d ptr)
         {
             GetEquation(out var a, out var b, out var c);
             return Math.Abs(a * ptr.X + b * ptr.Y + c) / Math.Sqrt(a * a + b * b);
         }
 
-        public double DistanceToOriginInfinite()
+        public readonly double DistanceToOriginInfinite()
         {
             return Math.Abs(From.Y * Direction.X - From.X * Direction.Y) / Math.Sqrt(Direction.Y * Direction.Y + Direction.X * Direction.X);
         }
 
-        public bool PassOriginInfinite(double tolerance)
+        public readonly bool PassOriginInfinite(double tolerance)
         {
             return Math.Abs(From.Y * Direction.X - From.X * Direction.Y) < tolerance;
         }
 
-        public bool ContainsOriginPoint(out double k)
+        public readonly bool ContainsOriginPoint(out double k)
         {
             if (Math.Abs(Direction.X) > MathUtils.ZeroTolerance)
             {
@@ -135,7 +133,7 @@ namespace Pancake.ManagedGeometry
             return From.SquareLength < MathUtils.ZeroTolerance;
         }
 
-        public double NearestPtToAnotherLine(Line2d another, out Coord2d thisPt, out Coord2d anotherPt)
+        public readonly double NearestPtToAnotherLine(Line2d another, out Coord2d thisPt, out Coord2d anotherPt)
         {
             var relation = IntersectWith(another, out var t, out _);
             if (relation == LineRelation.Intersected)
@@ -275,7 +273,7 @@ namespace Pancake.ManagedGeometry
 
             return minDist;
         }
-        public LineRelation IntersectWith(Line2d another,
+        public readonly LineRelation IntersectWith(Line2d another,
             out double paramOnThisLine, out double paramOnAnotherLine)
         {
             // https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
@@ -298,7 +296,7 @@ namespace Pancake.ManagedGeometry
             return (t.BetweenRange(0, 1) && u.BetweenRange(0, 1)) ? LineRelation.Intersected : LineRelation.NotIntersected;
         }
 
-        public LineRelation DoesIntersectWith(Line2d another)
+        public readonly LineRelation DoesIntersectWith(Line2d another)
         {
             var p1 = Coord2d.CrossProductLength(this.Direction, another.Direction);
             var p2 = another.From - this.From;
@@ -315,7 +313,7 @@ namespace Pancake.ManagedGeometry
             return t.BetweenRange(0, 1) && u.BetweenRange(0, 1) ? LineRelation.Intersected : LineRelation.NotIntersected;
         }
 
-        public LineRelation IsParallelOrColinear(Line2d another)
+        public readonly LineRelation IsParallelOrColinear(Line2d another)
         {
             var p1 = Coord2d.CrossProductLength(this.Direction, another.Direction);
 
@@ -328,7 +326,7 @@ namespace Pancake.ManagedGeometry
 
             return LineRelation.Undetermined;
         }
-        public LineRelation IsParallelOrColinear(Line2d another, double tolerance)
+        public readonly LineRelation IsParallelOrColinear(Line2d another, double tolerance)
         {
             var p1 = Coord2d.CrossProductLength(this.Direction.ChopZero(tolerance), another.Direction.ChopZero(tolerance));
 
@@ -342,7 +340,7 @@ namespace Pancake.ManagedGeometry
             return LineRelation.Undetermined;
         }
 
-        public bool AlmostEqualTo(Line2d another)
+        public readonly bool AlmostEqualTo(Line2d another)
         {
             var end = To;
             var anotherEnd = another.To;
@@ -352,7 +350,7 @@ namespace Pancake.ManagedGeometry
 
             return false;
         }
-        public bool AlmostEqualTo(Line2d another, double tolerance)
+        public readonly bool AlmostEqualTo(Line2d another, double tolerance)
         {
             var end = To;
             var anotherEnd = another.To;
@@ -364,12 +362,12 @@ namespace Pancake.ManagedGeometry
         }
 
         public static implicit operator Line2d((Coord2d, Coord2d) d) => new(d.Item1, d.Item2);
-        public bool IsValid() =>
+        public readonly bool IsValid() =>
             From.IsValid && Direction.IsValid && !Direction.SquareLength.CloseToZero();
 
-        public bool IsValid(double tolerance) =>
+        public readonly bool IsValid(double tolerance) =>
             From.IsValid && Direction.IsValid && !Direction.SquareLength.CloseToZero(tolerance);
-        public bool DoesOverlapWith(Line2d another)
+        public readonly bool DoesOverlapWith(Line2d another)
             => DoesOverlap(this, another, MathUtils.ZeroTolerance);
         public static bool DoesOverlap(Line2d a, Line2d b, double t)
         {
@@ -389,7 +387,7 @@ namespace Pancake.ManagedGeometry
             return false;
         }
 
-        internal bool CrossXAxis(double yValue, double minX, double maxX)
+        internal readonly bool CrossXAxis(double yValue, double minX, double maxX)
         {
             if (Direction.Y.CloseToZero())
             {
@@ -411,7 +409,7 @@ namespace Pancake.ManagedGeometry
             }
         }
 
-        internal bool CrossYAxis(double xValue, double minY, double maxY)
+        internal readonly bool CrossYAxis(double xValue, double minY, double maxY)
         {
             if (Direction.X.CloseToZero())
             {

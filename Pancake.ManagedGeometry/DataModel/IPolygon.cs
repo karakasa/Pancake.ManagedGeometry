@@ -6,7 +6,6 @@ namespace Pancake.ManagedGeometry.DataModel
 {
     public interface IPolygon
     {
-        public Coord2d VertexAt(int verticeId);
         public Line2d EdgeAt(int startPtId);
         public IEnumerable<Line2d> Edges { get; }
         public IEnumerable<Coord2d> Vertices { get; }

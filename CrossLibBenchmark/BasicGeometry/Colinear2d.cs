@@ -93,7 +93,7 @@ namespace CrossLibBenchmark.BasicGeometry
                 var pt2 = _ptGrp2he[i];
                 var pt3 = _ptGrp3he[i];
 
-                var sameLine = Elements.Geometry.Vector3.AreCollinear(pt1, pt2, pt3);
+                var sameLine = Elements.Geometry.Vector3.AreCollinearByDistance(pt1, pt2, pt3);
                 result ^= sameLine;
             }
             return result;

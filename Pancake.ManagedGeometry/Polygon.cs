@@ -4,6 +4,8 @@ using Pancake.ManagedGeometry.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -95,13 +97,6 @@ public readonly struct Polygon : ICloneable, IPolygon
             if (!Contains(pt)) return false;
         return true;
     }
-    public bool ContainsAllPoint(BoundingBox2d another)
-    {
-        foreach (var pt in another.Vertices)
-            if (!Contains(pt)) return false;
-        return true;
-    }
-
     internal Polygon(Coord2d[] vertices, bool noCopyFlag)
     {
         _v = vertices;
@@ -196,31 +191,7 @@ public readonly struct Polygon : ICloneable, IPolygon
     /// <returns>Category of the polygon</returns>
     public PolygonShape CalculateSimpleShape()
     {
-        if (_v.Length < 3) return PolygonShape.Degenerate;
-
-        Coord2d v1, v2;
-
-        v1 = _v[1] - _v[0];
-        v2 = _v[2] - _v[1];
-
-        var sign = Math.Sign(Coord2d.CrossProductLength(v1, v2));
-
-        for (var i = 1; i < _v.Length - 1; i++)
-        {
-            v1 = v2;
-            v2 = _v[(i + 2) % _v.Length] - _v[i + 1];
-
-            if (Math.Sign(Coord2d.CrossProductLength(v1, v2)) != sign)
-                return PolygonShape.Concave;
-        }
-
-        v1 = v2;
-        v2 = _v[1] - _v[0];
-
-        if (Math.Sign(Coord2d.CrossProductLength(v1, v2)) != sign)
-            return PolygonShape.Concave;
-
-        return PolygonShape.Convex;
+        return this.CalculateSimpleShape<Polygon>();
     }
 
     public void ChangeSeam(int index)
@@ -235,6 +206,7 @@ public readonly struct Polygon : ICloneable, IPolygon
         Array.Copy(newVertices, 0, _v, _v.Length - index, index);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public unsafe void ChangeSeamSmallIndex(int index)
     {
         index = index.UnboundIndex(_v.Length);
@@ -285,21 +257,7 @@ public readonly struct Polygon : ICloneable, IPolygon
     }
     public bool DoesSelfIntersect()
     {
-        var edgeCnt = _v.Length;
-        for (var i = 0; i < edgeCnt; i++)
-        {
-            var l1 = EdgeAt(i);
-            for (var j = i + 2; j <= edgeCnt; j++)
-            {
-                var l2 = EdgeAt(j.UnboundIndex(edgeCnt));
-
-                var result = l1.DoesIntersectWith(l2);
-                if (result == LineRelation.Intersected || result == LineRelation.Collinear)
-                    return true;
-            }
-        }
-
-        return false;
+        return this.DoesSelfIntersect<Polygon>();
     }
 
     /// <summary>
@@ -323,20 +281,33 @@ public readonly struct Polygon : ICloneable, IPolygon
 
     public bool IntersectWith(Polygon b)
     {
-        throw new NotImplementedException();
+        foreach (var ea in this.Edges)
+            foreach (var eb in b.Edges)
+            {
+                var rel = ea.DoesIntersectWith(eb);
+                if (rel is LineRelation.Intersected or LineRelation.Collinear) return true;
+            }
+
+        return false;
+    }
+
+    public bool IntersectWith(Polygon b, bool strict)
+    {
+        if (!strict) return IntersectWith(b);
+
+        foreach (var ea in this.Edges)
+            foreach (var eb in b.Edges)
+            {
+                var rel = ea.DoesIntersectWith(eb);
+                if (rel is LineRelation.Intersected) return true;
+            }
+
+        return false;
     }
 
     public Line2d EdgeAt(int startPtId)
     {
         return new Line2d(_v[startPtId], _v[(startPtId + 1) % _v.Length]);
-    }
-    public Coord2d VertexAt(int verticeId)
-    {
-        if (verticeId < 0 || verticeId >= InternalVerticeArray.Length)
-            return default;
-            // ThrowHelperOutOfRange();
-
-        return InternalVerticeArray[verticeId];
     }
 
     private static void ThrowHelperOutOfRange()
@@ -344,36 +315,9 @@ public readonly struct Polygon : ICloneable, IPolygon
         throw new ArgumentOutOfRangeException();
     }
 
-    public int OnWhichEdge(Coord2d pt, out PointOnEdgeRelation relation)
+    public int OnWhichEdge(in Coord2d pt, out PointOnEdgeRelation relation)
     {
-        for (var i = 0; i < _v.Length; i++)
-        {
-            var line = EdgeAt(i);
-
-            var t = line.NearestPoint(pt);
-            var closetPt = line.PointAt(t);
-
-            if ((pt - closetPt).Length > MathUtils.ZeroTolerance)
-                continue;
-
-            if (t.CloseToZero())
-            {
-                relation = PointOnEdgeRelation.AtStart;
-            }
-            else if ((t - 1).CloseToZero())
-            {
-                relation = PointOnEdgeRelation.AtEnd;
-            }
-            else
-            {
-                relation = PointOnEdgeRelation.InMiddle;
-            }
-
-            return i;
-        }
-
-        relation = PointOnEdgeRelation.NotOnEdge;
-        return -1;
+        return this.OnWhichEdge<Polygon>(pt, out relation);
     }
 
     public PolygonRelation RelationTo(Polygon another)
@@ -520,6 +464,12 @@ public readonly struct Polygon : ICloneable, IPolygon
 
         simplified = this;
         return false;
+    }
+
+    public Polygon Simplify(double tolerance = MathUtils.ZeroTolerance)
+    {
+        TrySimplify(out var s, tolerance);
+        return s;
     }
 }
 

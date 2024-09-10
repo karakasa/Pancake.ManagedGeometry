@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Jobs;
 using CrossLibBenchmark.Utils;
 using Pancake.ManagedGeometry;
 using Pancake.ManagedGeometry.Algo;
@@ -10,6 +11,8 @@ using System.Threading.Tasks;
 
 namespace CrossLibBenchmark.Algo
 {
+    [SimpleJob(RuntimeMoniker.Net60)]
+    [SimpleJob(RuntimeMoniker.Net80)]
     [MemoryDiagnoser]
     public class PtInPly
     {

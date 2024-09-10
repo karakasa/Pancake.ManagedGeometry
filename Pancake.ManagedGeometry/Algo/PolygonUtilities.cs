@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Pancake.ManagedGeometry.Algo;
 
-public static class PolygonAlgos
+public static class PolygonUtilities
 {
     public static double CalculateArea<TPolygon>(this TPolygon ply) where TPolygon : IPolygon
         => Math.Abs(CalculateDirectionalArea(ply));
@@ -105,22 +105,23 @@ public static class PolygonAlgos
         return PointInsidePolygon.Contains(ply, pt) != PointInsidePolygon.PointContainment.Outside;
     }
 
-    /*public static bool Contains<TPolygon1, TPolygon2>(this TPolygon1 ply, TPolygon2 another)
+    public static bool Contains<TPolygon1, TPolygon2>(this TPolygon1 ply, TPolygon2 another)
         where TPolygon1 : IPolygon
         where TPolygon2 : IPolygon
     {
-        return ContainsAllPoint(another) && !IntersectWith(another);
-    }*/
+        return ply.ContainsAllPoint(another) && !ply.IntersectWith(another);
+    }
 
-    /*public bool DoesSelfIntersect()
+    public static bool DoesSelfIntersect<TPolygon>(this TPolygon ply)
+        where TPolygon : IPolygon
     {
         var edgeCnt = ply.VertexCount;
         for (var i = 0; i < edgeCnt; i++)
         {
-            var l1 = EdgeAt(i);
+            var l1 = ply.EdgeAt(i);
             for (var j = i + 2; j <= edgeCnt; j++)
             {
-                var l2 = EdgeAt(j.UnboundIndex(edgeCnt));
+                var l2 = ply.EdgeAt(j.UnboundIndex(edgeCnt));
 
                 var result = l1.DoesIntersectWith(l2);
                 if (result == LineRelation.Intersected || result == LineRelation.Collinear)
@@ -129,12 +130,7 @@ public static class PolygonAlgos
         }
 
         return false;
-    }*/
-
-    /*public bool IntersectWith(Polygon b)
-    {
-        throw new NotImplementedException();
-    }*/
+    }
 
     public static int OnWhichEdge<TPolygon>(this TPolygon ply, in Coord2d pt, out PointOnEdgeRelation relation)
         where TPolygon : IPolygon
@@ -167,5 +163,97 @@ public static class PolygonAlgos
 
         relation = PointOnEdgeRelation.NotOnEdge;
         return -1;
+    }
+
+    public static bool IntersectWith<TPolygon1, TPolygon2>(this TPolygon1 ply, TPolygon2 another, bool strict = false)
+        where TPolygon1 : IPolygon
+        where TPolygon2 : IPolygon
+    {
+        if (strict)
+        {
+            for (var i = 0; i < ply.VertexCount; i++)
+                for (var j = 0; j < another.VertexCount; j++)
+                {
+                    var ea = ply.EdgeAt(i);
+                    var eb = ply.EdgeAt(j);
+
+                    var rel = ea.DoesIntersectWith(eb);
+                    if (rel is LineRelation.Intersected) return true;
+                }
+
+            return false;
+        }
+        else
+        {
+            for (var i = 0; i < ply.VertexCount; i++)
+                for (var j = 0; j < another.VertexCount; j++)
+                {
+                    var ea = ply.EdgeAt(i);
+                    var eb = ply.EdgeAt(j);
+
+                    var rel = ea.DoesIntersectWith(eb);
+                    if (rel is LineRelation.Intersected or LineRelation.Collinear) return true;
+                }
+
+            return false;
+        }
+    }
+
+    public static bool ContainsAllPoint<TPolygon1, TPolygon2>(this TPolygon1 ply, TPolygon2 another)
+        where TPolygon1 : IPolygon
+        where TPolygon2 : IPolygon
+    {
+        for (var j = 0; j < another.VertexCount; j++)
+            if (!ply.Contains(another[j])) return false;
+        return true;
+    }
+
+    public static PolygonRelation RelationTo<TPolygon1, TPolygon2>(this TPolygon1 ply, TPolygon2 another)
+        where TPolygon1 : IPolygon
+        where TPolygon2 : IPolygon
+    {
+        if (ply.IntersectWith(another)) return PolygonRelation.Intersected;
+        if (ply.ContainsAllPoint(another)) return PolygonRelation.ContainsAnother;
+        if (another.ContainsAllPoint(ply)) return PolygonRelation.InsideAnother;
+        return PolygonRelation.OutsideAnother;
+    }
+
+    public static PolygonShape CalculateSimpleShape<TPolygon>(this TPolygon ply)
+        where TPolygon : IPolygon
+    {
+        if (ply.VertexCount < 3) return PolygonShape.Degenerate;
+
+        Coord2d v1, v2;
+
+        v1 = ply[1] - ply[0];
+        v2 = ply[2] - ply[1];
+
+        var sign = Math.Sign(Coord2d.CrossProductLength(v1, v2));
+
+        for (var i = 1; i < ply.VertexCount - 1; i++)
+        {
+            v1 = v2;
+            v2 = ply[(i + 2) % ply.VertexCount] - ply[i + 1];
+
+            if (Math.Sign(Coord2d.CrossProductLength(v1, v2)) != sign)
+                return PolygonShape.Concave;
+        }
+
+        v1 = v2;
+        v2 = ply[1] - ply[0];
+
+        if (Math.Sign(Coord2d.CrossProductLength(v1, v2)) != sign)
+            return PolygonShape.Concave;
+
+        return PolygonShape.Convex;
+    }
+
+    public static Polygon Escalate<TPolygon>(this TPolygon ply)
+        where TPolygon : IPolygon
+    {
+        if (ply is Polygon p) return p;
+        var vertices = new Coord2d[ply.VertexCount];
+        ply.CopyVerticesTo(vertices, 0);
+        return Polygon.CreateByRef(vertices);
     }
 }

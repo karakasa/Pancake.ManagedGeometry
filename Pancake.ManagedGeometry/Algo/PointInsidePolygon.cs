@@ -65,10 +65,5 @@ public static partial class PointInsidePolygon
         {
             throw new NotImplementedException();
         }
-
-        public Coord2d VertexAt(int verticeId)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

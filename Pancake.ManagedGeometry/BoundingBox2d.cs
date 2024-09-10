@@ -196,19 +196,6 @@ namespace Pancake.ManagedGeometry
 
             return 0;
         }
-
-        public readonly Coord2d VertexAt(int verticeId)
-        {
-            return verticeId switch
-            {
-                0 => (MinX, MinY),
-                1 => (MaxX, MinY),
-                2 => (MaxX, MaxY),
-                3 => (MinX, MaxY),
-                _ => Coord2d.Unset
-            };
-        }
-
         public readonly Line2d EdgeAt(int startPtId)
         {
             return startPtId switch
