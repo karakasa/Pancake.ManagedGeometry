@@ -17,11 +17,11 @@ namespace Pancake.ManagedGeometry.Tests.Matrix44Test
             var vec = new Vector4(1, 2, 3);
             var vec2 = matrix * vec;
 
-            Assert.IsTrue((matrix * matrix * matrix).SimilarTo(matrix));
-            Assert.IsTrue((vec2.X - vec.X).CloseToZero());
-            Assert.IsTrue((vec2.Y - vec.Y).CloseToZero());
-            Assert.IsTrue((vec2.Z - vec.Z).CloseToZero());
-            Assert.IsTrue((vec2.W - vec.W).CloseToZero());
+            Assert.That((matrix * matrix * matrix).SimilarTo(matrix));
+            Assert.That((vec2.X - vec.X).CloseToZero());
+            Assert.That((vec2.Y - vec.Y).CloseToZero());
+            Assert.That((vec2.Z - vec.Z).CloseToZero());
+            Assert.That((vec2.W - vec.W).CloseToZero());
         }
         [Test]
         public void Inverse()
@@ -34,7 +34,7 @@ namespace Pancake.ManagedGeometry.Tests.Matrix44Test
                 (-4.0, 59.0 /  26, 125.0 / 26, -(93.0 / 26)), 
                 (7.0 / 2, -2.0, -4.0, 3.0));
 
-            Assert.IsTrue(matrix.Inverse().SimilarTo(matrix2));
+            Assert.That(matrix.Inverse().SimilarTo(matrix2));
         }
         [Test]
         public void InverseUnavailable()
@@ -43,7 +43,7 @@ namespace Pancake.ManagedGeometry.Tests.Matrix44Test
             var matrix = Matrix44.CreateByRowArray(array);
 
             Assert.Throws<InvalidOperationException>(() => matrix.Inverse());
-            Assert.IsFalse(matrix.TryGetInverse(out _));
+            Assert.That(!matrix.TryGetInverse(out _));
         }
         [Test]
         public void Determinant()
@@ -51,7 +51,7 @@ namespace Pancake.ManagedGeometry.Tests.Matrix44Test
             var array = Enumerable.Range(1, 16).Select(i => (i % 3 + i % 5) + 0.0).ToArray();
             var matrix = Matrix44.CreateByRowArray(array);
 
-            Assert.IsTrue((matrix.Determinant() - 144.0).CloseToZero());
+            Assert.That((matrix.Determinant() - 144.0).CloseToZero());
         }
     }
 }

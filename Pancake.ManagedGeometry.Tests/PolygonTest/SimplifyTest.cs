@@ -23,10 +23,10 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
                 (1,0)
             });
 
-            Assert.IsTrue(ply.TrySimplify(out var newPly));
-            Assert.AreEqual(newPly.VertexCount, 4);
-            Assert.AreEqual(newPly.CalculateArea(), 1, 1e-9);
-            Assert.AreEqual(newPly.CalculatePerimeter(), 4, 1e-9);
+            Assert.That(ply.TrySimplify(out var newPly));
+            Utility.AssertEquals(newPly.VertexCount, 4);
+            Utility.AssertEquals(newPly.CalculateArea(), 1, 1e-9);
+            Utility.AssertEquals(newPly.CalculatePerimeter(), 4, 1e-9);
         }
 
         [Test]
@@ -44,10 +44,10 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
                 (0,1)
             });
 
-            Assert.IsTrue(ply.TrySimplify(out newPly));
-            Assert.AreEqual(newPly.VertexCount, 4);
-            Assert.AreEqual(newPly.CalculateArea(), 1, 1e-9);
-            Assert.AreEqual(newPly.CalculatePerimeter(), 4, 1e-9);
+            Assert.That(ply.TrySimplify(out newPly));
+            Utility.AssertEquals(newPly.VertexCount, 4);
+            Utility.AssertEquals(newPly.CalculateArea(), 1, 1e-9);
+            Utility.AssertEquals(newPly.CalculatePerimeter(), 4, 1e-9);
 
             ply = Polygon.CreateByRef(new Coord2d[] {
                 (0.2,1),
@@ -59,10 +59,10 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
                 (0.1,1)
             });
 
-            Assert.IsTrue(ply.TrySimplify(out newPly));
-            Assert.AreEqual(newPly.VertexCount, 4);
-            Assert.AreEqual(newPly.CalculateArea(), 1, 1e-9);
-            Assert.AreEqual(newPly.CalculatePerimeter(), 4, 1e-9);
+            Assert.That(ply.TrySimplify(out newPly));
+            Utility.AssertEquals(newPly.VertexCount, 4);
+            Utility.AssertEquals(newPly.CalculateArea(), 1, 1e-9);
+            Utility.AssertEquals(newPly.CalculatePerimeter(), 4, 1e-9);
 
             ply = Polygon.CreateByRef(new Coord2d[] {
                 (0.3,1),
@@ -74,10 +74,10 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
                 (0.2,1),
             });
 
-            Assert.IsTrue(ply.TrySimplify(out newPly));
-            Assert.AreEqual(newPly.VertexCount, 4);
-            Assert.AreEqual(newPly.CalculateArea(), 1, 1e-9);
-            Assert.AreEqual(newPly.CalculatePerimeter(), 4, 1e-9);
+            Assert.That(ply.TrySimplify(out newPly));
+            Utility.AssertEquals(newPly.VertexCount, 4);
+            Utility.AssertEquals(newPly.CalculateArea(), 1, 1e-9);
+            Utility.AssertEquals(newPly.CalculatePerimeter(), 4, 1e-9);
         }
 
         [Test]
@@ -103,8 +103,8 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
                 (0, 1)
                 );
 
-            Assert.IsFalse(ply.TrySimplify(out var ply2));
-            Assert.AreSame(ply, ply2);
+            Assert.That(!ply.TrySimplify(out var ply2));
+            Assert.That(ply.InternalVerticeArray, Is.SameAs(ply2.InternalVerticeArray));
         }
 
         [Test]
@@ -124,9 +124,9 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
                 (0, 0)
                 );
 
-            Assert.IsTrue(ply.TrySimplify(out var ply2));
-            Assert.AreEqual(3, ply2.VertexCount);
-            Assert.AreEqual(0.5, ply2.CalculateArea(), 0.0001);
+            Assert.That(ply.TrySimplify(out var ply2));
+            Utility.AssertEquals(3, ply2.VertexCount);
+            Utility.AssertEquals(0.5, ply2.CalculateArea(), 0.0001);
         }
         /// <summary>
         /// Previously simplification tolerance is not supported, which causes issue in MajorRectangleSolver
@@ -147,9 +147,9 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
                 (-37.729658808750528, -5.5675538182192277),
                 (-37.729658808750521, 1.6404199350376896));
 
-            Assert.IsTrue(ply.TrySimplify(out var ply2, tolerance));
-            Assert.AreEqual(ply2.VertexCount, 6);
-            Assert.AreEqual(ply2.CalculateArea(), 198.5403, 0.0001);
+            Assert.That(ply.TrySimplify(out var ply2, tolerance));
+            Utility.AssertEquals(ply2.VertexCount, 6);
+            Utility.AssertEquals(ply2.CalculateArea(), 198.5403, 0.0001);
         }
     }
 }

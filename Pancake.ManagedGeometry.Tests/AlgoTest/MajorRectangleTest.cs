@@ -25,11 +25,11 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
 
             var solver = new MajorRectangleSolver();
 
-            Assert.IsTrue(solver.TryGreedyLookup(ply, out var rect));
-            Assert.AreEqual(rect.MinX, 0);
-            Assert.AreEqual(rect.MinY, 0);
-            Assert.AreEqual(rect.MaxX, 5);
-            Assert.AreEqual(rect.MaxY, 5);
+            Assert.That(solver.TryGreedyLookup(ply, out var rect));
+            Utility.AssertEquals(rect.MinX, 0);
+            Utility.AssertEquals(rect.MinY, 0);
+            Utility.AssertEquals(rect.MaxX, 5);
+            Utility.AssertEquals(rect.MaxY, 5);
         }
 
         [Test]
@@ -49,15 +49,15 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
 
             solver.MaximalAcceptableLength = 3;
 
-            Assert.IsTrue(solver.TryGreedyLookup(ply, out var rect));
-            Assert.AreEqual(rect.MinX, 4);
-            Assert.AreEqual(rect.MinY, 5);
-            Assert.AreEqual(rect.MaxX, 5);
-            Assert.AreEqual(rect.MaxY, 7);
+            Assert.That(solver.TryGreedyLookup(ply, out var rect));
+            Utility.AssertEquals(rect.MinX, 4);
+            Utility.AssertEquals(rect.MinY, 5);
+            Utility.AssertEquals(rect.MaxX, 5);
+            Utility.AssertEquals(rect.MaxY, 7);
 
             solver.MinimalAcceptableLength = 1.5;
 
-            Assert.IsFalse(solver.TryGreedyLookup(ply, out _));
+            Assert.That(!solver.TryGreedyLookup(ply, out _));
         }
         [Test]
         public void Bug20220708()
@@ -77,9 +77,9 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
 
             var solver = new MajorRectangleSolver { OrthoTolerance = tolerance };
 
-            Assert.IsTrue(solver.TryGreedyLookup(ply, out var rect));
-            Assert.AreEqual(12.4672, rect.SpanX, 0.0001);
-            Assert.AreEqual(12.7953, rect.SpanY, 0.0001);
+            Assert.That(solver.TryGreedyLookup(ply, out var rect));
+            Utility.AssertEquals(12.4672, rect.SpanX, 0.0001);
+            Utility.AssertEquals(12.7953, rect.SpanY, 0.0001);
         }
     }
 }

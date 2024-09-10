@@ -21,7 +21,7 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
                 (0, 1)
                 );
 
-            Assert.AreEqual(ply.CalculateDirection(), ClockwiseDirection.CounterClockwise);
+            Utility.AssertEquals(ply.CalculateDirection(), ClockwiseDirection.CounterClockwise);
 
             ply = Polygon.CreateByCoords(
                 (0, 0),
@@ -30,7 +30,7 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
                 (1, 0)
                 );
 
-            Assert.AreEqual(ply.CalculateDirection(), ClockwiseDirection.Clockwise);
+            Utility.AssertEquals(ply.CalculateDirection(), ClockwiseDirection.Clockwise);
         }
     }
 }

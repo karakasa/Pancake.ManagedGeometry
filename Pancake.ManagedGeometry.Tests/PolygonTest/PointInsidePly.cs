@@ -30,14 +30,14 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
             (0,2)
             });
 
-            Assert.AreEqual(PointInsidePolygon.Contains(hole1, (0.75, 0.75)), PointInsidePolygon.PointContainment.Outside);
-            Assert.AreEqual(PointInsidePolygon.Contains(hole1, (1.3, 0.75)), PointInsidePolygon.PointContainment.Coincident);
-            Assert.AreEqual(PointInsidePolygon.Contains(hole1, (3, 0.75)), PointInsidePolygon.PointContainment.Outside);
+            Utility.AssertEquals(PointInsidePolygon.Contains(hole1, (0.75, 0.75)), PointInsidePolygon.PointContainment.Outside);
+            Utility.AssertEquals(PointInsidePolygon.Contains(hole1, (1.3, 0.75)), PointInsidePolygon.PointContainment.Coincident);
+            Utility.AssertEquals(PointInsidePolygon.Contains(hole1, (3, 0.75)), PointInsidePolygon.PointContainment.Outside);
 
-            Assert.AreEqual(PointInsidePolygon.Contains(ply, (-1, 1)), PointInsidePolygon.PointContainment.Outside);
-            Assert.AreEqual(PointInsidePolygon.Contains(ply, (0.5, 1)), PointInsidePolygon.PointContainment.Inside);
-            Assert.AreEqual(PointInsidePolygon.Contains(ply, (1.5, 1)), PointInsidePolygon.PointContainment.Coincident);
-            Assert.AreEqual(PointInsidePolygon.Contains(ply, (3, 1)), PointInsidePolygon.PointContainment.Outside);
+            Utility.AssertEquals(PointInsidePolygon.Contains(ply, (-1, 1)), PointInsidePolygon.PointContainment.Outside);
+            Utility.AssertEquals(PointInsidePolygon.Contains(ply, (0.5, 1)), PointInsidePolygon.PointContainment.Inside);
+            Utility.AssertEquals(PointInsidePolygon.Contains(ply, (1.5, 1)), PointInsidePolygon.PointContainment.Coincident);
+            Utility.AssertEquals(PointInsidePolygon.Contains(ply, (3, 1)), PointInsidePolygon.PointContainment.Outside);
         }
         [Test]
         public void Bug20220728()
@@ -51,7 +51,7 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
 
             var testPt = new Coord2d(-50.1968503936883, 1.6404199350379609);
 
-            Assert.IsFalse(ply.Contains(testPt));
+            Assert.That(!ply.Contains(testPt));
         }
 
         [Test]
@@ -74,12 +74,12 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
             (0,2)
             });
 
-                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(hole1, (0.75, 0.75)), false);
-                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(hole1, (3, 0.75)), false);
+                Utility.AssertEquals(PointInsidePolygon.ContainsWindingNumberMethod(hole1, (0.75, 0.75)), false);
+                Utility.AssertEquals(PointInsidePolygon.ContainsWindingNumberMethod(hole1, (3, 0.75)), false);
 
-                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(ply, (-1, 1)), false);
-                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(ply, (0.5, 1)), true);
-                Assert.AreEqual(PointInsidePolygon.ContainsWindingNumberMethod(ply, (3, 1)), false);
+                Utility.AssertEquals(PointInsidePolygon.ContainsWindingNumberMethod(ply, (-1, 1)), false);
+                Utility.AssertEquals(PointInsidePolygon.ContainsWindingNumberMethod(ply, (0.5, 1)), true);
+                Utility.AssertEquals(PointInsidePolygon.ContainsWindingNumberMethod(ply, (3, 1)), false);
 
             }
 
@@ -93,7 +93,7 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
 
                 var testPt = new Coord2d(-50.1968503936883, 1.6404199350379609);
 
-                Assert.IsFalse(PointInsidePolygon.ContainsWindingNumberMethod(ply, testPt));
+                Assert.That(!PointInsidePolygon.ContainsWindingNumberMethod(ply, testPt));
             }
         }
     }

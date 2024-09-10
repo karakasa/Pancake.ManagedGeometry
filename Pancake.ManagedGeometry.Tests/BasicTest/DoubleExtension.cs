@@ -13,16 +13,16 @@ namespace Pancake.ManagedGeometry.Tests.BasicTest
         [Test]
         public void DoubleValidity()
         {
-            Assert.IsFalse(double.PositiveInfinity.IsFinite());
-            Assert.IsFalse(double.NegativeInfinity.IsFinite());
-            Assert.IsFalse(double.NaN.IsFinite());
+            Assert.That(!double.PositiveInfinity.IsFinite());
+            Assert.That(!double.NegativeInfinity.IsFinite());
+            Assert.That(!double.NaN.IsFinite());
 
-            Assert.IsTrue(double.MaxValue.IsFinite());
-            Assert.IsTrue(double.MinValue.IsFinite());
-            Assert.IsTrue(double.Epsilon.IsFinite());
-            Assert.IsTrue(0.0.IsFinite());
-            Assert.IsTrue(123456.456.IsFinite());
-            Assert.IsTrue((-123456.456).IsFinite());
+            Assert.That(double.MaxValue.IsFinite());
+            Assert.That(double.MinValue.IsFinite());
+            Assert.That(double.Epsilon.IsFinite());
+            Assert.That(0.0.IsFinite());
+            Assert.That(123456.456.IsFinite());
+            Assert.That((-123456.456).IsFinite());
         }
     }
 }

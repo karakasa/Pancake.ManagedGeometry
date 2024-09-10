@@ -15,8 +15,8 @@ namespace Pancake.ManagedGeometry.Tests.Line2dTest
             var a = new Line2d((11538.83910841442, 6687.1407661178728), (11538.83910841442, 6687.1407661410976));
             var b = new Line2d((10638.83910840534, 2687.1407661692119), (13738.83910840534, 2687.1407661692119));
 
-            Assert.IsFalse(a.IsValid());
-            Assert.IsTrue(b.IsValid());
+            Assert.That(!a.IsValid());
+            Assert.That(b.IsValid());
         }
     }
 }

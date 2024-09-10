@@ -27,7 +27,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
         {
             var set = GetBaseSet();
             set.Compact();
-            Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+            Utility.AssertEquals(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
         }
         [Test]
         public void SubtractTest()
@@ -42,7 +42,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.SubtractBy((1, 2));
                 set.Compact();
 
-                Assert.AreEqual(0, set.Count);
+                Utility.AssertEquals(0, set.Count);
             }
 
             {
@@ -51,7 +51,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.SubtractBy((0, 2));
                 set.Compact();
 
-                Assert.AreEqual(0, set.Count);
+                Utility.AssertEquals(0, set.Count);
             }
 
             {
@@ -60,7 +60,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.SubtractBy((1, 3));
                 set.Compact();
 
-                Assert.AreEqual(0, set.Count);
+                Utility.AssertEquals(0, set.Count);
             }
 
             {
@@ -69,7 +69,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.SubtractBy((0, 3));
                 set.Compact();
 
-                Assert.AreEqual(0, set.Count);
+                Utility.AssertEquals(0, set.Count);
             }
 
             {
@@ -78,7 +78,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.SubtractBy((3, 4));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -87,7 +87,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.SubtractBy((2, 3));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -96,7 +96,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.SubtractBy((0, 1));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -105,7 +105,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.SubtractBy((-1, 0));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -114,7 +114,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.SubtractBy((1.5, 1.6));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 1.5), (1.6, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 1.5), (1.6, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -123,7 +123,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.SubtractBy((1, 1.4));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1.4, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1.4, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -132,7 +132,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.SubtractBy((0, 1.4));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1.4, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1.4, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -141,7 +141,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.SubtractBy((1.6, 2));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 1.6) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 1.6) }, set.Intervals.ToArray());
             }
 
             {
@@ -150,7 +150,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.SubtractBy((1.6, 3));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 1.6) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 1.6) }, set.Intervals.ToArray());
             }
         }
 
@@ -168,7 +168,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
 
                 // BUG
 
-                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -177,7 +177,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((0, 2));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -186,7 +186,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((1, 3));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -195,7 +195,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((0, 3));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -204,7 +204,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((3, 4));
                 set.Compact();
 
-                Assert.AreEqual(0, set.Count);
+                Utility.AssertEquals(0, set.Count);
             }
 
             {
@@ -213,7 +213,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((2, 3));
                 set.Compact();
 
-                Assert.AreEqual(0, set.Count);
+                Utility.AssertEquals(0, set.Count);
             }
 
             {
@@ -222,7 +222,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((0, 1));
                 set.Compact();
 
-                Assert.AreEqual(0, set.Count);
+                Utility.AssertEquals(0, set.Count);
             }
 
             {
@@ -231,7 +231,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((-1, 0));
                 set.Compact();
 
-                Assert.AreEqual(0, set.Count);
+                Utility.AssertEquals(0, set.Count);
             }
 
             {
@@ -240,7 +240,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((1.5, 1.6));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1.5, 1.6) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1.5, 1.6) }, set.Intervals.ToArray());
             }
 
             {
@@ -249,12 +249,12 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((1, 1.4));
                 set.Compact();
 
-                Assert.AreEqual(1, set.Count);
+                Utility.AssertEquals(1, set.Count);
 
                 var iv = set.Intervals.First();
 
-                Assert.AreEqual(1, iv.From, 1e-7);
-                Assert.AreEqual(1.4, iv.To, 1e-7);
+                Utility.AssertEquals(1, iv.From, 1e-7);
+                Utility.AssertEquals(1.4, iv.To, 1e-7);
             }
 
             {
@@ -263,12 +263,12 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((0, 1.4));
                 set.Compact();
 
-                Assert.AreEqual(1, set.Count);
+                Utility.AssertEquals(1, set.Count);
 
                 var iv = set.Intervals.First();
 
-                Assert.AreEqual(1, iv.From, 1e-7);
-                Assert.AreEqual(1.4, iv.To, 1e-7);
+                Utility.AssertEquals(1, iv.From, 1e-7);
+                Utility.AssertEquals(1.4, iv.To, 1e-7);
             }
 
             {
@@ -277,12 +277,12 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((1.6, 2));
                 set.Compact();
 
-                Assert.AreEqual(1, set.Count);
+                Utility.AssertEquals(1, set.Count);
 
                 var iv = set.Intervals.First();
 
-                Assert.AreEqual(1.6, iv.From, 1e-7);
-                Assert.AreEqual(2, iv.To, 1e-7);
+                Utility.AssertEquals(1.6, iv.From, 1e-7);
+                Utility.AssertEquals(2, iv.To, 1e-7);
             }
 
             {
@@ -291,12 +291,12 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.IntersectWith((1.6, 3));
                 set.Compact();
 
-                Assert.AreEqual(1, set.Count);
+                Utility.AssertEquals(1, set.Count);
 
                 var iv = set.Intervals.First();
 
-                Assert.AreEqual(1.6, iv.From, 1e-7);
-                Assert.AreEqual(2, iv.To, 1e-7);
+                Utility.AssertEquals(1.6, iv.From, 1e-7);
+                Utility.AssertEquals(2, iv.To, 1e-7);
             }
         }
         [Test]
@@ -311,7 +311,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.UnionWith((1, 2));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -320,7 +320,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.UnionWith((0, 2));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (0, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (0, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -329,7 +329,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.UnionWith((1, 3));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 3) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 3) }, set.Intervals.ToArray());
             }
 
             {
@@ -338,7 +338,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.UnionWith((0, 3));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (0, 3) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (0, 3) }, set.Intervals.ToArray());
             }
 
             {
@@ -347,7 +347,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.UnionWith((3, 4));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 2), (3, 4) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 2), (3, 4) }, set.Intervals.ToArray());
             }
 
             {
@@ -356,7 +356,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.UnionWith((2, 3));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 3) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 3) }, set.Intervals.ToArray());
             }
 
             {
@@ -365,7 +365,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.UnionWith((0, 1));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (0, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (0, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -374,7 +374,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.UnionWith((-1, 0));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (-1, 0), (1, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (-1, 0), (1, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -383,7 +383,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.UnionWith((1.5, 1.6));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -392,7 +392,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.UnionWith((1, 1.4));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -401,7 +401,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.UnionWith((0, 1.4));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (0, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (0, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -410,7 +410,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.UnionWith((1.6, 2));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 2) }, set.Intervals.ToArray());
             }
 
             {
@@ -419,7 +419,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
                 set.UnionWith((1.6, 3));
                 set.Compact();
 
-                Assert.AreEqual(new Interval1d[] { (1, 3) }, set.Intervals.ToArray());
+                Utility.AssertEquals(new Interval1d[] { (1, 3) }, set.Intervals.ToArray());
             }
         }
     }

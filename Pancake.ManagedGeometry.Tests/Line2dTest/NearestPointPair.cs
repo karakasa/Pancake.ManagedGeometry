@@ -19,11 +19,11 @@ namespace Pancake.ManagedGeometry.Tests.Line2dTest
 
             var dist = l1.NearestPtToAnotherLine(l2, out var pt1, out var pt2);
 
-            Assert.IsTrue((dist - 2).CloseToZero());
-            Assert.IsTrue((pt1 - (0, 1)).Length.CloseToZero());
-            Assert.IsTrue((pt2 - (2, 1)).Length.CloseToZero());
-            Assert.IsTrue(l1.IsOnLine(pt1));
-            Assert.IsTrue(l2.IsOnLine(pt2));
+            Assert.That((dist - 2).CloseToZero());
+            Assert.That((pt1 - (0, 1)).Length.CloseToZero());
+            Assert.That((pt2 - (2, 1)).Length.CloseToZero());
+            Assert.That(l1.IsOnLine(pt1));
+            Assert.That(l2.IsOnLine(pt2));
         }
 
         [Test]
@@ -33,11 +33,11 @@ namespace Pancake.ManagedGeometry.Tests.Line2dTest
             var l2 = new Line2d((-2, 0), (4, 7));
 
             var dist = l1.NearestPtToAnotherLine(l2, out var pt1, out var pt2);
-            Assert.IsTrue((dist - 8 / Math.Sqrt(85)).CloseToZero());
-            Assert.IsTrue((pt1 - (0, 1)).Length.CloseToZero());
-            Assert.IsTrue((pt2 - (-56.0 / 85, 133.0 / 85)).Length.CloseToZero());
-            Assert.IsTrue(l1.IsOnLine(pt1));
-            Assert.IsTrue(l2.IsOnLine(pt2));
+            Assert.That((dist - 8 / Math.Sqrt(85)).CloseToZero());
+            Assert.That((pt1 - (0, 1)).Length.CloseToZero());
+            Assert.That((pt2 - (-56.0 / 85, 133.0 / 85)).Length.CloseToZero());
+            Assert.That(l1.IsOnLine(pt1));
+            Assert.That(l2.IsOnLine(pt2));
         }
 
         [Test]
@@ -48,11 +48,11 @@ namespace Pancake.ManagedGeometry.Tests.Line2dTest
 
             var dist = l1.NearestPtToAnotherLine(l2, out var pt1, out var pt2);
 
-            Assert.IsTrue((dist).CloseToZero());
-            Assert.IsTrue((pt1 - (1, 1)).Length.CloseToZero());
-            Assert.IsTrue((pt2 - (1, 1)).Length.CloseToZero());
-            Assert.IsTrue(l1.IsOnLine(pt1));
-            Assert.IsTrue(l2.IsOnLine(pt2));
+            Assert.That((dist).CloseToZero());
+            Assert.That((pt1 - (1, 1)).Length.CloseToZero());
+            Assert.That((pt2 - (1, 1)).Length.CloseToZero());
+            Assert.That(l1.IsOnLine(pt1));
+            Assert.That(l2.IsOnLine(pt2));
         }
         [Test]
         public void Parallel()
@@ -64,10 +64,10 @@ namespace Pancake.ManagedGeometry.Tests.Line2dTest
 
             double ExpectedLength = 1 / Math.Sqrt(2);
 
-            Assert.IsTrue((dist - ExpectedLength).CloseToZero());
-            Assert.IsTrue(((pt1 - pt2).Length - ExpectedLength).CloseToZero());
-            Assert.IsTrue(l1.IsOnLine(pt1));
-            Assert.IsTrue(l2.IsOnLine(pt2));
+            Assert.That((dist - ExpectedLength).CloseToZero());
+            Assert.That(((pt1 - pt2).Length - ExpectedLength).CloseToZero());
+            Assert.That(l1.IsOnLine(pt1));
+            Assert.That(l2.IsOnLine(pt2));
         }
         [Test]
         public void Colinear()
@@ -79,10 +79,10 @@ namespace Pancake.ManagedGeometry.Tests.Line2dTest
 
             double ExpectedLength = 0;
 
-            Assert.IsTrue((dist - ExpectedLength).CloseToZero());
-            Assert.IsTrue(((pt1 - pt2).Length - ExpectedLength).CloseToZero());
-            Assert.IsTrue(l1.IsOnLine(pt1));
-            Assert.IsTrue(l2.IsOnLine(pt2));
+            Assert.That((dist - ExpectedLength).CloseToZero());
+            Assert.That(((pt1 - pt2).Length - ExpectedLength).CloseToZero());
+            Assert.That(l1.IsOnLine(pt1));
+            Assert.That(l2.IsOnLine(pt2));
         }
     }
 }

@@ -41,13 +41,13 @@ public class MergeCrv
         var crvs = array.Select(l => new CurveRepresentation(l.From, l.To)).ToArray();
         var result = CurveOperation.MergeCurves(crvs).ToArray();
 
-        Assert.AreEqual(result.Length, 3);
+        Utility.AssertEquals(result.Length, 3);
         var resultLength = result.Select(list => list.Sum(l => array[l.Index].Length))
             .OrderBy(s => s).ToArray();
 
-        Assert.AreEqual(169.596174, resultLength[0], 1e-4);
-        Assert.AreEqual(220.549678, resultLength[1], 1e-4);
-        Assert.AreEqual(270.78, resultLength[2], 1e-4);
+        Utility.AssertEquals(169.596174, resultLength[0], 1e-4);
+        Utility.AssertEquals(220.549678, resultLength[1], 1e-4);
+        Utility.AssertEquals(270.78, resultLength[2], 1e-4);
     }
 
     [Test]

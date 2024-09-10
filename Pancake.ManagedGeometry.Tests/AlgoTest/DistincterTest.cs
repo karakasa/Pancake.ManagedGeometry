@@ -20,7 +20,7 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
 
             var sorted2 = new ArraySegment<int>(intArray, 0, newIndex).ToArray();
 
-            Assert.AreEqual(sorted, sorted2);
+            Utility.AssertEquals(sorted, sorted2);
         }
     }
 }

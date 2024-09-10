@@ -17,10 +17,10 @@ namespace Pancake.ManagedGeometry.Tests.Matrix44Test
             var vec = new Vector4(1, 2, 3);
             var vec2 = matrix * vec;
 
-            Assert.IsTrue((vec2.X - 5).CloseToZero());
-            Assert.IsTrue((vec2.Y - 7).CloseToZero());
-            Assert.IsTrue((vec2.Z - 9).CloseToZero());
-            Assert.IsTrue((vec2.W - vec.W).CloseToZero());
+            Assert.That((vec2.X - 5).CloseToZero());
+            Assert.That((vec2.Y - 7).CloseToZero());
+            Assert.That((vec2.Z - 9).CloseToZero());
+            Assert.That((vec2.W - vec.W).CloseToZero());
         }
     }
 }

@@ -30,21 +30,21 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
 
             var calculated = merger.Calculate(lines).OrderBy(l2d => l2d.From.X).ToArray();
 
-            Assert.AreEqual(2, calculated.Length);
+            Utility.AssertEquals(2, calculated.Length);
 
-            Assert.IsTrue(calculated[0].AlmostEqualTo(((1, 1), (4, 4))));
-            Assert.IsTrue(calculated[1].AlmostEqualTo(((6, 6), (7, 7))));
+            Assert.That(calculated[0].AlmostEqualTo(((1, 1), (4, 4))));
+            Assert.That(calculated[1].AlmostEqualTo(((6, 6), (7, 7))));
 
             merger.SplitAtOriginalEndPoints = true;
 
             calculated = merger.Calculate(lines).OrderBy(l2d => l2d.From.X).ToArray();
 
-            Assert.AreEqual(4, calculated.Length);
+            Utility.AssertEquals(4, calculated.Length);
 
-            Assert.IsTrue(calculated[0].AlmostEqualTo(((1, 1), (2, 2))));
-            Assert.IsTrue(calculated[1].AlmostEqualTo(((2, 2), (3, 3))));
-            Assert.IsTrue(calculated[2].AlmostEqualTo(((3, 3), (4, 4))));
-            Assert.IsTrue(calculated[3].AlmostEqualTo(((6, 6), (7, 7))));
+            Assert.That(calculated[0].AlmostEqualTo(((1, 1), (2, 2))));
+            Assert.That(calculated[1].AlmostEqualTo(((2, 2), (3, 3))));
+            Assert.That(calculated[2].AlmostEqualTo(((3, 3), (4, 4))));
+            Assert.That(calculated[3].AlmostEqualTo(((6, 6), (7, 7))));
         }
         [Test]
         public void ToleranceTest()
@@ -63,8 +63,8 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
 
             var calculated = merger.Calculate(lines).OrderBy(l2d => l2d.From.Y).ToArray();
 
-            Assert.AreEqual(1, calculated.Length);
-            Assert.IsTrue(calculated[0].AlmostEqualTo(((0, 1), (0, 8))));
+            Utility.AssertEquals(1, calculated.Length);
+            Assert.That(calculated[0].AlmostEqualTo(((0, 1), (0, 8))));
         }
         [Test]
         public void LargeCoordinateTest()
@@ -90,8 +90,8 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
 
             var calculated = merger.Calculate(lines).OrderBy(l2d => l2d.From.Y).ToArray();
 
-            Assert.AreEqual(1, calculated.Length);
-            Assert.AreEqual(7, calculated[0].Length, 0.01);
+            Utility.AssertEquals(1, calculated.Length);
+            Utility.AssertEquals(7, calculated[0].Length, 0.01);
         }
         [Test]
         public void DuplicateRemoveTest()
@@ -106,15 +106,15 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
 
             var calculated = merger.Calculate(lines).ToArray();
 
-            Assert.AreEqual(1, calculated.Length);
-            Assert.IsTrue(calculated[0].AlmostEqualTo(((0, 1), (0, 5))));
+            Utility.AssertEquals(1, calculated.Length);
+            Assert.That(calculated[0].AlmostEqualTo(((0, 1), (0, 5))));
 
             merger.SplitAtOriginalEndPoints = true;
 
             calculated = merger.Calculate(lines).ToArray();
 
-            Assert.AreEqual(1, calculated.Length);
-            Assert.IsTrue(calculated[0].AlmostEqualTo(((0, 1), (0, 5))));
+            Utility.AssertEquals(1, calculated.Length);
+            Assert.That(calculated[0].AlmostEqualTo(((0, 1), (0, 5))));
         }
         [Test]
         public void DuplicateRemoveWithToleranceTest()
@@ -134,15 +134,15 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
 
             var calculated = merger.Calculate(lines).ToArray();
 
-            Assert.AreEqual(1, calculated.Length);
-            Assert.IsTrue(calculated[0].AlmostEqualTo(((0, 1), (0, 5)), TOLERANCE));
+            Utility.AssertEquals(1, calculated.Length);
+            Assert.That(calculated[0].AlmostEqualTo(((0, 1), (0, 5)), TOLERANCE));
 
             merger.SplitAtOriginalEndPoints = true;
 
             calculated = merger.Calculate(lines).ToArray();
 
-            Assert.AreEqual(1, calculated.Length);
-            Assert.IsTrue(calculated[0].AlmostEqualTo(((0, 1), (0, 5)), TOLERANCE));
+            Utility.AssertEquals(1, calculated.Length);
+            Assert.That(calculated[0].AlmostEqualTo(((0, 1), (0, 5)), TOLERANCE));
         }
         [Test]
         public void DuplicateRemoveWithToleranceAndLargeCoordTest()
@@ -168,15 +168,15 @@ namespace Pancake.ManagedGeometry.Tests.AlgoTest
 
             var calculated = merger.Calculate(lines).ToArray();
 
-            Assert.AreEqual(1, calculated.Length);
-            Assert.IsTrue(calculated[0].AlmostEqualTo(((0, 1 + VERY_LARGE_COORDINATE), (0, 5 + VERY_LARGE_COORDINATE)), TOLERANCE));
+            Utility.AssertEquals(1, calculated.Length);
+            Assert.That(calculated[0].AlmostEqualTo(((0, 1 + VERY_LARGE_COORDINATE), (0, 5 + VERY_LARGE_COORDINATE)), TOLERANCE));
 
             merger.SplitAtOriginalEndPoints = true;
 
             calculated = merger.Calculate(lines).ToArray();
 
-            Assert.AreEqual(1, calculated.Length);
-            Assert.IsTrue(calculated[0].AlmostEqualTo(((0, 1 + VERY_LARGE_COORDINATE), (0, 5 + VERY_LARGE_COORDINATE)), TOLERANCE));
+            Utility.AssertEquals(1, calculated.Length);
+            Assert.That(calculated[0].AlmostEqualTo(((0, 1 + VERY_LARGE_COORDINATE), (0, 5 + VERY_LARGE_COORDINATE)), TOLERANCE));
         }
     }
 }
