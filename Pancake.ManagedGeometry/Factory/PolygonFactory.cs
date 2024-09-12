@@ -29,9 +29,9 @@ namespace Pancake.ManagedGeometry.Factory
             return RegularCircumscribed(side, radius, basePt, baseAngle);
         }
 
-        public const int DEFAULT_CIRCLE_DIVISION = 64;
-        public const int MINIMAL_CIRCLE_DIVISION = 6;
-        public static Polygon TessellatedCircle(double radius, int division = DEFAULT_CIRCLE_DIVISION,
+        public const int DefaultCircleDivision = 64;
+        public const int MinimalCircleDivision = 6;
+        public static Polygon TessellatedCircle(double radius, int division = DefaultCircleDivision,
             Coord2d basePt = default)
         {
             return RegularCircumscribed(division, radius, basePt);
@@ -44,12 +44,12 @@ namespace Pancake.ManagedGeometry.Factory
                 // Error is larger compared to the radius.
                 // Happens with fixed error and ultra-small radius.
                 // Use the default tesslation to avoid underflow.
-                return TessellatedCircle(radius, MINIMAL_CIRCLE_DIVISION, basePt);
+                return TessellatedCircle(radius, MinimalCircleDivision, basePt);
 
             delta = Math.Ceiling(Math.PI / delta);
 
-            var division = (delta < MINIMAL_CIRCLE_DIVISION)
-                ? MINIMAL_CIRCLE_DIVISION
+            var division = (delta < MinimalCircleDivision)
+                ? MinimalCircleDivision
                 : (int)delta;
 
             return RegularCircumscribed(division, radius, basePt);

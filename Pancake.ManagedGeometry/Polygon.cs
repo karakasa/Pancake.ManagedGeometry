@@ -250,6 +250,11 @@ public readonly struct Polygon : ICloneable, IPolygon
         return ContainsAllPoint(another) && !IntersectWith(another);
     }
 
+    public bool Contains<TPolygon>(TPolygon another) where TPolygon : IPolygon
+    {
+        return PolygonUtilities.Contains(this, another);
+    }
+
     public bool Contains(Line2d line)
     {
         var lineSideSolver = new LineInsidePolygon();
