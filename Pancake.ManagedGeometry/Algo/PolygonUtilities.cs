@@ -256,4 +256,54 @@ public static class PolygonUtilities
         ply.CopyVerticesTo(vertices, 0);
         return Polygon.CreateByRef(vertices);
     }
+    private static bool IsZeroOrOne(this double value, double eps)
+    {
+        return Math.Abs(value) < eps || Math.Abs(value - 1) < eps;
+    }
+    public static bool EdgeIntersectWith<TPolygon1, TPolygon2>(this TPolygon1 ply, TPolygon2 another,
+        bool allowColinear = false, double absoluteTolerance = MathUtils.ZeroTolerance)
+        where TPolygon1 : IPolygon
+        where TPolygon2 : IPolygon
+    {
+        if (allowColinear)
+        {
+            for (var i = 0; i < ply.VertexCount; i++)
+            {
+                var edgeA = ply.EdgeAt(i);
+                for (var j = 0; j < another.VertexCount; j++)
+                {
+                    var edgeB = another.EdgeAt(j);
+                    var relation = edgeA.IntersectWith(edgeB, out var ta, out var tb);
+                    switch (relation)
+                    {
+                        case LineRelation.Collinear:
+                        case LineRelation.Intersected:
+                            return true;
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (var i = 0; i < ply.VertexCount; i++)
+            {
+                var edgeA = ply.EdgeAt(i);
+                for (var j = 0; j < another.VertexCount; j++)
+                {
+                    var edgeB = another.EdgeAt(j);
+                    var relation = edgeA.IntersectWith(edgeB, out var ta, out var tb);
+                    switch (relation)
+                    {
+                        case LineRelation.Intersected:
+                            if (IsZeroOrOne(ta, absoluteTolerance / edgeA.Length)
+                                || IsZeroOrOne(tb, absoluteTolerance / edgeB.Length))
+                                continue;
+                            return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 }

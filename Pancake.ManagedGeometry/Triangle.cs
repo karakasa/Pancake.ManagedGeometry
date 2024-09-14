@@ -20,10 +20,6 @@ public readonly struct Triangle(Coord2d a, Coord2d b, Coord2d c) : IPolygon, IEn
         _ => ThrowOutOfRange<Coord2d>()
     };
 
-    IEnumerable<Line2d> IPolygon.Edges => [EdgeAt(0), EdgeAt(1), EdgeAt(2)];
-
-    IEnumerable<Coord2d> IPolygon.Vertices => [Vertex0, Vertex1, Vertex2];
-
     public struct VerticesEnumerator(Triangle qd) : IEnumerator<Coord2d>
     {
         private readonly Triangle _qd = qd;

@@ -21,11 +21,6 @@ public readonly struct Quadrilateral(Coord2d a, Coord2d b, Coord2d c, Coord2d d)
         3 => Vertex3,
         _ => ThrowOutOfRange<Coord2d>()
     };
-
-    IEnumerable<Line2d> IPolygon.Edges => [EdgeAt(0), EdgeAt(1), EdgeAt(2), EdgeAt(3)];
-
-    IEnumerable<Coord2d> IPolygon.Vertices => [Vertex0, Vertex1, Vertex2, Vertex3];
-
     public struct VerticesEnumerator(Quadrilateral qd) : IEnumerator<Coord2d>
     {
         private readonly Quadrilateral _qd = qd;

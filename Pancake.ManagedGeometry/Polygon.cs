@@ -420,9 +420,6 @@ public readonly struct Polygon : ICloneable, IPolygon
         }
     }
 
-    IEnumerable<Line2d> IPolygon.Edges => BasedEnumerable.Create<Line2d, PolygonEdgeEnumeratorBoxed>(new(this));
-    IEnumerable<Coord2d> IPolygon.Vertices => InternalVerticeArray;
-
     public PolygonEdgeEnumerable Edges => new(this);
     public Coord2d this[int index] => InternalVerticeArray[index];
 
