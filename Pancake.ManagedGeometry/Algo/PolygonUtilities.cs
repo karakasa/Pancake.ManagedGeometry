@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Pancake.ManagedGeometry.Algo;
 
@@ -109,7 +110,7 @@ public static class PolygonUtilities
         where TPolygon1 : IPolygon
         where TPolygon2 : IPolygon
     {
-        return ply.ContainsAllPoint(another) && !ply.IntersectWith(another);
+        return ply.ContainsAllPoint(another) && !ply.EdgeIntersectWith(another);
     }
 
     public static bool DoesSelfIntersect<TPolygon>(this TPolygon ply)
@@ -165,40 +166,6 @@ public static class PolygonUtilities
         return -1;
     }
 
-    public static bool IntersectWith<TPolygon1, TPolygon2>(this TPolygon1 ply, TPolygon2 another, bool strict = false)
-        where TPolygon1 : IPolygon
-        where TPolygon2 : IPolygon
-    {
-        if (strict)
-        {
-            for (var i = 0; i < ply.VertexCount; i++)
-                for (var j = 0; j < another.VertexCount; j++)
-                {
-                    var ea = ply.EdgeAt(i);
-                    var eb = ply.EdgeAt(j);
-
-                    var rel = ea.DoesIntersectWith(eb);
-                    if (rel is LineRelation.Intersected) return true;
-                }
-
-            return false;
-        }
-        else
-        {
-            for (var i = 0; i < ply.VertexCount; i++)
-                for (var j = 0; j < another.VertexCount; j++)
-                {
-                    var ea = ply.EdgeAt(i);
-                    var eb = ply.EdgeAt(j);
-
-                    var rel = ea.DoesIntersectWith(eb);
-                    if (rel is LineRelation.Intersected or LineRelation.Collinear) return true;
-                }
-
-            return false;
-        }
-    }
-
     public static bool ContainsAllPoint<TPolygon1, TPolygon2>(this TPolygon1 ply, TPolygon2 another)
         where TPolygon1 : IPolygon
         where TPolygon2 : IPolygon
@@ -212,7 +179,7 @@ public static class PolygonUtilities
         where TPolygon1 : IPolygon
         where TPolygon2 : IPolygon
     {
-        if (ply.IntersectWith(another)) return PolygonRelation.Intersected;
+        if (ply.EdgeIntersectWith(another)) return PolygonRelation.Intersected;
         if (ply.ContainsAllPoint(another)) return PolygonRelation.ContainsAnother;
         if (another.ContainsAllPoint(ply)) return PolygonRelation.InsideAnother;
         return PolygonRelation.OutsideAnother;
@@ -260,50 +227,88 @@ public static class PolygonUtilities
     {
         return Math.Abs(value) < eps || Math.Abs(value - 1) < eps;
     }
-    public static bool EdgeIntersectWith<TPolygon1, TPolygon2>(this TPolygon1 ply, TPolygon2 another,
+    public static bool EdgeIntersectWith<TPolygon1, TPolygon2>(this TPolygon1 ply, in TPolygon2 another,
+#if NET7_0_OR_GREATER
+        [ConstantExpected]
+#endif
+        bool allowColinear = false, double absoluteTolerance = MathUtils.ZeroTolerance)
+        where TPolygon1 : IPolygon
+        where TPolygon2 : IPolygon
+    {
+        return EdgeIntersectWith(ply, another, out _, out _, allowColinear, absoluteTolerance);
+    }
+    public static bool EdgeIntersectWith<TPolygon1, TPolygon2>(this TPolygon1 ply, in TPolygon2 another,
+        out int edgeIndexPly, out int edgeIndexAnother,
+#if NET7_0_OR_GREATER
+        [ConstantExpected]
+#endif
         bool allowColinear = false, double absoluteTolerance = MathUtils.ZeroTolerance)
         where TPolygon1 : IPolygon
         where TPolygon2 : IPolygon
     {
         if (allowColinear)
         {
-            for (var i = 0; i < ply.VertexCount; i++)
-            {
-                var edgeA = ply.EdgeAt(i);
-                for (var j = 0; j < another.VertexCount; j++)
-                {
-                    var edgeB = another.EdgeAt(j);
-                    var relation = edgeA.IntersectWith(edgeB, out var ta, out var tb);
-                    switch (relation)
-                    {
-                        case LineRelation.Collinear:
-                        case LineRelation.Intersected:
-                            return true;
-                    }
-                }
-            }
+            return EdgeIntersectWith_AllowColinear(ply, another, out edgeIndexPly, out edgeIndexAnother, absoluteTolerance);
         }
         else
         {
-            for (var i = 0; i < ply.VertexCount; i++)
+            return EdgeIntersectWith_DisallowColinear(ply, another, out edgeIndexPly, out edgeIndexAnother, absoluteTolerance);
+        }
+    }
+    private static bool EdgeIntersectWith_AllowColinear<TPolygon1, TPolygon2>(this TPolygon1 ply, in TPolygon2 another,
+        out int edgeIndexPly, out int edgeIndexAnother,
+        double absoluteTolerance = MathUtils.ZeroTolerance)
+        where TPolygon1 : IPolygon
+        where TPolygon2 : IPolygon
+    {
+        for (var i = 0; i < ply.VertexCount; i++)
+        {
+            var edgeA = ply.EdgeAt(i);
+            for (var j = 0; j < another.VertexCount; j++)
             {
-                var edgeA = ply.EdgeAt(i);
-                for (var j = 0; j < another.VertexCount; j++)
+                var edgeB = another.EdgeAt(j);
+                var relation = edgeA.IntersectWith(edgeB, out _, out _);
+                switch (relation)
                 {
-                    var edgeB = another.EdgeAt(j);
-                    var relation = edgeA.IntersectWith(edgeB, out var ta, out var tb);
-                    switch (relation)
-                    {
-                        case LineRelation.Intersected:
-                            if (IsZeroOrOne(ta, absoluteTolerance / edgeA.Length)
-                                || IsZeroOrOne(tb, absoluteTolerance / edgeB.Length))
-                                continue;
-                            return true;
-                    }
+                    case LineRelation.Collinear:
+                    case LineRelation.Intersected:
+                        edgeIndexPly = i;
+                        edgeIndexAnother = j;
+                        return true;
                 }
             }
         }
 
+        edgeIndexPly = edgeIndexAnother = -1;
+        return false;
+    }
+    private static bool EdgeIntersectWith_DisallowColinear<TPolygon1, TPolygon2>(this TPolygon1 ply, in TPolygon2 another,
+        out int edgeIndexPly, out int edgeIndexAnother,
+        double absoluteTolerance = MathUtils.ZeroTolerance)
+        where TPolygon1 : IPolygon
+        where TPolygon2 : IPolygon
+    {
+        for (var i = 0; i < ply.VertexCount; i++)
+        {
+            var edgeA = ply.EdgeAt(i);
+            for (var j = 0; j < another.VertexCount; j++)
+            {
+                var edgeB = another.EdgeAt(j);
+                var relation = edgeA.IntersectWith(edgeB, out var ta, out var tb);
+                switch (relation)
+                {
+                    case LineRelation.Intersected:
+                        if (IsZeroOrOne(ta, absoluteTolerance / edgeA.Length)
+                            || IsZeroOrOne(tb, absoluteTolerance / edgeB.Length))
+                            continue;
+                        edgeIndexPly = i;
+                        edgeIndexAnother = j;
+                        return true;
+                }
+            }
+        }
+
+        edgeIndexPly = edgeIndexAnother = -1;
         return false;
     }
 }

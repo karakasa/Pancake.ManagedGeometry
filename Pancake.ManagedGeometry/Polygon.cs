@@ -473,6 +473,13 @@ public readonly struct Polygon : ICloneable, IPolygon
         TrySimplify(out var s, tolerance);
         return s;
     }
+
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static Polygon CreateFromConvex(Coord2d[] pts)
+    {
+        var center = new BoundingBox2d(pts).Center;
+        throw new NotImplementedException();
+    }
 }
 
 
