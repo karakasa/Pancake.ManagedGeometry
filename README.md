@@ -1,4 +1,6 @@
 # Pancake.ManagedGeometry
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fkarakasa%2FPancake.ManagedGeometry.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fkarakasa%2FPancake.ManagedGeometry?ref=badge_shield)
+
 
 Pancake.ManagedGeometry is a geometry library to provide basic geometric objects through fully-managed code.
 
@@ -26,3 +28,7 @@ Objectives don't include:
 ## Similar projects you may be interested in
 * [Hypar.Elements](https://github.com/hypar-io/Elements). A comprehensive library regarding BIM practice (and related geometric operations)
 * [G-Shark](https://github.com/GSharker/G-Shark). A library about managed AEC geometric practices.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fkarakasa%2FPancake.ManagedGeometry.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fkarakasa%2FPancake.ManagedGeometry?ref=badge_large)
