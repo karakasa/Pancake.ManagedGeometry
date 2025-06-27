@@ -2,6 +2,7 @@
 using Pancake.ManagedGeometry.Utility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -15,11 +16,34 @@ public static partial class PointInsidePolygon
     {
         return ContainsRaycastingMethod(polygon, ptr, Tolerance);
     }
+#if DEBUG
+    public static List<bool> l = [];
+    private static void Reset()
+    {
+        l.Clear();
+    }
+    private static void Record(bool val)
+    {
+        l.Add(val);
+    }
+#else
+    [Conditional("DEBUG")]
+    private static void Reset()
+    {
+    }
+    [Conditional("DEBUG")]
+    private static void Record(bool val)
+    {
+    }
+#endif
     public static PointContainment ContainsRaycastingMethod<TPolygon>(TPolygon polygon, in Coord2d ptr, double tolerance)
         where TPolygon : IPolygon
     {
         var crossing = 0;
         var len = polygon.VertexCount;
+#if DEBUG
+        Reset();
+#endif
 
         for (var i = 0; i < len; i++)
         {
@@ -36,7 +60,10 @@ public static partial class PointInsidePolygon
             var x2 = p2.X;
 
             if (Math.Abs(x1 - x2) < tolerance && Math.Abs(y1 - y2) < tolerance)
+            {
+                Record(false);
                 continue;
+            }
 
             var minY = Math.Min(y1, y2);
             var maxY = Math.Max(y1, y2);
@@ -44,7 +71,12 @@ public static partial class PointInsidePolygon
             // Bug20220728
             // 这里记得也要加上/扣掉公差
             if (ptr.Y < minY - tolerance || ptr.Y > maxY + tolerance)
+            {
+                Record(false);
                 continue;
+            }
+
+            var recordVal = false;
 
             if (Math.Abs(minY - maxY) < tolerance)
             {
@@ -63,8 +95,14 @@ public static partial class PointInsidePolygon
 
                     if (ptr.X < minX)
                     {
+                        return ContainsWindingNumberMethodExtended(polygon, ptr, tolerance);
+
+                        // 这个workaround好像还是有问题
                         if (DetermineCrossingState(x1, x2, y1, y2, i, j, polygon))
+                        {
+                            recordVal = true;
                             ++crossing;
+                        }
                     }
                 }
             }
@@ -72,15 +110,28 @@ public static partial class PointInsidePolygon
             {
                 // 不平行于 X 轴的边
 
-                var x = (x2 - x1) * (ptr.Y - y1) / (y2 - y1) + x1;
+                var y = ptr.Y;
+                var k = (y - y1) / (y2 - y1);
+                var x = (x2 - x1) * k + x1;
                 if (Math.Abs(x - ptr.X) <= tolerance)
                     return PointContainment.Coincident;
 
                 if (ptr.X < x)
                 {
-                    ++crossing;
+                    // 每根线的尾断点不算。防止正好穿过断点时被算两次。2025/06/28 bug
+                    if ((new Coord2d(x, y) - new Coord2d(x2, y2)).Length > tolerance)
+                    {
+                        recordVal = true;
+                        ++crossing;
+                    }
+                    else
+                    {
+                        ;
+                    }
                 }
             }
+
+            Record(recordVal);
         }
 
         return ((crossing & 1) == 0) ? PointContainment.Outside : PointContainment.Inside;
@@ -89,6 +140,18 @@ public static partial class PointInsidePolygon
         where TPolygon : IPolygon
     {
         return ContainsWindingNumberMethod(coords, ptToTest, Tolerance);
+    }
+    private static PointContainment ContainsWindingNumberMethodExtended<TPolygon>(TPolygon coords, in Coord2d ptToTest, double tolerance)
+        where TPolygon : IPolygon
+    {
+        var count = coords.VertexCount;
+        for (var i = 0; i < count; i++)
+        {
+            var edge = coords.EdgeAt(i);
+            if (edge.DistanceToPoint(ptToTest) < tolerance) return PointContainment.Coincident;
+        }
+
+        return ContainsWindingNumberMethod(coords, ptToTest, tolerance) ? PointContainment.Inside : PointContainment.Outside;
     }
     public static bool ContainsWindingNumberMethod<TPolygon>(TPolygon coords, in Coord2d ptToTest, double tolerance)
         where TPolygon : IPolygon

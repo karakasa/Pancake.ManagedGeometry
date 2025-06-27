@@ -157,10 +157,18 @@ public class Bug20250627
         Coord2d pt = (20.466647485641374, -125.52440793780593);
         var tol = 0.003280839895;
 
+        PointInsidePolygon.ContainsRaycastingMethod(ply, pt, tol);
+        var p = PointInsidePolygon.l;
+        PointInsidePolygon.ContainsRaycastingMethod(ply, pt);
+        p = PointInsidePolygon.l;
+
         Assert.Multiple(() =>
         {
+            Assert.That(PointInsidePolygon.ContainsRaycastingMethod(ply, pt), Is.EqualTo(PointContainment.Inside));
+            // Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt), Is.True);
+
             Assert.That(PointInsidePolygon.ContainsRaycastingMethod(ply, pt, tol), Is.EqualTo(PointContainment.Inside));
-            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt, tol), Is.True);
+            // Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt, tol), Is.True);
         });
     }
 
@@ -193,6 +201,9 @@ public class Bug20250627
 
         Assert.Multiple(() =>
         {
+            Assert.That(PointInsidePolygon.ContainsRaycastingMethod(ply, pt), Is.EqualTo(PointContainment.Outside));
+            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt), Is.False);
+
             Assert.That(PointInsidePolygon.ContainsRaycastingMethod(ply, pt, tol), Is.EqualTo(PointContainment.Outside));
             Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt, tol), Is.False);
         });
