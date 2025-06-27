@@ -480,6 +480,43 @@ public readonly struct Polygon : ICloneable, IPolygon
         var center = new BoundingBox2d(pts).Center;
         throw new NotImplementedException();
     }
+
+    public static Polygon CreateConvexHull(IEnumerable<Coord2d> points)
+    {
+        var pointList = points.ToList();
+        if (pointList.Count < 3)
+        {
+            throw new ArgumentException("至少需要3个点来创建凸多边形");
+        }
+
+        // 找到最左下角的点
+        var start = pointList.OrderBy(p => p.X).ThenBy(p => p.Y).First();
+        var hull = new List<Coord2d>();
+        var current = start;
+        
+        do
+        {
+            hull.Add(current);
+            var next = pointList[0];
+
+            for (int i = 1; i < pointList.Count; i++)
+            {
+                if (next == current || LineSide(current, next, pointList[i]) < 0)
+                {
+                    next = pointList[i];
+                }
+            }
+
+            current = next;
+        } while (current != start);
+
+        return new Polygon(hull);
+    }
+
+    private static double LineSide(Coord2d a, Coord2d b, Coord2d p)
+    {
+        return (b.X - a.X) * (p.Y - a.Y) - (b.Y - a.Y) * (p.X - a.X);
+    }
 }
 
 

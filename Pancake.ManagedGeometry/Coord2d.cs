@@ -90,6 +90,10 @@ namespace Pancake.ManagedGeometry
         {
             return Math.Acos(this * another / (another.Length * this.Length));
         }
+        public double AngleFromAxisX()
+        {
+            return Math.Atan2(Y, X);
+        }
         public double AcuteAngleWith(Coord2d another)
         {
             return MathUtils.PiAngleToAcuteAngle(AngleWith(another));

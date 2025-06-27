@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pancake.ModernUtility", "Pa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pancake.ExpressionEvaluator", "Pancake.ExpressionEvaluator\Pancake.ExpressionEvaluator.csproj", "{2B58B498-DB09-4C3A-9872-37B3B77992ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtractBeamCenterlines", "ExtractBeamCenterlines\ExtractBeamCenterlines.csproj", "{A980B68D-FD86-4C83-AA64-F67A3653673D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{2B58B498-DB09-4C3A-9872-37B3B77992ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B58B498-DB09-4C3A-9872-37B3B77992ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B58B498-DB09-4C3A-9872-37B3B77992ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A980B68D-FD86-4C83-AA64-F67A3653673D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A980B68D-FD86-4C83-AA64-F67A3653673D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A980B68D-FD86-4C83-AA64-F67A3653673D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A980B68D-FD86-4C83-AA64-F67A3653673D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -25,16 +25,22 @@ namespace Pancake.ManagedGeometry
         public Coord2d Direction;
 
         public Coord2d To
-        { readonly get => From + Direction;
+        {
+            readonly get => From + Direction;
             set => Direction = value - From;
         }
 
         public double Length
-        { readonly get => Direction.Length;
+        {
+            readonly get => Direction.Length;
             set => Direction = Direction / Direction.Length * value;
         }
 
-        public void Reverse() => Direction = -Direction;
+        public void Reverse()
+        {
+            From = To;
+            Direction = -Direction;
+        }
 
         public void Translate(Coord2d vec) => From += vec;
 
@@ -46,6 +52,48 @@ namespace Pancake.ManagedGeometry
         {
             From = start;
             Direction = end - start;
+        }
+        public bool EnsurePositiveDirection()
+        {
+            if (Direction.X.CloseToZero())
+            {
+                if (Direction.Y < 0 && !Direction.Y.CloseToZero())
+                {
+                    Reverse();
+                    return true;
+                }
+            }
+            else
+            {
+                if (Direction.X < 0 && !Direction.X.CloseToZero())
+                {
+                    Reverse();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        public bool EnsurePositiveDirection(double tolerance)
+        {
+            if (Direction.X.CloseToZero(tolerance))
+            {
+                if (Direction.Y < 0 && !Direction.Y.CloseToZero(tolerance))
+                {
+                    Reverse();
+                    return true;
+                }
+            }
+            else
+            {
+                if (Direction.X < 0 && !Direction.X.CloseToZero(tolerance))
+                {
+                    Reverse();
+                    return true;
+                }
+            }
+
+            return false;
         }
         public readonly bool IsOnLine(Coord2d pt)
         {
