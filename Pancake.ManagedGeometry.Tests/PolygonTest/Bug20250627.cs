@@ -165,10 +165,10 @@ public class Bug20250627
         Assert.Multiple(() =>
         {
             Assert.That(PointInsidePolygon.ContainsRaycastingMethod(ply, pt), Is.EqualTo(PointContainment.Inside));
-            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt), Is.True);
+            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt), Is.EqualTo(PointContainment.Inside));
 
             Assert.That(PointInsidePolygon.ContainsRaycastingMethod(ply, pt, tol), Is.EqualTo(PointContainment.Inside));
-            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt, tol), Is.True);
+            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt, tol), Is.EqualTo(PointContainment.Inside));
         });
     }
 
@@ -202,10 +202,10 @@ public class Bug20250627
         Assert.Multiple(() =>
         {
             Assert.That(PointInsidePolygon.ContainsRaycastingMethod(ply, pt), Is.EqualTo(PointContainment.Outside));
-            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt), Is.False);
+            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt), Is.EqualTo(PointContainment.Outside));
 
             Assert.That(PointInsidePolygon.ContainsRaycastingMethod(ply, pt, tol), Is.EqualTo(PointContainment.Outside));
-            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt, tol), Is.False);
+            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt, tol), Is.EqualTo(PointContainment.Outside));
         });
     }
 
@@ -259,10 +259,41 @@ public class Bug20250627
         Assert.Multiple(() =>
         {
             Assert.That(PointInsidePolygon.ContainsRaycastingMethod(ply, pt), Is.EqualTo(PointContainment.Outside));
-            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt), Is.False);
+            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt), Is.EqualTo(PointContainment.Outside));
 
             Assert.That(PointInsidePolygon.ContainsRaycastingMethod(ply, pt, tol), Is.EqualTo(PointContainment.Outside));
-            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt, tol), Is.False);
+            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt, tol), Is.EqualTo(PointContainment.Outside));
+        });
+    }
+
+    static readonly Polygon CornerPly = Polygon.CreateByRef([(1, 1), (2, 1), (2, 2), (1, 2)]);
+
+    [Test]
+    [TestCase(0, 0)]
+    [TestCase(0, 1)]
+    [TestCase(0, 2)]
+    [TestCase(0, 3)]
+    [TestCase(1, 0)]
+    [TestCase(1, 3)]
+    [TestCase(2, 0)]
+    [TestCase(2, 3)]
+    [TestCase(3, 0)]
+    [TestCase(3, 1)]
+    [TestCase(3, 2)]
+    [TestCase(3, 3)]
+    public void Test3_Extended(int x, int y)
+    {
+        var pt = new Coord2d(x, y);
+
+        var tol = 0.1;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(PointInsidePolygon.ContainsRaycastingMethod(CornerPly, pt), Is.EqualTo(PointContainment.Outside));
+            Assert.That(PointInsidePolygon.ContainsRaycastingMethod(CornerPly, pt, tol), Is.EqualTo(PointContainment.Outside));
+
+            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(CornerPly, pt), Is.EqualTo(PointContainment.Outside));
+            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(CornerPly, pt, tol), Is.EqualTo(PointContainment.Outside));
         });
     }
 }

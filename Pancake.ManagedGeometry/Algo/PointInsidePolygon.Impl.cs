@@ -16,34 +16,18 @@ public static partial class PointInsidePolygon
     {
         return ContainsRaycastingMethod(polygon, ptr, Tolerance);
     }
-#if DEBUG
-    public static List<bool> l = [];
-    private static void Reset()
-    {
-        l.Clear();
-    }
-    private static void Record(bool val)
-    {
-        l.Add(val);
-    }
-#else
-    [Conditional("DEBUG")]
-    private static void Reset()
-    {
-    }
-    [Conditional("DEBUG")]
-    private static void Record(bool val)
-    {
-    }
-#endif
     public static PointContainment ContainsRaycastingMethod<TPolygon>(TPolygon polygon, in Coord2d ptr, double tolerance)
         where TPolygon : IPolygon
     {
-        var crossing = 0;
         var len = polygon.VertexCount;
-#if DEBUG
-        Reset();
-#endif
+
+        for (var i = 0; i < len; i++)
+        {
+            if (Math.Abs(polygon[i].Y - ptr.Y) < tolerance)
+                return ContainsWindingNumberMethod(polygon, ptr, tolerance);
+        }
+
+        var crossing = 0;
 
         for (var i = 0; i < len; i++)
         {
@@ -61,7 +45,6 @@ public static partial class PointInsidePolygon
 
             if (Math.Abs(x1 - x2) < tolerance && Math.Abs(y1 - y2) < tolerance)
             {
-                Record(false);
                 continue;
             }
 
@@ -72,7 +55,6 @@ public static partial class PointInsidePolygon
             // 这里记得也要加上/扣掉公差
             if (ptr.Y < minY - tolerance || ptr.Y > maxY + tolerance)
             {
-                Record(false);
                 continue;
             }
 
@@ -95,7 +77,7 @@ public static partial class PointInsidePolygon
 
                     if (ptr.X < minX)
                     {
-                        return ContainsWindingNumberMethodExtended(polygon, ptr, tolerance);
+                        return ContainsWindingNumberMethod(polygon, ptr, tolerance);
 
                         // 这个workaround好像还是有问题
                         if (DetermineCrossingState(x1, x2, y1, y2, i, j, polygon))
@@ -130,18 +112,16 @@ public static partial class PointInsidePolygon
                     }
                 }
             }
-
-            Record(recordVal);
         }
 
         return ((crossing & 1) == 0) ? PointContainment.Outside : PointContainment.Inside;
     }
-    public static bool ContainsWindingNumberMethod<TPolygon>(TPolygon coords, in Coord2d ptToTest)
+    public static PointContainment ContainsWindingNumberMethod<TPolygon>(TPolygon coords, in Coord2d ptToTest)
         where TPolygon : IPolygon
     {
         return ContainsWindingNumberMethod(coords, ptToTest, Tolerance);
     }
-    private static PointContainment ContainsWindingNumberMethodExtended<TPolygon>(TPolygon coords, in Coord2d ptToTest, double tolerance)
+    public static PointContainment ContainsWindingNumberMethod<TPolygon>(TPolygon coords, in Coord2d ptToTest, double tolerance)
         where TPolygon : IPolygon
     {
         var count = coords.VertexCount;
@@ -151,9 +131,9 @@ public static partial class PointInsidePolygon
             if (edge.DistanceToPoint(ptToTest) < tolerance) return PointContainment.Coincident;
         }
 
-        return ContainsWindingNumberMethod(coords, ptToTest, tolerance) ? PointContainment.Inside : PointContainment.Outside;
+        return ContainsWindingNumberMethodInternal(coords, ptToTest, Tolerance) ? PointContainment.Inside : PointContainment.Outside;
     }
-    public static bool ContainsWindingNumberMethod<TPolygon>(TPolygon coords, in Coord2d ptToTest, double tolerance)
+    private static bool ContainsWindingNumberMethodInternal<TPolygon>(TPolygon coords, in Coord2d ptToTest, double tolerance)
         where TPolygon : IPolygon
     {
         // https://stackoverflow.com/questions/924171/geo-fencing-point-inside-outside-polygon
@@ -178,15 +158,15 @@ public static partial class PointInsidePolygon
             }
 
             // edge from V[i] to V[i+1]
-            if (pt1.X <= ptToTest.X + tolerance)
+            if (pt1.Y <= ptToTest.Y)
             {         // start y <= P.y
-                if (pt2.X > ptToTest.X - tolerance)      // an upward crossing
+                if (pt2.Y > ptToTest.Y)      // an upward crossing
                     if (LineSide(pt1, pt2, ptToTest, tolerance) > 0)  // P left of edge
                         ++windingNumber;            // have a valid up intersect
             }
             else
             {                       // start y > P.y (no test needed)
-                if (pt2.X <= ptToTest.X + tolerance)     // a downward crossing
+                if (pt2.Y <= ptToTest.Y)     // a downward crossing
                     if (LineSide(pt1, pt2, ptToTest, tolerance) < 0)  // P right of edge
                         --windingNumber;            // have a valid down intersect
             }

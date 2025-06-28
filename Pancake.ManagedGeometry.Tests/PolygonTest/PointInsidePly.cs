@@ -2,9 +2,11 @@
 using Pancake.ManagedGeometry.Algo;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Pancake.ManagedGeometry.Algo.PointInsidePolygon;
 
 namespace Pancake.ManagedGeometry.Tests.PolygonTest
 {
@@ -74,12 +76,12 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
             (0,2)
             });
 
-                Utility.AssertEquals(PointInsidePolygon.ContainsWindingNumberMethod(hole1, (0.75, 0.75)), false);
-                Utility.AssertEquals(PointInsidePolygon.ContainsWindingNumberMethod(hole1, (3, 0.75)), false);
+                Utility.AssertEquals(PointInsidePolygon.ContainsWindingNumberMethod(hole1, (0.75, 0.75)), PointContainment.Outside);
+                Utility.AssertEquals(PointInsidePolygon.ContainsWindingNumberMethod(hole1, (3, 0.75)), PointContainment.Outside);
 
-                Utility.AssertEquals(PointInsidePolygon.ContainsWindingNumberMethod(ply, (-1, 1)), false);
-                Utility.AssertEquals(PointInsidePolygon.ContainsWindingNumberMethod(ply, (0.5, 1)), true);
-                Utility.AssertEquals(PointInsidePolygon.ContainsWindingNumberMethod(ply, (3, 1)), false);
+                Utility.AssertEquals(PointInsidePolygon.ContainsWindingNumberMethod(ply, (-1, 1)), PointContainment.Outside);
+                Utility.AssertEquals(PointInsidePolygon.ContainsWindingNumberMethod(ply, (0.5, 1)), PointContainment.Inside);
+                Utility.AssertEquals(PointInsidePolygon.ContainsWindingNumberMethod(ply, (3, 1)), PointContainment.Outside);
 
             }
 
@@ -93,7 +95,7 @@ namespace Pancake.ManagedGeometry.Tests.PolygonTest
 
                 var testPt = new Coord2d(-50.1968503936883, 1.6404199350379609);
 
-                Assert.That(!PointInsidePolygon.ContainsWindingNumberMethod(ply, testPt));
+                Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, testPt), Is.EqualTo(PointContainment.Outside));
             }
         }
     }
