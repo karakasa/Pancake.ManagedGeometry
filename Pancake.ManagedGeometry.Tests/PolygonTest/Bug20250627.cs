@@ -157,18 +157,18 @@ public class Bug20250627
         Coord2d pt = (20.466647485641374, -125.52440793780593);
         var tol = 0.003280839895;
 
-        PointInsidePolygon.ContainsRaycastingMethod(ply, pt, tol);
+        /*PointInsidePolygon.ContainsRaycastingMethod(ply, pt, tol);
         var p = PointInsidePolygon.l;
         PointInsidePolygon.ContainsRaycastingMethod(ply, pt);
-        p = PointInsidePolygon.l;
+        p = PointInsidePolygon.l;*/
 
         Assert.Multiple(() =>
         {
             Assert.That(PointInsidePolygon.ContainsRaycastingMethod(ply, pt), Is.EqualTo(PointContainment.Inside));
-            // Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt), Is.True);
+            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt), Is.True);
 
             Assert.That(PointInsidePolygon.ContainsRaycastingMethod(ply, pt, tol), Is.EqualTo(PointContainment.Inside));
-            // Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt, tol), Is.True);
+            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt, tol), Is.True);
         });
     }
 
@@ -197,6 +197,63 @@ public class Bug20250627
             );
 
         Coord2d pt = (-3.8115677374557571, -159.64514209289115);
+        var tol = 0.003280839895;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(PointInsidePolygon.ContainsRaycastingMethod(ply, pt), Is.EqualTo(PointContainment.Outside));
+            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt), Is.False);
+
+            Assert.That(PointInsidePolygon.ContainsRaycastingMethod(ply, pt, tol), Is.EqualTo(PointContainment.Outside));
+            Assert.That(PointInsidePolygon.ContainsWindingNumberMethod(ply, pt, tol), Is.False);
+        });
+    }
+
+    [Test]
+    public void Test3()
+    {
+        var ply = Polygon.CreateByRef(
+    [
+    (68.530951651632563, -169.32361978318193),
+    (99.862972649007645, -169.32361978318193),
+    (99.862972649007872, -169.65170377268271),
+    (94.496219244720237, -169.65170377268294),
+    (94.1288817246961, -169.67233300531637),
+    (93.766163687120653, -169.7339612786478),
+    (93.412626521770108, -169.83581358138224),
+    (93.072716163625813, -169.97660906171672),
+    (92.750707182662, -170.15457713479458),
+    (92.450649028648257, -170.36747974883738),
+    (92.1763151069691, -170.61263952994457),
+    (86.716296857713132, -176.07265777920031),
+    (86.471137076606084, -176.34699170087941),
+    (86.258234462563237, -176.6470498548932),
+    (86.080266389485359, -176.96905883585703),
+    (85.93947090915087, -177.30896919400138),
+    (85.837618606416441, -177.66250635935197),
+    (85.775990333085, -178.02522439692746),
+    (85.7553611004513, -178.39256191695145),
+    (85.75536110045141, -191.25861436132288),
+    (85.734731867817644, -191.62595188134682),
+    (85.673103594486221, -191.98866991892231),
+    (85.571251291751793, -192.3422070842729),
+    (85.4304558114173, -192.68211744241722),
+    (85.25248773833944, -193.00412642338105),
+    (85.039585124296607, -193.30418457739484),
+    (84.794425343189388, -193.57851849907402),
+    (74.741230944952235, -203.6317128973111),
+    (74.466897023273091, -203.87687267841835),
+    (74.166838869259323, -204.08977529246118),
+    (73.844829888295479, -204.26774336553905),
+    (73.504919530151156, -204.40853884587352),
+    (73.1513823648006, -204.51039114860797),
+    (72.788664327225121, -204.57201942193939),
+    (72.42132680720114, -204.59264865457311),
+    (68.530951651632449, -204.59264865457283)
+    ]
+    );
+
+        Coord2d pt = (64.101818089315628, -204.26456466507003);
         var tol = 0.003280839895;
 
         Assert.Multiple(() =>
